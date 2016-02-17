@@ -70,7 +70,7 @@ try
     scenesDir='~/Documents/NETPD/StimuliPD/Aquisition/300Scenes/';
     objectsDir='~/Documents/NETPD/StimuliPD/Aquisition/300Objects/';
     
-    onsetlist=load('testonsets_1.mat'); % NEED TO FIX THIS
+    onsetlist=load('newonsets_1.mat'); % NEED TO FIX THIS
     onsetlist=onsetlist.onsetlist;
 
     maxtime=2.5;
