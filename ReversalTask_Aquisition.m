@@ -36,6 +36,7 @@ Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running
         leftResp=KbName('j');
         rightResp=KbName('k');
         okResp=KbName('space');
+        ttl=KbName('t');
     else
         leftResp=KbName('2@');
         rightResp=KbName('3#');
@@ -91,7 +92,7 @@ if day == 1 %set and save randomized list
     x=aq.prob*(nTrials); % determine number of rewarded trials based on probability and total trial number
     aq.rewProb(1:x)=1; % change the rewarded trials from 0 to 1
     aq.rewProb=aq.rewProb(randperm(numel(aq.rewProb))); %randomize order of rewarded trials
-    %disp(['# trials is ' num2str(nTrials) 'on line 107']);
+    disp(['# trials is ' num2str(nTrials) 'on line 107']);
     
     %% which is on left
     aq.stimOnLeft=ones(1,nTrials); %create matrix of ones to determine which category (1=scene, 2=object) will appear on the left
@@ -294,9 +295,9 @@ escape=0;
 
             
                 [keyDown,RT_Response,keyCode] = KbQ_Func(buttonBox,allowKeys,endTime);
-                if KbName(keyCode)==leftResp|| KbName(keyCode)==rightResp %checks if left or right key was pressed
-                    break;
-                end
+                %if KbName(keyCode)==leftResp || KbName(keyCode)==rightResp %checks if left or right key was pressed
+                 %   break;
+                %end
                 WaitSecs(.001);
                            
        
