@@ -67,9 +67,9 @@ Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running
     [xPoints, yPoints]=RectSize(windrect);    
 
 %% Locate and Choose the Stimuli
-    scenesDir='StimuliPD/Practice/scenes/';
+    scenesDir='~/Documents/NETPD/StimuliPD/Practice/scenes/';
     scenes=dir([scenesDir, '*.jpg']);
-    objectsDir='StimuliPD/Practice/objects/';
+    objectsDir='~/Documents/NETPD/StimuliPD/Practice/objects/';
     objects=dir([objectsDir, '*.jpg']); 
 
     if day==1 % list 1

@@ -67,8 +67,8 @@ try
     disp(['Center is ',num2str(cx), ' ',num2str(cy), ' and winsize is ', num2str(xPoints), num2str(yPoints)])
     %pause
     
-    scenesDir='StimuliPD/Aquisition/300Scenes/';
-    objectsDir='StimuliPD/Aquisition/300Objects/';
+    scenesDir='~/Documents/NETPD/StimuliPD/Aquisition/300Scenes/';
+    objectsDir='~/Documents/NETPD/StimuliPD/Aquisition/300Objects/';
     
     onsetlist=load('testonsets_1.mat'); % NEED TO FIX THIS
     onsetlist=onsetlist.onsetlist;
@@ -78,9 +78,9 @@ try
 if day == 1 %set and save randomized list    
     %% Locate and Choose the Stimuli
 
-    %scenesDir='StimuliPD/Aquisition/800Scenes/'; %directory of 1st category
+    %scenesDir='~/Documents/NETPD/StimuliPD/Aquisition/800Scenes/'; %directory of 1st category
     scenes=dir([scenesDir, '*.jpg']);
-    %objectsDir='StimuliPD/Aquisition/800Objects/';  %directory of 2nd category
+    %objectsDir='~/Documents/NETPD/StimuliPD/Aquisition/800Objects/';  %directory of 2nd category
     objects=dir([objectsDir, '*.jpg']);
     
     %nTrials=uint16(numel(scenes)); %total trial number for sum of both days based on total number of stimuli from 1 category (since scenes=objects)

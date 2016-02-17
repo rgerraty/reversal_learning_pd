@@ -28,7 +28,7 @@ try
     [cx,cy]=RectCenter(windrect); %center point of screen
     [xPoints, yPoints]=RectSize(windrect);
 
-    instructions='instructionsPD/inst/';
+    instructions='~/Documents/NETPD/instructionsPD/inst/';
   
     %read in images
     for i=1:8
