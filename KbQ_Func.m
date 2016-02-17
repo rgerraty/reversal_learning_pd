@@ -17,15 +17,19 @@ end
 
 
 % KbQueue set up
-
-
-KbQueueCreate(device,allowKeyCodes);KbQueueStart();
+%endTime=GetSecs+4;
+%KbQueueFlush();
+%device=1;
+KbQueueCreate(device,allowKeyCodes);
+KbQueueStart();
 keyIsDown=0;
 while keyIsDown==0 && GetSecs<endTime
 	%first press contains key identity and RT
     [keyIsDown, firstPress]=KbQueueCheck();
 end
- 
+
+%KbName(firstPress>0)
+
 %indices of firstPress refer to key code
 keyInd=find(firstPress>0);
 if sum(firstPress>0)>1 %if two keys pressed at once, take first

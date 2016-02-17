@@ -281,7 +281,7 @@ escape=0;
        endTime=startChoice(t)+maxtime;
        
        if 0
-       keyDown=1; %assume first that key is down
+            keyDown=1; %assume first that key is down
        
        %this is checking that key isnt down and must be the same length as the respnse while loop
             [keyDown,RT_Response,keyCode] = KbQ_Func(buttonBox,allowKeys,endTime)
