@@ -9,7 +9,6 @@
 
 function ReversalTask_MAIN
 % main file that runs sections of task and takes initial input
-direc='../Subjects/'; % enter subject directory here
 
 KbName('UnifyKeyNames');
 rand('state',sum(100*clock));
@@ -18,7 +17,7 @@ okResp=KbName('space');
 p.SubjectNumber=input('Input Subject Number (e.g. 1, or 12 -- no leading zeros necessary):  ' );
 p.day=input('Which day (1 or 2)?: '); %1st half list for 1st day; 2nd half list for 2nd day
 
-folder_name=(sprintf('Subjects/Subject%d/day%d',p.SubjectNumber,p.day));
+folder_name=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day%d',p.SubjectNumber,p.day));
 if ~exist(folder_name, 'dir')
     mkdir (sprintf('%s',folder_name))
 else
