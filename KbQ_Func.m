@@ -17,9 +17,6 @@ end
 
 
 % KbQueue set up
-%endTime=GetSecs+4;
-%KbQueueFlush();
-%device=1;
 KbQueueCreate(device,allowKeyCodes);
 KbQueueStart();
 keyIsDown=0;
@@ -27,8 +24,7 @@ while keyIsDown==0 && GetSecs<endTime
 	%first press contains key identity and RT
     [keyIsDown, firstPress]=KbQueueCheck();
 end
-
-%KbName(firstPress>0)
+KbQueueFlush();
 
 %indices of firstPress refer to key code
 keyInd=find(firstPress>0);

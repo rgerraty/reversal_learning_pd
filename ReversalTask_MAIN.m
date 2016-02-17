@@ -50,7 +50,7 @@ end
 [trigger,kb,buttonBox]=getExternals; 
 
 if p.scanned==2;
-    kb=1; 
+    %kb=1; 
     trigger=kb;
     buttonBox=kb;
 elseif p.scanned==1
