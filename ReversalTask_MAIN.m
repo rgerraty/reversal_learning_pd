@@ -52,7 +52,7 @@ end
 if p.scanned==2;
     kb=1; 
     trigger=kb;
-     buttonBox=kb;
+    buttonBox=kb;
 elseif p.scanned==1
      error=0;
      if trigger==0
