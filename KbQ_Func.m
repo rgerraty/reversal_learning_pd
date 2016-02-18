@@ -15,11 +15,11 @@ if endTime==0
     endTime=GetSecs+99999999999;
 end
 
-device=6
+%device=6
 
 % KbQueue set up
 KbQueueCreate(device,allowKeyCodes);
-KbQueueStart();
+KbQueueStart(device);
 keyIsDown=0;
 while keyIsDown==0 && GetSecs<endTime
 	%first press contains key identity and RT
