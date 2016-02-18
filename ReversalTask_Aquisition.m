@@ -303,20 +303,24 @@ escape=0;
        
          disp('line 198')
 
-        aq.rt(t)=RT_Response-startChoice(t);% compute response time in milliseconds
+        
         
 
         resp=keyCode; %find name of key that was pressed **however KbQ_Func now takes care of this, we think
+        if isempty(resp)
+            resp=NaN;
+            aq.rt(t)=maxtime; 
+        else
+            aq.rt(t)=RT_Response-startChoice(t);% compute response time in sec
+        end
+        
         if iscell(resp) %checking if 2 keys were pressed and keeping 2nd
             resp=resp{2};
         end
         if length(resp)>1
             resp=NaN;
         end
-        if isempty(resp)
-            resp=NaN;
-            aq.rt(t)=maxtime;
-        end
+        
         aq.keyPressed(t)=resp;
 
         % Add Yellow Frame to Chosen Stimuli

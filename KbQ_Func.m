@@ -19,7 +19,8 @@ end
 
 % KbQueue set up
 KbQueueCreate(device,allowKeyCodes);
-KbQueueStart(device);
+
+KbQueueStart;
 keyIsDown=0;
 while keyIsDown==0 && GetSecs<endTime
 	%first press contains key identity and RT
