@@ -15,6 +15,7 @@ if endTime==0
     endTime=GetSecs+99999999999;
 end
 
+device=6
 
 % KbQueue set up
 KbQueueCreate(device,allowKeyCodes);
