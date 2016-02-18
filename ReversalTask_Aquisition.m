@@ -204,7 +204,7 @@ end
     while(1)
         [keyIsDown,TimeStamp,keyCode] = KbCheck;
         if keyCode(okResp) %%allows examiner to press the space bar to pause the task if there is a problem, without terminating
-            if scanned==1
+            if scanned==1 || scanned==2
             DrawFormattedText(window,['Please wait while we start the scan'],'center','center',[0 0 0]);
             Screen('Flip',window);
             keysofint=zeros(1,256);
@@ -212,6 +212,7 @@ end
             KbQueueCreate(trigger,keysofint);
             KbQueueStart;
             KbQueueWait;
+            WaitSecs(12.9)
             end
             break;
         end
@@ -498,6 +499,7 @@ escape=0;
                             KbQueueCreate(trigger,keysofint);
                             KbQueueStart;
                             KbQueueWait;
+                            WaitSecs(12.9)
                         end
                         break;
                     end
