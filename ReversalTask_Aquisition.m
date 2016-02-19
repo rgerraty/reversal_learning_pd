@@ -246,7 +246,7 @@ escape=0;
         end
         [~, startTrial, KeyCode]=KbCheck;% initialize keys
         %Screen('FillRect', window, white); % Color the entire window grey
-        Screen('TextSize',window, [30]);
+        Screen('TextSize',window, [50]);
         Screen('TextStyle',window,[2]);
         DrawFormattedText(window,'+','center','center',[0 0 0]);
         Screen('Flip', window);
