@@ -496,6 +496,12 @@ escape=0;
                         if scanned==1
                             DrawFormattedText(window,['Please wait while we re-boot the scanner'],'center','center',[0 0 0]);
                             Screen('Flip',window);
+                            proc_key=zeros(1,256);
+                            proc_key(KbName('k'))=1;
+                            KbQueueCreate(kb,proc_key);
+                            KbQueueStart;
+                            KbQueueWait;
+                            KbQueueFlush;
                             keysofint=zeros(1,256);
                             keysofint(ttl)=1;
                             KbQueueCreate(trigger,keysofint);

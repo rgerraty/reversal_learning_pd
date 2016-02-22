@@ -46,7 +46,7 @@ if p.practice==1
     save(sprintf('%s/practicePR',folder_name),'pr')
 end
 
-
+KbName('UnifyKeyNames');
 [trigger,kb,buttonBox]=getExternals; 
 
 if p.scanned==2;
