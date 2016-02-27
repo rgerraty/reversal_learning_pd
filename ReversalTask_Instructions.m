@@ -2,7 +2,7 @@
 % Modified from shopping learning task written by Madeleine Sharp, MD
 % in the lab of Daphna Shohamy, PhD at Columbia University
 % Last Updated December 17, 2015
-function ReversalTask_Instructions(rewCat,scanned)
+function ReversalTask_Instructions(rewCat,scanned,buttonBox)
 
 KbName('UnifyKeyNames');
 rand('state',sum(100*clock));
@@ -46,11 +46,11 @@ disp('read all in instructions-main');
     for i=1:numel(imgTexCell) % these are the final instructions before the real game
         Screen('DrawTexture', window, imgTexCell{i});
         [VBLTimestamp startChoice]=Screen('Flip', window);
-        [keyIsDown,TimeStamp,keyCode] = KbCheck;
+        [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
 disp('instructions-main display loop');        
         WaitSecs(.5);
         while(1)
-            [keyIsDown,TimeStamp,keyCode] = KbCheck;
+            [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
             
             if keyCode(okResp)
                 

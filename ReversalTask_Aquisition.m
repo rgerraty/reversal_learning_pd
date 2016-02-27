@@ -202,7 +202,7 @@ end
     DrawFormattedText(window,['Which category is more likely to be correct? \n\n Use the ''j'' key for Left \n use the ''k'' key for Right \n\n\n Press SPACE BAR to start'], 'center','center', [0 0 0]);
     Screen('Flip', window); % show text
     while(1)
-        [keyIsDown,TimeStamp,keyCode] = KbCheck;
+        [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
         if keyCode(okResp) %%allows examiner to press the space bar to pause the task if there is a problem, without terminating
             if scanned==1 || scanned==2
             DrawFormattedText(window,['Please wait while we start the scan'],'center','center',[0 0 0]);
@@ -210,8 +210,8 @@ end
             keysofint=zeros(1,256);
             keysofint(ttl)=1;
             KbQueueCreate(trigger,keysofint);
-            KbQueueStart;
-            KbQueueWait;
+            KbQueueStart(trigger);
+            KbQueueWait(trigger);
             DrawFormattedText(window,['Still more waiting...'],'center','center',[0 0 0]);
             Screen('Flip',window);
             WaitSecs(12.9)
@@ -253,7 +253,7 @@ escape=0;
         
         while (GetSecs-startTrial)<=.5 %checks each loop for held escape key
             if ~(KeyCode(escapeKey))
-                [~, ~, KeyCode]=KbCheck;
+                [~, ~, KeyCode]=KbCheck(buttonBox);
                 WaitSecs(0.001);
             else
                 escape=1;
@@ -499,14 +499,14 @@ escape=0;
                             proc_key=zeros(1,256);
                             proc_key(KbName('k'))=1;
                             KbQueueCreate(kb,proc_key);
-                            KbQueueStart;
-                            KbQueueWait;
-                            KbQueueFlush;
+                            KbQueueStart(kb);
+                            KbQueueWait(kb);
+                            KbQueueFlush(kb);
                             keysofint=zeros(1,256);
                             keysofint(ttl)=1;
                             KbQueueCreate(trigger,keysofint);
-                            KbQueueStart;
-                            KbQueueWait;
+                            KbQueueStart(trigger);
+                            KbQueueWait(trigger);
                             WaitSecs(12.9)
                         end
                         break;
@@ -528,7 +528,7 @@ escape=0;
     Screen('Flip', window);    
     WaitSecs(5);   
     while(1)
-        [~,~,keyCode] = KbCheck;
+        [~,~,keyCode] = KbCheck(kb);
         if keyCode(okResp)
             break;
         end
