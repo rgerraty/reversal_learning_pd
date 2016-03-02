@@ -7,6 +7,7 @@
 %MS: commented out the scanner-relevant bit because can't find getexternals
 %or equivalent function
 
+
 function ReversalTask_MAIN
 % main file that runs sections of task and takes initial input
 
