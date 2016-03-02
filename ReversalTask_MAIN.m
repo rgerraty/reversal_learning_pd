@@ -71,7 +71,9 @@ elseif p.scanned==1
      if error
          throw(err)
      end
- end
+end
+
+ 
 
 if p.acquisition ==1
      ReversalTask_Instructions(p.versionRewardCat,p.scanned,buttonBox);
