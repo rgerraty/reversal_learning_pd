@@ -317,12 +317,19 @@ escape=0;
             aq.rt(t)=RT_Response-startChoice(t);% compute response time in sec
         end
         
-        if iscell(resp) %checking if 2 keys were pressed and keeping 2nd
-            resp=resp{2};
-        end
-        if length(resp)>1
-            resp=NaN;
-        end
+        
+        %if iscell(resp) %checking if 2 keys were pressed and keeping 2nd
+         %   resp=resp{2};
+        %end
+        
+        %this has been causing us problems, in the scanner the keycode is
+        %2@, which has length>1
+        %We may want to flag dual presses, but will have to do it
+        %differently
+        
+        %if length(resp)>1
+         %   resp=NaN;
+        %end
         
         aq.keyPressed(t)=resp;
 
@@ -332,14 +339,14 @@ escape=0;
         Screen('DrawTexture', window, img{t,abs(aq.stimOnLeft(t)-3)}, [], StimBox2);
         Screen('FrameRect',window, black, StimBox2, 4);  
 
-        if isequal(resp,'j')
+        if isequal(resp,KbName(leftResp))
             aq.chosenSide(t)=1; % i.e. Left
             aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; 
             Screen('FrameRect',window, [255 255 0], StimBox1Frame, 6);
             Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)); % show response
             %WaitSecs(.5); %so show the feedback for 0.5sec
             resp=1;
-        elseif isequal(resp,'k')
+        elseif isequal(resp,KbName(rightResp))
             aq.chosenSide(t)=2; % i.e. Right
             aq.chosenStim(t)=img{t,abs(aq.stimOnLeft(t)-3)};
             Screen('FrameRect',window, [255 255 0], StimBox2Frame, 6);
