@@ -331,7 +331,7 @@ escape=0;
          %   resp=NaN;
         %end
         
-        aq.keyPressed(t)=resp;
+        aq.keyPressed(t)=KbName(resp);
 
         % Add Yellow Frame to Chosen Stimuli
         Screen('DrawTexture', window, img{t,aq.stimOnLeft(t)}, [], StimBox1);
