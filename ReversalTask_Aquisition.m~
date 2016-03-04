@@ -128,21 +128,14 @@ if day == 1 %set and save randomized list
     
     save(sprintf('%s/scenesList',folder_name),'scenesList'); % save total randomized directory list to load later
     save(sprintf('%s/objectsList',folder_name),'objectsList');
-    save(sprintf('%s/trialsS',folder_name),'ranS');    
-    save(sprintf('%s/trialsO',folder_name),'ranO');    
+    %save(sprintf('%s/trialsS',folder_name),'aq.trialsS');    
+    %save(sprintf('%s/trialsO',folder_name),'aq.trialsO');    
     
 elseif day == 2  % load randomized lists for reward proability, scenes/objects order, and stimuli presented on left order and choose second half
     
     day1_folder=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1',SubjectNumber));
     load(sprintf('%s/scenesList',day1_folder)); %loads scenesList
     load(sprintf('%s/objectsList',day1_folder)); 
-    load(sprintf('%s/trialsS',day1_folder));    
-    load(sprintf('%s/trialsO',day1_folder));    
-    
-    aq.scenesList=scenesList;
-    aq.objectsList=objectsList;
-    aq.trialsS=ranS;
-    aq.trialsO=ranO;
  
     %% Probability of Reward
     aq.prob=prob;  %now probability distribution is set in main functino
@@ -158,6 +151,9 @@ elseif day == 2  % load randomized lists for reward proability, scenes/objects o
     aq.stimOnLeft(1:x)=2; %object =1/2 trials
     aq.stimOnLeft=aq.stimOnLeft(randperm(numel(aq.stimOnLeft))); % random ordering for Stimuli presented in stimBox1 on left (1=scene, 2=object)
     
+    aq.scenesList=scenesList;
+    aq.objectsList=objectsList;
+
     aq.halfScenesList=scenesList((round(numel(scenesList)/2)+1):round(numel(scenesList)));
     halfScenesList=aq.halfScenesList; %duplicating save for use later
     aq.halfObjectsList=objectsList((round(numel(objectsList)/2)+1):round(numel(objectsList)));
