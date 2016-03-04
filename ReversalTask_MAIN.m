@@ -84,7 +84,7 @@ if p.acquisition ==1
      prob=.7; % move variable to top
      nTrials=150; %total number of trials for 1 day
      blockLength=30;
-     aq = ReversalTask_Aquisition(p.versionRewardCat,p.day,p.scanned,folder_name, p.SubjectNumber,prob,blockLength,nTrials,trigger,buttonBox);
+     aq = ReversalTask_Aquisition(p.versionRewardCat,p.day,p.scanned,folder_name, p.SubjectNumber,prob,blockLength,nTrials,trigger,buttonBox,kb);
 
 % end
 save(sprintf('%s/aquisitionAQfin',folder_name),'aq')

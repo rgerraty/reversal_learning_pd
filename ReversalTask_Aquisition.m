@@ -16,7 +16,7 @@
 
 %what's up RTG?
 
-function aq=ReversalTask_Aquisition(rewCat, day, scanned, folder_name, SubjectNumber,prob,blockLength, nTrials,trigger,buttonBox)
+function aq=ReversalTask_Aquisition(rewCat, day, scanned, folder_name, SubjectNumber,prob,blockLength, nTrials,trigger,buttonBox,kb)
 Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running, skips sync tests for troubleshooting purposes
 
 
