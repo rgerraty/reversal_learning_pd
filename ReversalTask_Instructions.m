@@ -28,10 +28,10 @@ try
     [cx,cy]=RectCenter(windrect); %center point of screen
     [xPoints, yPoints]=RectSize(windrect);
 
-    instructions='~/Documents/NETPD/instructionsPD/inst/';
+    instructions='~/Documents/NETPD/instructionsPD/inst_acq/';
   
     %read in images
-    for i=1:8
+    for i=1:3
         [o,map,alpha] = imread([instructions num2str(i) '.jpg'], 'jpg');
         imgRect{i}=RectOfMatrix(o); %gets rects of ImagesArrays
         imgCell{i}=cat(3,o,alpha); %combines RBG matrix and alpha (transperency)

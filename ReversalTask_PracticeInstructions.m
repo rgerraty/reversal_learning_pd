@@ -65,7 +65,7 @@ try
     instructions='~/Documents/NETPD/instructionsPD/inst/';
 
     %read in images
-    for i=1:8 %#of instruction files in the folder
+    for i=1:9 %#of instruction files in the folder
         [o,map,alpha] = imread([instructions num2str(i) '.jpg'], 'jpg');
         imgRect{i}=RectOfMatrix(o); %gets rects of ImagesArrays
         imgCell{i}=cat(3,o,alpha); %combines RBG matrix and alpha (transperency)
@@ -76,7 +76,7 @@ try
 
     %%% Pre-practice instructions
     
-    for i=1:5 % these are the instructions that appear before the practice
+    for i=1:7 % these are the instructions that appear before the practice
         Screen('DrawTexture', window, imgTexCell{i});
         [VBLTimestamp startChoice]=Screen('Flip', window);
         [keyIsDown,TimeStamp,keyCode] = KbCheck;
@@ -109,7 +109,7 @@ disp('finished practice');
     %flicker of image #5??!!
     [window, windrect] = Screen('OpenWindow', 0); % get screen    
     
-    for i=6:8
+    for i=8:9
 disp('post-prac instr 1');
 
         Screen('DrawTexture', window, imgTexCell{i});

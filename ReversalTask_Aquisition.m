@@ -199,7 +199,7 @@ end
     Screen('Flip', window);
 
    %%  Write Instructions and check for escape key
-    DrawFormattedText(window,['Which category is more likely to be correct? \n\n Use the ''j'' key for Left \n use the ''k'' key for Right \n\n\n Press SPACE BAR to start'], 'center','center', [0 0 0]);
+    DrawFormattedText(window,['Which box has the points? \n\n Use the INDEX for Left \n use the MIDDLE finger for Right \n\n\n Press the THUMB to start'], 'center','center', [0 0 0]);
     Screen('Flip', window); % show text
     while(1)
         [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
