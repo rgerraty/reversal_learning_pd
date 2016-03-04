@@ -313,8 +313,10 @@ escape=0;
         if isempty(resp)
             resp=NaN;
             aq.rt(t)=maxtime; 
+            aq.keyPressed(t)=resp;
         else
             aq.rt(t)=RT_Response-startChoice(t);% compute response time in sec
+            aq.keyPressed(t)=KbName(resp);
         end
         
         
@@ -331,7 +333,7 @@ escape=0;
          %   resp=NaN;
         %end
         
-        aq.keyPressed(t)=KbName(resp);
+        
 
         % Add Yellow Frame to Chosen Stimuli
         Screen('DrawTexture', window, img{t,aq.stimOnLeft(t)}, [], StimBox1);
@@ -500,8 +502,8 @@ escape=0;
                 while(1)
                     [keyIsDown,TimeStamp,keyCode] = KbCheck;
                     if keyCode(okResp) %end the break when spacebar is pressed
-                        if scanned==1
-                            DrawFormattedText(window,['Please wait while we re-boot the scanner'],'center','center',[0 0 0]);
+                        if scanned==1 || scanned==2
+                            DrawFormattedText(window,['Please wait while we re-boot the scanner\n\nExperimenter please press k when finished with prep scan'],'center','center',[0 0 0]);
                             Screen('Flip',window);
                             proc_key=zeros(1,256);
                             proc_key(KbName('k'))=1;
@@ -509,11 +511,16 @@ escape=0;
                             KbQueueStart(kb);
                             KbQueueWait(kb);
                             KbQueueFlush(kb);
+                            DrawFormattedText(window,['Warming up...'],'center','center',[0 0 0]);
+                            Screen('Flip',window);
                             keysofint=zeros(1,256);
                             keysofint(ttl)=1;
                             KbQueueCreate(trigger,keysofint);
                             KbQueueStart(trigger);
                             KbQueueWait(trigger);
+                            KbQueueFlush(trigger);
+                            DrawFormattedText(window,['Still warming up...'],'center','center',[0 0 0]);
+                            Screen('Flip',window);
                             WaitSecs(12.9)
                         end
                         break;
