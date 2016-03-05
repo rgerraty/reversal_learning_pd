@@ -17,6 +17,7 @@ okResp=KbName('space');
 
 p.SubjectNumber=input('Input Subject Number (e.g. 1, or 12 -- no leading zeros necessary):  ' );
 p.day=input('Which day (1 or 2)?: '); %1st half list for 1st day; 2nd half list for 2nd day
+p.med=input('Is subject ON meds (1=ON, 0=OFF)?: ');
 
 folder_name=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day%d',p.SubjectNumber,p.day));
 if ~exist(folder_name, 'dir')
@@ -84,7 +85,7 @@ if p.acquisition ==1
      prob=.7; % move variable to top
      nTrials=150; %total number of trials for 1 day
      blockLength=30;
-     aq = ReversalTask_Aquisition(p.versionRewardCat,p.day,p.scanned,folder_name, p.SubjectNumber,prob,blockLength,nTrials,trigger,buttonBox,kb);
+     aq = ReversalTask_Aquisition(p.versionRewardCat,p.day,p.med,p.scanned,folder_name, p.SubjectNumber,prob,blockLength,nTrials,trigger,buttonBox,kb);
 
 % end
 save(sprintf('%s/aquisitionAQfin',folder_name),'aq')

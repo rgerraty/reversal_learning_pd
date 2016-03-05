@@ -16,7 +16,7 @@
 
 %what's up RTG?
 
-function aq=ReversalTask_Aquisition(rewCat, day, scanned, folder_name, SubjectNumber,prob,blockLength, nTrials,trigger,buttonBox,kb)
+function aq=ReversalTask_Aquisition(rewCat, day, med, scanned, folder_name, SubjectNumber,prob,blockLength, nTrials,trigger,buttonBox,kb)
 Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running, skips sync tests for troubleshooting purposes
 
 
@@ -167,6 +167,7 @@ end
     aq.chosenSide=NaN(1,nTrials);%creates null matrix that will be populated by participant choices
     aq.chosenStim=aq.chosenSide;
     aq.chosenFileName=aq.chosenSide;
+    aq.chosenCat=aq.chosenSide;
     aq.rt=aq.chosenSide;
 
     aq.reversalAt=randi([80 100],1,1); % sets reversal at random value between 80 and 100, want to avoid block transition
@@ -357,7 +358,8 @@ escape=0;
 
         if isequal(resp,KbName(leftResp))
             aq.chosenSide(t)=1; % i.e. Left
-            aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; 
+            aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; %MS: don't think this saves anything useful
+            aq.chosenCat(t)=aq.stimOnLeft(t);
             
             %saving out the image filename stimOnLeft=1 is Scene
             if aq.stimOnLeft(t)==1
@@ -373,6 +375,7 @@ escape=0;
         elseif isequal(resp,KbName(rightResp))
             aq.chosenSide(t)=2; % i.e. Right
             aq.chosenStim(t)=img{t,abs(aq.stimOnLeft(t)-3)};
+            aq.chosenCat(t)=abs(aq.stimOnLeft(t)-3); %i.e the opposite of what's on the left
             
             %saving out the image filename stimOnLeft=1 is Scene
             if aq.stimOnLeft(t)==1 %i.e. scene
@@ -496,23 +499,16 @@ escape=0;
         outputmat(t,1)=SubjectNumber;
         outputmat(t,2)=t;
         outputmat(t,3)=day;
-        %outputmat(t,4)=trials1; eliminated these - now halfScenesList and
-        %halfObjectsList used - have stimuli names in random permutation
-        %for half being used for day
-        %outputmat(t,5)=trials2;
-        %outputmat(t,4)=aq.halfScenesList.name;
-        %outputmat(t,5)=aq.halfObjectsList.name;
-        outputmat(t,4)=aq.stimOnLeft(t); %this is image category on Left?
-        outputmat(t,5)=rewCat;
-        outputmat(t,6)=resp; %1=left, 2=right
-        outputmat(t,7)=aq.rewProb(t);
-        outputmat(t,8)=aq.reward(t); %feedback they were acually given
-        outputmat(t,9)=aq.optimal(t);
-        %MS: i want to also save the number of the images shown on each
-        %trial. Not sure which variable best for this. The img variable
-        %does not seem to be saving the correct number as the numbers don't
-        %match anything else that I can find
-    
+        outputmat(t,4)=med;
+        outputmat(t,5)=aq.stimOnLeft(t); %this is image category on Left: 1=scene, 2=obj
+        outputmat(t,6)=rewCat;
+        outputmat(t,7)=resp; %1=left, 2=right
+        outputmat(t,8)=aq.rewProb(t);
+        outputmat(t,9)=aq.reward(t); %feedback they were acually given
+        outputmat(t,10)=aq.optimal(t);
+        outputmat(t,11)=aq.chosenCat(t); %1=scene
+        outputmat(t,12)=1; %1=old, all are old (for use in memory test
+        outputmat(t,13)=aq.rt(t);
      
     
     %%
@@ -562,17 +558,35 @@ escape=0;
             end
             
     end % end trial loop
-        save(sprintf('%s/day%d/aquisitionAQ',folder_name),'aq')
-        save(sprintf('%s/day%d/AQmat',folder_name),'outputmat');
-        save(sprintf('%s/day%d/space',folder_name))
+        save(sprintf('%s/aquisitionAQ',folder_name),'aq')
+        save(sprintf('%s/AQmat',folder_name),'outputmat');
+        save(sprintf('%s/space',folder_name))
         
   
         %% create output cell for use in the memory test: contains strings and num
         
-        im_names={
+        memInput=cell(150,10); %150trials, will add header row when creating the csv
+        %C2=mat2cell(C,repmat(1,1,5),repmat(1,1,5));
+        subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
+        imgCell=names; %=aq.chosenFileName
+        
+        %print to a output file by filling it row by row. So start with
+        %header row (all strings) then add the cell rows (a mix of string
+        %and numbers)
+        fid = fopen(sprintf('%s/memInput.csv',folder_name),'w')
+        numColumns = size(memInput,2);
+        rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
+        fprintf(fid,'%s, %s, %s, %s, %s, %s\n', 'a','b','c','d','e','f'); %header, first row
+        for i=1:size(combo3,1)
+            fprintf(fid,rowFmt,combo3{i,1:end});
+        end
+        
+        fclose(fid)
         
         
-        
+        fprintf(fid,[headerFmt,'%s\n'],c{1,:})
+        fprintf(fid,[cellFmt,'%s\n'],c{2:end,:})
+        fclose(fid)
         
         %%
         escape=1;
