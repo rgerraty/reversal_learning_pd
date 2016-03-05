@@ -495,7 +495,7 @@ escape=0;
         %does not seem to be saving the correct number as the numbers don't
         %match anything else that I can find
     
-    
+     
     
     %%
         
@@ -547,6 +547,16 @@ escape=0;
         save(sprintf('%s/day%d/aquisitionAQ',folder_name),'aq')
         save(sprintf('%s/day%d/AQmat',folder_name),'outputmat');
         save(sprintf('%s/day%d/space',folder_name))
+        
+  
+        %% create output cell for use in the memory test: contains strings and num
+        
+        im_names={
+        
+        
+        
+        
+        %%
         escape=1;
  end
  
