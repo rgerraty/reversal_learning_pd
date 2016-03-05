@@ -166,6 +166,7 @@ end
 
     aq.chosenSide=NaN(1,nTrials);%creates null matrix that will be populated by participant choices
     aq.chosenStim=aq.chosenSide;
+    aq.chosenFileName=aq.chosenSide;
     aq.rt=aq.chosenSide;
 
     aq.reversalAt=randi([80 100],1,1); % sets reversal at random value between 80 and 100, want to avoid block transition
@@ -357,6 +358,14 @@ escape=0;
         if isequal(resp,KbName(leftResp))
             aq.chosenSide(t)=1; % i.e. Left
             aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; 
+            
+            %saving out the image filename stimOnLeft=1 is Scene
+            if aq.stimOnLeft(t)==1
+                aq.chosenFileName(t)=aq.scenes(t);
+            elseif
+                aq.chosenFileName(t)=aq.objects(t);
+            end
+            
             Screen('FrameRect',window, [255 255 0], StimBox1Frame, 6);
             Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)); % show response
             %WaitSecs(.5); %so show the feedback for 0.5sec
@@ -364,13 +373,22 @@ escape=0;
         elseif isequal(resp,KbName(rightResp))
             aq.chosenSide(t)=2; % i.e. Right
             aq.chosenStim(t)=img{t,abs(aq.stimOnLeft(t)-3)};
+            
+            %saving out the image filename stimOnLeft=1 is Scene
+            if aq.stimOnLeft(t)==1 %i.e. scene
+                aq.chosenFileName(t)=aq.objects(t); %then take opposite since chose Right
+            elseif
+                aq.chosenFileName(t)=aq.scenes(t);
+            end
+            
             Screen('FrameRect',window, [255 255 0], StimBox2Frame, 6);
             Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)); % show response
             %WaitSecs(.5);
             resp=2;
         else
             aq.chosenSide(t)=NaN;
-            aq.chosenStim(t)=NaN;    
+            aq.chosenStim(t)=NaN;   
+            aq.chosenFileName(t)=NaN;
             resp=NaN; %there is no waitsecs here so that if no resp was recorded, go straight to next piece of code 
         end
 
@@ -501,8 +519,8 @@ escape=0;
         
     %% Save frequently and set blocks
             if mod(t,10)==1
-                save(sprintf('%s/day%d/aquisitionAQ',folder_name),'aq');
-                save(sprintf('%s/day%d/AQmat',folder_name),'outputmat');
+                save(sprintf('%s/aquisitionAQ',folder_name),'aq');
+                save(sprintf('%s/AQmat',folder_name),'outputmat');
             end
             % below is where we could move the image loading to
             if mod(t,aq.blockLength)==0 && t<nTrials %MS changed block length to 6 for testing

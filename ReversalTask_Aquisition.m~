@@ -128,14 +128,21 @@ if day == 1 %set and save randomized list
     
     save(sprintf('%s/scenesList',folder_name),'scenesList'); % save total randomized directory list to load later
     save(sprintf('%s/objectsList',folder_name),'objectsList');
-    %save(sprintf('%s/trialsS',folder_name),'aq.trialsS');    
-    %save(sprintf('%s/trialsO',folder_name),'aq.trialsO');    
+    save(sprintf('%s/trialsS',folder_name),'ranS');    
+    save(sprintf('%s/trialsO',folder_name),'ranO');    
     
 elseif day == 2  % load randomized lists for reward proability, scenes/objects order, and stimuli presented on left order and choose second half
     
     day1_folder=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1',SubjectNumber));
     load(sprintf('%s/scenesList',day1_folder)); %loads scenesList
     load(sprintf('%s/objectsList',day1_folder)); 
+    load(sprintf('%s/trialsS',day1_folder));    
+    load(sprintf('%s/trialsO',day1_folder));    
+    
+    aq.scenesList=scenesList;
+    aq.objectsList=objectsList;
+    aq.trialsS=ranS;
+    aq.trialsO=ranO;
  
     %% Probability of Reward
     aq.prob=prob;  %now probability distribution is set in main functino
@@ -151,9 +158,6 @@ elseif day == 2  % load randomized lists for reward proability, scenes/objects o
     aq.stimOnLeft(1:x)=2; %object =1/2 trials
     aq.stimOnLeft=aq.stimOnLeft(randperm(numel(aq.stimOnLeft))); % random ordering for Stimuli presented in stimBox1 on left (1=scene, 2=object)
     
-    aq.scenesList=scenesList;
-    aq.objectsList=objectsList;
-
     aq.halfScenesList=scenesList((round(numel(scenesList)/2)+1):round(numel(scenesList)));
     halfScenesList=aq.halfScenesList; %duplicating save for use later
     aq.halfObjectsList=objectsList((round(numel(objectsList)/2)+1):round(numel(objectsList)));
@@ -162,6 +166,7 @@ end
 
     aq.chosenSide=NaN(1,nTrials);%creates null matrix that will be populated by participant choices
     aq.chosenStim=aq.chosenSide;
+    aq.chosenFileName=aq.chosenSide;
     aq.rt=aq.chosenSide;
 
     aq.reversalAt=randi([80 100],1,1); % sets reversal at random value between 80 and 100, want to avoid block transition
@@ -353,6 +358,14 @@ escape=0;
         if isequal(resp,KbName(leftResp))
             aq.chosenSide(t)=1; % i.e. Left
             aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; 
+            
+            %saving out the image filename stimOnLeft=1 is Scene
+            if aq.stimOnLeft(t)==1
+                aq.chosenFileName(t)=aq.scenes(t);
+            elseif
+                aq.chosenFileName(t)=aq.objects(t);
+            end
+            
             Screen('FrameRect',window, [255 255 0], StimBox1Frame, 6);
             Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)); % show response
             %WaitSecs(.5); %so show the feedback for 0.5sec
@@ -360,13 +373,22 @@ escape=0;
         elseif isequal(resp,KbName(rightResp))
             aq.chosenSide(t)=2; % i.e. Right
             aq.chosenStim(t)=img{t,abs(aq.stimOnLeft(t)-3)};
+            
+            %saving out the image filename stimOnLeft=1 is Scene
+            if aq.stimOnLeft(t)==1
+                aq.chosenFileName(t)=aq.scenes(t);
+            elseif
+                aq.chosenFileName(t)=aq.objects(t);
+            end
+            
             Screen('FrameRect',window, [255 255 0], StimBox2Frame, 6);
             Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)); % show response
             %WaitSecs(.5);
             resp=2;
         else
             aq.chosenSide(t)=NaN;
-            aq.chosenStim(t)=NaN;    
+            aq.chosenStim(t)=NaN;   
+            aq.chosenFileName(t)=NaN;
             resp=NaN; %there is no waitsecs here so that if no resp was recorded, go straight to next piece of code 
         end
 
@@ -491,7 +513,7 @@ escape=0;
         %does not seem to be saving the correct number as the numbers don't
         %match anything else that I can find
     
-    
+     
     
     %%
         
@@ -543,6 +565,16 @@ escape=0;
         save(sprintf('%s/day%d/aquisitionAQ',folder_name),'aq')
         save(sprintf('%s/day%d/AQmat',folder_name),'outputmat');
         save(sprintf('%s/day%d/space',folder_name))
+        
+  
+        %% create output cell for use in the memory test: contains strings and num
+        
+        im_names={
+        
+        
+        
+        
+        %%
         escape=1;
  end
  
