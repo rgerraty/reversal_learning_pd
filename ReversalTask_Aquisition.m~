@@ -564,21 +564,23 @@ escape=0;
         
   
         %% create output cell for use in the memory test: contains strings and num
-        
-        memInput=cell(150,10); %150trials, will add header row when creating the csv
-        %C2=mat2cell(C,repmat(1,1,5),repmat(1,1,5));
         subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
-        imgCell=names; %=aq.
-        
+        imgCell=names; %=aq.chosenFileName
+        %use mat2cell to convert outputmat to cell format. Specificy to
+        %subdivide into smaller arrays for each row and each col (1x1)
+        restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8));
+        %concatenate along the row dimension
+        memInputCell=cat(2,subNumCell,imgCell,restCell);
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        fid = fopen(sprintf('%s/memInput.csv',folder_name),'w')
-        numColumns = size(memInput,2);
+        %fid = fopen(sprintf('%s/memInput.csv',folder_name),'w')
+        fid = fopen('memInput2.csv','w')
+        numColumns = size(memInputCell,2);
         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
-        fprintf(fid,'%s, %s, %s, %s, %s, %s\n', 'a','b','c','d','e','f'); %header, first row
-        for i=1:size(combo3,1)
-            fprintf(fid,rowFmt,combo3{i,1:end});
+        fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
+        for i=1:size(memInputCell,1)
+            fprintf(fid,rowFmt,memInputCell{i,1:end});
         end
         
         fclose(fid)
