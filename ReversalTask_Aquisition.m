@@ -580,8 +580,8 @@ escape=0;
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        %fid = fopen(sprintf('%s/memInput.csv',folder_name),'w')
-        fid = fopen('memInput2.csv','w')
+        fid = fopen(sprintf('%s/memInput.csv',folder_name),'w')
+
         numColumns = size(memInputCell,2);
         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
         fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
