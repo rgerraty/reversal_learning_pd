@@ -167,6 +167,7 @@ end
     aq.chosenSide=NaN(1,nTrials);%creates null matrix that will be populated by participant choices
     aq.chosenStim=aq.chosenSide;
     aq.chosenFileName=aq.chosenSide;
+    aq.chosenFileName=mat2cell(aq.chosenFileName,1,repmat(1,1,nTrials));
     aq.chosenCat=aq.chosenSide;
     aq.rt=aq.chosenSide;
 
@@ -194,6 +195,7 @@ end
         Screen('Flip', window);
     end  
     % will likely modify for stimuli to be added each block
+    
     
     disp('line 67')
     % these can be modified depending on the size the stimuli should be
@@ -356,6 +358,8 @@ escape=0;
         Screen('DrawTexture', window, img{t,abs(aq.stimOnLeft(t)-3)}, [], StimBox2);
         Screen('FrameRect',window, black, StimBox2, 4);  
 
+ save(sprintf('%s/space',folder_name))
+        
         if isequal(resp,KbName(leftResp))
             aq.chosenSide(t)=1; % i.e. Left
             aq.chosenStim(t)=img{t,aq.stimOnLeft(t)}; %MS: don't think this saves anything useful
@@ -391,10 +395,12 @@ escape=0;
         else
             aq.chosenSide(t)=NaN;
             aq.chosenStim(t)=NaN;   
-            aq.chosenFileName(t)=NaN;
+            %aq.chosenFileName(t)=0; If no choice is made, the cell already
+            %contains NANs in other spots, so don't need to add it
             resp=NaN; %there is no waitsecs here so that if no resp was recorded, go straight to next piece of code 
         end
 
+ save(sprintf('%s/space',folder_name))
         %% Show Feedback Based on Choice
         % when chosen category = rewarded category, rewarded most of the
         % time (rewProb = 1)
@@ -565,7 +571,7 @@ escape=0;
   
         %% create output cell for use in the memory test: contains strings and num
         subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
-        imgCell=names; %=aq.chosenFileName
+        imgCell=aq.chosenFileName';
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)
         restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8));
