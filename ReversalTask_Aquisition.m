@@ -364,7 +364,7 @@ escape=0;
             %saving out the image filename stimOnLeft=1 is Scene
             if aq.stimOnLeft(t)==1
                 aq.chosenFileName(t)=aq.scenes(t);
-            elseif
+            elseif aq.stimOnLeft(t)==2
                 aq.chosenFileName(t)=aq.objects(t);
             end
             
@@ -380,7 +380,7 @@ escape=0;
             %saving out the image filename stimOnLeft=1 is Scene
             if aq.stimOnLeft(t)==1 %i.e. scene
                 aq.chosenFileName(t)=aq.objects(t); %then take opposite since chose Right
-            elseif
+            elseif aq.stimOnLeft(t)==2
                 aq.chosenFileName(t)=aq.scenes(t);
             end
             
