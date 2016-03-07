@@ -229,7 +229,7 @@ end
             KbQueueCreate(trigger,keysofint);
             KbQueueStart(trigger);
             KbQueueWait(trigger);
-            DrawFormattedText(window,['Still more waiting...'],'center','center',[0 0 0]);
+            DrawFormattedText(window,['Preparing the MRI...'],'center','center',[0 0 0]);
             Screen('Flip',window);
             WaitSecs(12.9)
             end
