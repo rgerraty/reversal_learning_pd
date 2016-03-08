@@ -7,14 +7,24 @@ function ReversalTask_Instructions(rewCat,scanned,buttonBox)
 KbName('UnifyKeyNames');
 rand('state',sum(100*clock));
 
-if scanned==2
-    okResp=KbName('space');
-else
-    okResp=KbName('1!');
+ if scanned==2
+        leftResp=KbName('j');
+        rightResp=KbName('k');
+        okResp=KbName('space');
+        ttl=KbName('t');
+    else
+        leftResp=KbName('2@');
+        rightResp=KbName('3#');
+        okResp=KbName('1!');
+        ttl=KbName('t');
 end
 
 try
+
     [window, windrect] = Screen('OpenWindow', 0); % get screen
+
+   
+
     AssertOpenGL; % check for opengl compatability
     Screen('BlendFunction', window, GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);  %enables alpha bending
     black = BlackIndex(window);  % Retrieves the CLUT color code for black.
@@ -30,6 +40,8 @@ try
 
     instructions='~/Documents/NETPD/instructionsPD/inst_acq/';
   
+    KeyTest(buttonBox,okResp,leftResp,rightResp,window)
+
     %read in images
     for i=1:3
         [o,map,alpha] = imread([instructions num2str(i) '.jpg'], 'jpg');
