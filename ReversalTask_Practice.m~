@@ -104,8 +104,7 @@ Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running
     
 %     StimX1=cx-(RectWidth(StimRect)/2)-((yPoints/2.5)-RectWidth(StimRect))/2;
 %     StimX2=cx+(RectWidth(StimRect)/2)+((yPoints/2.5)-RectWidth(StimRect))/2;
-    StimX1=cx-360;
-    StimX2=cx+360;
+    StimX1=cx-(RectWidth(StimRect)/2)-((yPoints/2.5)-RectWidth(StimRect))/2;
     
     StimBox1=CenterRectOnPoint(StimRect,StimX1,cy);
     StimBox2=CenterRectOnPoint(StimRect,StimX2,cy);
