@@ -145,7 +145,7 @@ elseif day == 2  % load randomized lists for reward proability, scenes/objects o
     aq.trialsO=ranO;
  
     %% Probability of Reward
-    aq.prob=prob;  %now probability distribution is set in main functino
+    aq.prob=prob;  %now probability distribution is set in main function
     aq.rewProb=zeros(1,nTrials); %create zero matrix of numel(nTrials) 
     x=aq.prob*nTrials; % determine number of rewarded trials based on probability and total trial number
     aq.rewProb(1:x)=1; % change the rewarded trials from 0 to 1
