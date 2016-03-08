@@ -204,10 +204,13 @@ end
     disp('line 67')
     % these can be modified depending on the size the stimuli should be
     % when presented on screen 
-    StimRect=StimRect*(yPoints/6*2)./StimRect(3); %makes the StimRect a fraction of the size of the screen window, keeping same proportions
+%     StimRect=StimRect*(yPoints/6*2)./StimRect(3); %makes the StimRect a fraction of the size of the screen window, keeping same proportions
+    StimRect=StimRect*(yPoints/6*3)./StimRect(3); %to make stim larger, need to fix after
     
-    StimX1=cx-(RectWidth(StimRect)/2)-((yPoints/2.5)-RectWidth(StimRect))/2;
-    StimX2=cx+(RectWidth(StimRect)/2)+((yPoints/2.5)-RectWidth(StimRect))/2;
+%     StimX1=cx-(RectWidth(StimRect)/2)-((yPoints/2.5)-RectWidth(StimRect))/2;
+%     StimX2=cx+(RectWidth(StimRect)/2)+((yPoints/2.5)-RectWidth(StimRect))/2;
+    StimX1=cx-360;
+    StimX2=cx+360;
     
     StimBox1=CenterRectOnPoint(StimRect,StimX1,cy);
     StimBox2=CenterRectOnPoint(StimRect,StimX2,cy);
