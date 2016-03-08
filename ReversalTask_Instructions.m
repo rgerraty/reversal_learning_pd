@@ -57,18 +57,14 @@ disp('read all in instructions-main');
     
     for i=1:numel(imgTexCell) % these are the final instructions before the real game
         Screen('DrawTexture', window, imgTexCell{i});
-        [VBLTimestamp startChoice]=Screen('Flip', window);
-        [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
-disp('instructions-main display loop');        
+        [VBLTimestamp startChoice]=Screen('Flip', window);  
         WaitSecs(.5);
-        while(1)
-            [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
-            
-            if keyCode(okResp)
-                
-                break; %so move on to next screeen as soon as spacebar is pressed
-            end
-        end
+        proc_key=zeros(1,256);
+        proc_key(okResp)=1;
+        KbQueueCreate(buttonBox,proc_key);
+        KbQueueStart(buttonBox);
+        KbQueueWait(buttonBox);
+        KbQueueFlush(buttonBox);
 disp('instructions-main display loop-post taking specebar press');
     end
     
