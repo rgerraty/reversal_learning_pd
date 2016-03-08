@@ -32,17 +32,7 @@ Screen('Preference','SkipSyncTests',1); % change this to 0 when actually running
     % Key Responses    
     KbName('UnifyKeyNames');
     escapeKey=KbName('q');
-    if scanned==2
-        leftResp=KbName('j');
-        rightResp=KbName('k');
-        okResp=KbName('space');
-        ttl=KbName('t');
-    else
-        leftResp=KbName('2@');
-        rightResp=KbName('3#');
-        okResp=KbName('1!');
-        ttl=KbName('t');
-    end
+   
    
 %% Start psychtoolbox, open the screen, and set initial infromation
 
@@ -227,25 +217,31 @@ end
     Screen('TextStyle',window,[2]);
     DrawFormattedText(window,['Which box has the points? \n\n Use the INDEX for Left \n use the MIDDLE finger for Right \n\n\n Press the THUMB to start'], 'center','center', [0 0 0]);
     Screen('Flip', window); % show text
-    while(1)
-        [keyIsDown,TimeStamp,keyCode] = KbCheck(buttonBox);
-        if keyCode(okResp) %%allows examiner to press the space bar to pause the task if there is a problem, without terminating
-            if scanned==1 || scanned==2
-            DrawFormattedText(window,['Please wait while we start the scan'],'center','center',[0 0 0]);
-            Screen('Flip',window);
-            keysofint=zeros(1,256);
-            keysofint(ttl)=1;
-            KbQueueCreate(trigger,keysofint);
-            KbQueueStart(trigger);
-            KbQueueWait(trigger);
-            DrawFormattedText(window,['Preparing the MRI...'],'center','center',[0 0 0]);
-            Screen('Flip',window);
-            WaitSecs(12.9)
-            end
-            break;
-        end
-        
-    end
+    
+   if scanned==1 || scanned==2
+        DrawFormattedText(window,['Please wait while we prep the scanner\n\nExperimenter please press k when finished with prep scan'],'center','center',[0 0 0]);
+        Screen('Flip',window);
+        proc_key=zeros(1,256);
+        proc_key(KbName('k'))=1;
+        KbQueueCreate(kb,proc_key);
+        KbQueueStart(kb);
+        KbQueueWait(kb);
+        KbQueueFlush(kb);
+
+        DrawFormattedText(window,['Please wait while we start the scan'],'center','center',[0 0 0]);
+        Screen('Flip',window);
+        keysofint=zeros(1,256);
+        keysofint(ttl)=1;
+        KbQueueCreate(trigger,keysofint);
+        KbQueueStart(trigger);
+        KbQueueWait(trigger);
+
+        DrawFormattedText(window,['Preparing the MRI...'],'center','center',[0 0 0]);
+        Screen('Flip',window);
+        WaitSecs(12.9)
+    end     
+            
+            
 
 escape=0;
  while escape==0
