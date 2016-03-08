@@ -173,7 +173,7 @@ end
     aq.rt=aq.chosenSide;
 
     %aq.reversalAt=randi([80 100],1,1); % sets reversal at random value between 80 and 100, want to avoid block transition
-    aq.reversalAt=85;
+    aq.reversalAt=
     b=0;
     aq.blockLength=blockLength; %now set in main function
     aq.breaks=NaN(1,nTrials/aq.blockLength-1);
@@ -542,7 +542,7 @@ escape=0;
                 save(sprintf('%s/AQmat',folder_name),'outputmat');
             end
             % below is where we could move the image loading to
-            if mod(t,aq.blockLength)==0 && t<nTrials 
+            if mod(t,aq.blockLength)==0 && t<nTrials %MS changed block length to 6 for testing
                 b=b+1;
                 aq.breaks(b)=GetSecs;
                 Screen('TextSize',window, [50]);
