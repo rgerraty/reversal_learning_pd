@@ -249,7 +249,7 @@ end
 
         DrawFormattedText(window,['Preparing the MRI...'],'center','center',[0 0 0]);
         Screen('Flip',window);
-        WaitSecs(12.9)
+        WaitSecs(10.2)
     end     
             
             
@@ -581,7 +581,7 @@ escape=0;
                             KbQueueFlush(trigger);
                             DrawFormattedText(window,['Still warming up...'],'center','center',[0 0 0]);
                             Screen('Flip',window);
-                            WaitSecs(12.9)
+                            WaitSecs(10.2)
                         end
                         break;
                     end
