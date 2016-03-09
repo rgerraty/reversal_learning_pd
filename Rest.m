@@ -45,7 +45,7 @@ try
     endTime=0;
     KbQ_Func(buttonBox,allowKeys,endTime);
     
-    DrawFormattedText('Please wait while we start the scan.', 'center','center')
+    DrawFormattedText(window,'Please wait while we start the scan.', 'center','center')
     Screen('flip', window); % show text
     
     keysOfInterest=zeros(1,256);
