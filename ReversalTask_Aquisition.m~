@@ -133,6 +133,30 @@ if day == 1 %set and save randomized list
     save(sprintf('%s/trialsS',folder_name),'ranS');    
     save(sprintf('%s/trialsO',folder_name),'ranO');    
     
+    % save out a list of ALL objects and scenes that will be shown across
+    % the 2 days. This will be used to select New images at Memory test
+    for i=1:length(objectsList)
+        allObjects(i)=cellstr(objectsList(i).name); %structures are annoying: cannot be indexed multiple at once, have to run loop
+    end
+    for i=1:length(scenesList)
+        allScenes(i)=cellstr(scenesList(i).name); 
+    end
+    allOld=[allObjects allScenes];
+    
+    fid = fopen(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d',SubjectNumber,SubjectNumber),'w')
+    fprintf(fid, [repmat('%s,', 1, length(allOld)-1) '%s'], )
+
+    numColumns = size(memInputCell,2);
+    rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
+    fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
+    for i=1:size(memInputCell,1)
+        fprintf(fid,rowFmt,memInputCell{i,1:end});
+    end
+
+    fclose(fid)
+    
+    save(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d',SubjectNumber,SubjectNumber),'allImages')
+    
 elseif day == 2  % load randomized lists for reward proability, scenes/objects order, and stimuli presented on left order and choose second half
     
     day1_folder=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1',SubjectNumber));
@@ -597,22 +621,23 @@ escape=0;
         
   
         %% create output cell for use in the memory test: contains strings and num
+        % (we will concatenate day 1 and day 2 in seperate script to be rn
+        % after day 2 for each ppant individually)
         
-        % first, prune the output mat to contain only every second trial,
-        % plus all 10 trials preceding and following the reversal
-        % take every 2nd trial and, additionally, take ALL 10 trials pre and post
-% reversal
-% so given 150 trials on each day (i.e. 150 chosen images on each day), we
-% will take 75+5+5 for a total of 85/day = 170 total
-% at memory test, will be shown 170 old and 170 new = total 340
+        % first, prune the output mat 
+        % take every 2nd trial and, additionally, take ALL 10 trials pre and post reversal
+        % so given 150 trials on each day (i.e. 150 chosen images on each day), we
+        % will take 75+5+5 for a total of 85/day = 170 total
+        % at memory test, will be shown 170 old and 170 new = total 340
 
-        ind=[2:2:74,76:1:96,98:2:150];
+        ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
         
-        subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
-        imgCell=aq.chosenFileName';
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)
-        restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8));
+        subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
+        imgCell=aq.chosenFileName(ind)';
+        
+        restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
         %concatenate along the row dimension
         memInputCell=cat(2,subNumCell,imgCell,restCell);
         %print to a output file by filling it row by row. So start with

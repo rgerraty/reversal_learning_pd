@@ -133,6 +133,24 @@ if day == 1 %set and save randomized list
     save(sprintf('%s/trialsS',folder_name),'ranS');    
     save(sprintf('%s/trialsO',folder_name),'ranO');    
     
+    % save out a list of ALL objects and scenes that will be shown across
+    % the 2 days. This will be used to select New images at Memory test
+    for i=1:length(objectsList)
+        allObjects(i)=cellstr(objectsList(i).name); %structures are annoying: cannot be indexed multiple at once, have to run loop
+    end
+    for i=1:length(scenesList)
+        allScenes(i)=cellstr(scenesList(i).name); 
+    end
+    allOld=[allObjects allScenes];
+    
+    % 
+    fid = fopen(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d.csv',SubjectNumber,SubjectNumber),'w')
+    fprintf(fid, [repmat('%s,', 1, length(allOld)-1) '%s'], allOld{1:end}) %all vallues are Strings, and all except the last must be followed by a comma
+    fclose(fid)
+
+    
+    save(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d',SubjectNumber,SubjectNumber),'allImages')
+    
 elseif day == 2  % load randomized lists for reward proability, scenes/objects order, and stimuli presented on left order and choose second half
     
     day1_folder=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1',SubjectNumber));
@@ -415,7 +433,7 @@ escape=0;
             resp=NaN; %there is no waitsecs here so that if no resp was recorded, go straight to next piece of code 
         end
 
- save(sprintf('%s/space',folder_name))
+
         %% Show Feedback Based on Choice
         % when chosen category = rewarded category, rewarded most of the
         % time (rewProb = 1)
@@ -595,7 +613,6 @@ escape=0;
         save(sprintf('%s/AQmat',folder_name),'outputmat');
         save(sprintf('%s/space',folder_name))
         
-  
         %% create output cell for use in the memory test: contains strings and num
         % (we will concatenate day 1 and day 2 in seperate script to be rn
         % after day 2 for each ppant individually)
