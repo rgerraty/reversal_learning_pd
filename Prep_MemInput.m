@@ -1,17 +1,22 @@
-% Preparing the Memory Test Inupt file. Script to be run fr each
+% Preparing the Memory Test Inupt file. Script to be run f0r each
 % participant after day 2
 
-% concatenate the output from days 1 and 2 and select the trials to be used
-% for memory testing
+% concatenate the csv output files from days 1 and 2 
 
-% take every 2nd trial and, additionally, take ALL 10 trials pre and post
-% reversal
-% so given 150 trials on each day (i.e. 150 chosen images on each day), we
-% will take 75+5+5 for a total of 85/day = 170 total
+% *** this is run from the terminal, notfrom matlab, though by starting off
+% the commands with "!" we can execute these commands in matlab
 
-% at memory test, will be shown 170 old and 170 new = total 340
 
-SubNum=input('Input Subject Number (e.g. 1, or 12 -- no leading zeros necessary):  ' )
 
-day1=load(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1/%d.csv',SubNum, SubNum));
-day2=load(sprintf('~/Documents/NETPD/Subjects/Subject%d/day2',SubNum));
+
+%% ** use the commands below but MUST MANUALLY ENTER THE SUBJECT NUMBER
+
+% make temp file from day 2 output, excluding the first line which is the
+% header row
+!grep -v subjectID ~/Documents/NETPD/Subjects/SubjectXXX/day2/XXX_2.csv > day2temp.csv
+
+!cat ~/Documents/NETPD/Subjects/SubjectXXX/day1/XXX_1.csv day2temp.csv > ~/Documents/NETPD/Subjects/SubjectXXX/XXX.csv
+
+day1=textscan(sprintf('~/Documents/NETPD/Subjects/Subject%d/day1/%d.csv',SubNum, SubNum));
+day2=load(sprintf('~/Documents/NETPD/Subjects/Subject%d/day2/%d.csv',SubNum, SubNum));
+
