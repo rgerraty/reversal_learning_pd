@@ -149,7 +149,7 @@ if day == 1 %set and save randomized list
     fclose(fid)
 
     
-    save(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d',SubjectNumber,SubjectNumber),'allImages')
+    %save(sprintf('~/Documents/NETPD/Subjects/Subject%d/allOld_%d',SubjectNumber,SubjectNumber),'allImages')
     
 elseif day == 2  % load randomized lists for reward proability, scenes/objects order, and stimuli presented on left order and choose second half
     
@@ -432,7 +432,7 @@ escape=0;
             %contains NANs in other spots, so don't need to add it
             resp=NaN; %there is no waitsecs here so that if no resp was recorded, go straight to next piece of code 
         end
-
+    save(sprintf('%s/space',folder_name))
 
         %% Show Feedback Based on Choice
         % when chosen category = rewarded category, rewarded most of the
@@ -623,15 +623,18 @@ escape=0;
         % will take 75+5+5 for a total of 85/day = 170 total
         % at memory test, will be shown 170 old and 170 new = total 340
 
-        ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
+       % ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
         
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)
-        subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
-        imgCell=aq.chosenFileName(ind)';
+        %subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
+        %imgCell=aq.chosenFileName(ind)';
+        subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
+        imgCell=aq.chosenFileName';
         
-        restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
-        %concatenate along the row dimension
+       % restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
+       restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8)); 
+       %concatenate along the row dimension
         memInputCell=cat(2,subNumCell,imgCell,restCell);
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
