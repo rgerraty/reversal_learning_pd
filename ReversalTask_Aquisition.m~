@@ -612,16 +612,19 @@ escape=0;
         
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)
-        subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
-        imgCell=aq.chosenFileName(ind)';
+        %subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
+        %imgCell=aq.chosenFileName(ind)';
+        subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
+        imgCell=aq.chosenFileName';
         
-        restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
-        %concatenate along the row dimension
+       % restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
+       restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8)); 
+       %concatenate along the row dimension
         memInputCell=cat(2,subNumCell,imgCell,restCell);
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        fid = fopen(sprintf('%s/%d_%dtest.csv',folder_name,SubjectNumber,day),'w')
+        fid = fopen(sprintf('%s/%d_%d.csv',folder_name,SubjectNumber,day),'w')
 
         numColumns = size(memInputCell,2);
         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
