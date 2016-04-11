@@ -608,7 +608,7 @@ escape=0;
         % will take 75+5+5 for a total of 85/day = 170 total
         % at memory test, will be shown 170 old and 170 new = total 340
 
-       % ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
+        ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
         
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)

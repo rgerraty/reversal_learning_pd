@@ -20,18 +20,21 @@ p.day=input('Which day (1 or 2)?: '); %1st half list for 1st day; 2nd half list 
 p.med=input('Is subject ON meds (1=ON, 0=OFF)?: ');
 p.list=input('Onset list (1-5)?: ');
 
-folder_name=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day%d',p.SubjectNumber,p.day));
-if ~exist(folder_name, 'dir')
-    mkdir (sprintf('%s',folder_name))
-else
-    disp(['Error directory exists for subject ' num2str(p.SubjectNumber) ' for day ' num2str(p.day)])
-    return
-end
-
 p.practice=input('Are you doing the Practice?: (1=yes, 2=no) ');
 p.acquisition=input('Are you doing the Acquisition?: (1=yes, 2=no) ');
 p.versionRewardCat=input('Which stim set (1 or 2)?: '); %1=scenes 1st rewarded, 2=objects first rewarded
 p.scanned=input('Is this an fMRI experiment (1=yes, 2=no)?:  ');
+
+if p.acquisition==1 %to only create a subj folder once starting real expt
+    folder_name=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day%d',p.SubjectNumber,p.day));
+    if ~exist(folder_name, 'dir')
+        mkdir (sprintf('%s',folder_name))
+    else
+        disp(['Error directory exists for subject ' num2str(p.SubjectNumber) ' for day ' num2str(p.day)])
+        return
+    end
+end
+
 
 if p.versionRewardCat~= 1 && p.versionRewardCat~=2
     Screen('CloseAll');
