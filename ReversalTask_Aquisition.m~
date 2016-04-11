@@ -526,6 +526,9 @@ escape=0;
         end
         Screen('TextSize',window, [100]);
         Screen('TextStyle',window,[2]);
+        % put up crosshair after remove FB (aftr 2.5sec of FB), crosshair
+        % stays on duration of jitter, into the next trial until the time
+        % of onset of the next trial is reached
         DrawFormattedText(window,'+','center','center',[0 0 0]);
         [VBLTimestamp FBOffTime(t)]=Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)+2.5);    % remove feedback after 1sec (ie 2.5sec since =0.5+1+1)
     
@@ -608,26 +611,25 @@ escape=0;
         % will take 75+5+5 for a total of 85/day = 170 total
         % at memory test, will be shown 170 old and 170 new = total 340
 
-       % ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
+        ind=[2:2:(aq.reversalAt-11),(aq.reversalAt-9):1:(aq.reversalAt+11),(aq.reversalAt+13):2:nTrials];;
         
         %use mat2cell to convert outputmat to cell format. Specificy to
         %subdivide into smaller arrays for each row and each col (1x1)
-        %subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
-        %imgCell=aq.chosenFileName(ind)';
-        subNumCell=mat2cell(outputmat(:,1),repmat(1,1,150),repmat(1,1,1));
-        imgCell=aq.chosenFileName';
+        subNumCell=mat2cell(outputmat(ind,1),repmat(1,1,length(ind)),repmat(1,1,1));
+        imgCell=aq.chosenFileName(ind)';
         
-       % restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
-       restCell=mat2cell(outputmat(:,[12,11,2,4,3,9,10,13]),repmat(1,1,150),repmat(1,1,8)); 
-       %concatenate along the row dimension
+        restCell=mat2cell(outputmat(ind,[12,11,2,4,3,9,10,13]),repmat(1,1,length(ind)),repmat(1,1,8));
+        %concatenate along the row dimension
         memInputCell=cat(2,subNumCell,imgCell,restCell);
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        fid = fopen(sprintf('%s/%d_%d.csv',folder_name,SubjectNumber,day),'w')
+        fid = fopen(sprintf('%s/%d_%dtest.csv',folder_name,SubjectNumber,day),'w')
 
-        numColumns = size(memInputCell,2);
-        rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
+        numColumns = size(memInputCell,2);       
+        rowFmt = ['%.0f,' '%s,' repmat('%.0f,',1,numColumns-3), '%.5f\n']; %last one, which doesn't need the extra comma
+        
+%         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
         fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
         for i=1:size(memInputCell,1)
             fprintf(fid,rowFmt,memInputCell{i,1:end});

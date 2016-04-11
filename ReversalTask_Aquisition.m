@@ -526,6 +526,9 @@ escape=0;
         end
         Screen('TextSize',window, [100]);
         Screen('TextStyle',window,[2]);
+        % put up crosshair after remove FB (aftr 2.5sec of FB), crosshair
+        % stays on duration of jitter, into the next trial until the time
+        % of onset of the next trial is reached
         DrawFormattedText(window,'+','center','center',[0 0 0]);
         [VBLTimestamp FBOffTime(t)]=Screen('Flip', window, ExpStart+onsetlist(t)+aq.rt(t)+2.5);    % remove feedback after 1sec (ie 2.5sec since =0.5+1+1)
     
@@ -621,10 +624,12 @@ escape=0;
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        fid = fopen(sprintf('%s/%d_%d.csv',folder_name,SubjectNumber,day),'w')
+        fid = fopen(sprintf('%s/%d_%dtest.csv',folder_name,SubjectNumber,day),'w')
 
         numColumns = size(memInputCell,2);       
-        rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
+        rowFmt = ['%.0f,' '%s,' repmat('%.0f,',1,numColumns-3), '%.5f\n']; %last one, which doesn't need the extra comma
+        
+%         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
         fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
         for i=1:size(memInputCell,1)
             fprintf(fid,rowFmt,memInputCell{i,1:end});
