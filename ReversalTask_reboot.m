@@ -432,7 +432,7 @@ while escape==0
         outputmat(t,1)=SubjectNumber;
         outputmat(t,2)=t;
         outputmat(t,3)=day;
-        outputmat(t,4)=med;
+        outputmat(t,4)=p.med;
         outputmat(t,5)=aq.stimOnLeft(t); %this is image category on Left: 1=scene, 2=obj
         outputmat(t,6)=rewCat;
         outputmat(t,7)=resp; %1=left, 2=right
