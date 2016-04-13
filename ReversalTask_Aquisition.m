@@ -263,11 +263,15 @@ escape=0;
         break % also provides an escape mechanism to stop the task
     end
     
- % preparing for first trial  
-%  DrawFormattedText(window,'+','center','center',[0 0 0]);
-%  Screen('Flip',window);
+
 
     %%
+    Screen('TextSize',window, [100]);
+    Screen('TextStyle',window,[2]);
+    DrawFormattedText(window,'+','center','center',[0 0 0]);
+    Screen('Flip', window);
+    
+    
     startTime=datestr(now);
     ExpStart=GetSecs;
         
@@ -282,12 +286,9 @@ escape=0;
         end
         [~, startTrial, KeyCode]=KbCheck;% initialize keys
         %Screen('FillRect', window, white); % Color the entire window grey
-        Screen('TextSize',window, [100]);
-        Screen('TextStyle',window,[2]);
-        DrawFormattedText(window,'+','center','center',[0 0 0]);
-        Screen('Flip', window);
+
         
-        while (GetSecs-startTrial)<=.5 %checks each loop for held escape key
+        while (GetSecs-startTrial)<=.01 %checks each loop for held escape key
             if ~(KeyCode(escapeKey))
                 [~, ~, KeyCode]=KbCheck(buttonBox);
                 WaitSecs(0.001);
@@ -526,7 +527,7 @@ escape=0;
         end
         Screen('TextSize',window, [100]);
         Screen('TextStyle',window,[2]);
-        % put up crosshair after remove FB (aftr 2.5sec of FB), crosshair
+        % put up crosshair after remove FB (aftr 1sec of FB), crosshair
         % stays on duration of jitter, into the next trial until the time
         % of onset of the next trial is reached
         DrawFormattedText(window,'+','center','center',[0 0 0]);
@@ -561,10 +562,15 @@ escape=0;
             if mod(t,aq.blockLength)==0 && t<nTrials 
                 b=b+1;
                 aq.breaks(b)=GetSecs;
+                Screen('TextSize',window, [100]);
+                Screen('TextStyle',window,[2]);
+                DrawFormattedText(window,'+','center','center',[0 0 0]);
+                Screen('Flip',window, ExpStart+onsetlist(t+1)); %to ensure that the previous crosshair stays up for the pre-determined jitter time on the last trial of the block
+                WaitSecs(5); %then keep this crosshair on for 5sec jsut in case of scanner timing issues 
                 Screen('TextSize',window, [50]);
                 Screen('TextStyle',window,[2]);
                 DrawFormattedText(window,'Please take a break for as long as you need. \n\n Press the SPACE BAR when you are ready to start again.', 'center','center', [0 0 0]);            
-                Screen('Flip',window);
+                Screen('Flip',window); 
                 while(1)
                     [keyIsDown,TimeStamp,keyCode] = KbCheck;
                     if keyCode(okResp) %end the break when spacebar is pressed
@@ -592,6 +598,10 @@ escape=0;
                         break;
                     end
                 end
+                Screen('TextSize',window, [100]);
+                Screen('TextStyle',window,[2]);
+                DrawFormattedText(window,'+','center','center',[0 0 0]); 
+                Screen('Flip', window);
                 aq.breaksLength(b)=GetSecs-aq.breaks(b);
                 ExpStart=ExpStart+aq.breaksLength(b);
             end
@@ -628,8 +638,7 @@ escape=0;
 
         numColumns = size(memInputCell,2);       
         rowFmt = ['%.0f,' '%s,' repmat('%.0f,',1,numColumns-3), '%.5f\n']; %last one, which doesn't need the extra comma
-        
-%         rowFmt = ['%f,' '%s,' repmat('%f,',1,numColumns-3), '%f\n']; %last one, which doesn't need the extra comma
+    
         fprintf(fid,'%s, %s, %s, %s, %s, %s, %s, %s, %s, %s\n', 'subjectID','stimID','old','category','scannerTrialNum','med','day','scannerFB','scannerOptimal','scannerRT'); %header, first row
         for i=1:size(memInputCell,1)
             fprintf(fid,rowFmt,memInputCell{i,1:end});
@@ -642,6 +651,12 @@ escape=0;
  end
  
     aq.totalPoints=nansum(aq.reward)*10;
+    
+    Screen('TextSize',window, [100]);
+    Screen('TextStyle',window,[2]);
+    DrawFormattedText(window,'+','center','center',[0 0 0]); 
+    Screen('Flip', window);
+    WaitSecs(5);
     Screen('TextSize',window, [50]);
     Screen('TextStyle',window,[2]);
     DrawFormattedText(window,['You are finished! \n\n You won ' num2str(aq.totalPoints,'%1.0f') ' points \n\n Please inform the experimenter.'], 'center','center', [0 0 0]);    
