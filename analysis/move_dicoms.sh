@@ -7,7 +7,7 @@ if [ -z $2 ];
 	echo \<output\>	output directory
 	echo \<session\>	session id \for multisession studies
 	echo e\.g\.
-	echo move_dicoms.sh 
+	echo move_dicoms.sh DICOM/files/ /data/engine/abuch/NETPD/ 1
 
 else
 	#set dicom directory
@@ -16,7 +16,6 @@ else
 	output=$2
 
 	#set session ID
-	#if this input is blank it will overwrite any dicoms in subjects session 1 folder for this sequence
 	if [ -z $3 ];
 		then 
 		sess_id=1
