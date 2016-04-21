@@ -25,10 +25,10 @@ else
 
 	cd $dicom_dir
 	#set sequence ID from dicom header for name of directory
-	seq_id=$(dicom_hdr $(ls $dicom_dir | head -n 1)  | grep Series\ Description| awk 'BEGIN { FS = "//" } { print $3 }')
+	seq_id=$(dicom_hdr $(ls | head -n 1)  | grep Series\ Description| awk 'BEGIN { FS = "//" } { print $3 }')
 
 	#set subject ID from dicom header
-	sub_id=$(dicom_hdr $(ls $dicom_dir | head -n 1)  | grep Patient\ Name | awk 'BEGIN { FS = "//" } { print $3 }')
+	sub_id=$(dicom_hdr $(ls | head -n 1)  | grep Patient\ Name | awk 'BEGIN { FS = "//" } { print $3 }')
 
 
 	if [ -d $output/$sub_id/sess_$sess_id/$seq_id ]
