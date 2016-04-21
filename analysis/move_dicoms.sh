@@ -1,6 +1,6 @@
 if [ -z $2 ];
 	then
-	echo script for creating sensible directories from XNAT output
+	echo script \for creating sensible directories from XNAT output
 	echo usage:
 	echo move_dicoms.sh \<input\> \<output\> \<session\>
 	echo \<input\>	directory containing dicom files to be moved
