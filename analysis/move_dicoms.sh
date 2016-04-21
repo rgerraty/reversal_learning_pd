@@ -38,11 +38,14 @@ else
 			if [ ! -d $output ]
 				then
 				mkdir $output
-			elif [ ! -d $output/sess_$sess_id ]; 
+			elif [ ! -d $output/$sub_id ]
 				then
-				mkdir $output/sess_$sess_id
+				mkdir $output/$sub_id
+			elif [ ! -d $output/$sub_id/sess_$sess_id ]; 
+				then
+				mkdir $output/$sub_id/sess_$sess_id
 			fi
-		mkdir -p $output/sess_$sess_id/$seq_id/dicoms
-		cp $dicom_dir/*dcm $output/sess_$sess_id/$seq_id/dicoms
+		mkdir -p $output/$sub_id/sess_$sess_id/$seq_id/dicoms
+		cp $dicom_dir/*dcm $output/$sub_id/sess_$sess_id/$seq_id/dicoms
 	fi
 fi
