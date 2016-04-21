@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -z $2 ];
 	then
 	echo script \for creating sensible directories from XNAT output
@@ -8,6 +10,10 @@ if [ -z $2 ];
 	echo \<session\>	session id \for multisession studies
 	echo e\.g\.
 	echo move_dicoms.sh DICOM/files/ /data/engine/abuch/NETPD/ 1
+
+elif [[ -z $(ls $2/*dcm) ]];
+	then 
+	echo no dcm files in $1
 
 else
 	#set dicom directory
