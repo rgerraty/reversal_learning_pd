@@ -2,7 +2,7 @@ if [ -z $2 ];
 	then
 	echo script for creating sensible directories from XNAT output
 	echo usage:
-	echo move_dicoms.sh \<input\> \<session\>
+	echo move_dicoms.sh \<input\> \<output\> \<session\>
 	echo \<input\>	directory containing dicom files to be moved
 	echo \<output\>	output directory
 	echo \<session\>	session id \for multisession studies
