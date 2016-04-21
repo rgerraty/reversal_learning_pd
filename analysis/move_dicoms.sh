@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -z $2 ];
 	then
 	echo script \for creating sensible directories from XNAT output
@@ -8,6 +10,10 @@ if [ -z $2 ];
 	echo \<session\>	session id \for multisession studies
 	echo e\.g\.
 	echo move_dicoms.sh DICOM/files/ /data/engine/abuch/NETPD/ 1
+
+elif [[ -z $(ls $2/*dcm) ]];
+	then 
+	echo no dcm files in $1
 
 else
 	#set dicom directory
@@ -23,15 +29,18 @@ else
 		sess_id=$3
 	fi
 
+	
+
 	cd $dicom_dir
 	#set sequence ID from dicom header for name of directory
 	seq_id=$(dicom_hdr $(ls | head -n 1)  | grep Series\ Description| awk 'BEGIN { FS = "//" } { print $3 }')
+	seq_id=$(echo ${seq_id//[[:blank:]]/})
 
 	#set subject ID from dicom header
 	sub_id=$(dicom_hdr $(ls | head -n 1)  | grep Patient\ Name | awk 'BEGIN { FS = "//" } { print $3 }')
+	sub_id=$(echo ${sub_id//[[:blank:]]/})
 
-
-	if [ -d $output/$sub_id/sess_$sess_id/$seq_id ]
+	if [[ -d $output/$sub_id/sess_$sess_id/$seq_id ]]
 			then 
 			echo $output/$sub_id/sess_$sess_id/$seq_id already exists\!
 			echo please check directory and delete before continuing
@@ -46,7 +55,7 @@ else
 				then
 				mkdir $output/$sub_id/sess_$sess_id
 			fi
-		mkdir -p $output/$sub_id/sess_$sess_id/$seq_id/dicoms
-		cp $dicom_dir/*dcm $output/$sub_id/sess_$sess_id/$seq_id/dicoms
+			mkdir -p $output/$sub_id/sess_$sess_id/$seq_id/dicoms
+			cp $dicom_dir/*dcm $output/$sub_id/sess_$sess_id/$seq_id/dicoms
 	fi
 fi
