@@ -23,6 +23,7 @@ else
 		sess_id=$3
 	fi
 
+	cd $dicom_dir
 	#set sequence ID from dicom header for name of directory
 	seq_id=$(dicom_hdr $(ls $dicom_dir | head -n 1)  | grep Series\ Description| awk 'BEGIN { FS = "//" } { print $3 }')
 
