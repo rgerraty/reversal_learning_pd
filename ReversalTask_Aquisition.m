@@ -624,7 +624,7 @@ escape=0;
         %print to a output file by filling it row by row. So start with
         %header row (all strings) then add the cell rows (a mix of string
         %and numbers)
-        fid = fopen(sprintf('%s/%d_%dtest.csv',folder_name,SubjectNumber,day),'w')
+        fid = fopen(sprintf('%s/%d_%d.csv',folder_name,SubjectNumber,day),'w')
 
         numColumns = size(memInputCell,2);       
         rowFmt = ['%.0f,' '%s,' repmat('%.0f,',1,numColumns-3), '%.5f\n']; %last one, which doesn't need the extra comma
