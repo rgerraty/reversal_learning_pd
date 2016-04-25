@@ -19,7 +19,7 @@ else
 	#set dicom directory
 	dicom_dir=$(readlink -f $1)
 
-	output=$2
+	output=$(readlink -f $2)
 
 	#set session ID
 	if [ -z $3 ];
@@ -32,6 +32,7 @@ else
 	
 
 	cd $dicom_dir
+	pwd
 	#set sequence ID from dicom header for name of directory
 	seq_id=$(dicom_hdr $(ls | head -n 1)  | grep Series\ Description| awk 'BEGIN { FS = "//" } { print $3 }')
 	seq_id=$(echo ${seq_id//[[:blank:]]/})
@@ -47,13 +48,17 @@ else
 		else 
 			if [ ! -d $output ]
 				then
+				echo making $output folder
 				mkdir $output
+
 			elif [ ! -d $output/$sub_id ]
 				then
+				echo making $output/$sub_id folder
 				mkdir $output/$sub_id
 			elif [ ! -d $output/$sub_id/sess_$sess_id ]; 
 				then
 				mkdir $output/$sub_id/sess_$sess_id
+				echo making $output/$sub_id/sess_$sess_id
 			fi
 			mkdir -p $output/$sub_id/sess_$sess_id/$seq_id/dicoms
 			cp $dicom_dir/*dcm $output/$sub_id/sess_$sess_id/$seq_id/dicoms
