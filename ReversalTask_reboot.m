@@ -9,6 +9,7 @@ day=input('Which day (1 or 2)?: '); %1st half list for 1st day; 2nd half list fo
 scanned=input('Is this an fMRI experiment (1=yes, 2=no)?:  ');
 
 folder_name=(sprintf('~/Documents/NETPD/Subjects/Subject%d/day%d',SubjectNumber,day));
+nTrials=150;
 
 KbName('UnifyKeyNames');
 [trigger,kb,buttonBox]=getExternals; 
@@ -41,7 +42,7 @@ load(strcat(num2str(folder_name),'/aquisitionAQ.mat'))
 load(strcat(num2str(folder_name),'/inputP.mat'))
 
 
-trial=length(aq.chosenCat)
+trial=sum(~isnan(aq.chosenCat));
 
 %% Setting up the environment
 rand('state',sum(100*clock));  % reset the state of rand to a random value
@@ -86,7 +87,7 @@ Screen('TextSize', window, 36); %set text size
 Screen('TextColor', window, black);
     
 [cx,cy]=RectCenter(windrect); %center point of screen
-
+[xPoints, yPoints]=RectSize(windrect);  
 
 
 img=cell(numel(aq.halfScenesList),2); % the stimuli converted to a screen texture for presentation later in script
@@ -166,10 +167,11 @@ while escape==0
 
     %%
     startTime=datestr(now);
-    ExpStart=GetSecs;
+    ExpStart=onsetlist(trial-1);
         
     %% Start of Trial Aquisition %%
     reversal=0;
+    rewCat=p.versionRewardCat;
     for t=trial:nTrials %MS: i''m probably missing something but I changed all the nTrials/2 to nTrials...
         if t>aq.reversalAt && reversal==0 % when trial number is greater than reversal point and reversal has not occured yet
             reversal=reversal+1;
@@ -553,10 +555,12 @@ while escape==0
     fclose('all');
     Priority(0);
     psychrethrow(psychlasterror);
+    
+    save(sprintf('%s/aquisitionAQfin',folder_name),'aq')
  end %end the while loop
-end    
+ 
 
 
-save(sprintf('%s/aquisitionAQfin',folder_name),'aq')
+
 
 
