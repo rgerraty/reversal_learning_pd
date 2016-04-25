@@ -41,6 +41,7 @@ load(strcat(num2str(folder_name),'/AQmat.mat'))
 load(strcat(num2str(folder_name),'/aquisitionAQ.mat'))
 load(strcat(num2str(folder_name),'/inputP.mat'))
 
+b=sum(~isnan(aq.breaksLength))+1;
 
 trial=sum(~isnan(aq.chosenCat));
 
@@ -167,7 +168,7 @@ while escape==0
 
     %%
     startTime=datestr(now);
-    ExpStart=onsetlist(trial-1);
+    onsetlist=onsetlist-onsetlist(trial)+3;
         
     %% Start of Trial Aquisition %%
     reversal=0;
