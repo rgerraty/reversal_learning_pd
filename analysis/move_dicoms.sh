@@ -11,13 +11,17 @@ if [ -z $2 ];
 	echo e\.g\.
 	echo move_dicoms.sh DICOM/files/ /data/engine/abuch/NETPD/ 1
 
-#elif [[ -z $(ls $2/*dcm) ]];
-	#then 
-	#echo no dcm files in $1
+
 
 else
 	#set dicom directory
 	dicom_dir=$(readlink -f $1)
+
+	if [[ -z $(ls $dicom_dir/*dcm) ]];
+		then 
+		echo no dcm files in $1
+		break
+	fi
 
 	output=$(readlink -f $2)
 
