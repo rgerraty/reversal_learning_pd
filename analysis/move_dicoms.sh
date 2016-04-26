@@ -62,5 +62,9 @@ else
 			fi
 			mkdir -p $output/$sub_id/sess_$sess_id/$seq_id/dicoms
 			cp $dicom_dir/*dcm $output/$sub_id/sess_$sess_id/$seq_id/dicoms
+			if [[ -d $dicom_dir/../../MUX/ ]];
+				then
+				mv $dicom_dir/../../MUX/files/* $output/$sub_id/sess_$sess_id/$seq_id/
+			fi
 	fi
 fi
