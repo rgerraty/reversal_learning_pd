@@ -20,7 +20,7 @@ else
 	if [[ -z $(ls $dicom_dir/*dcm) ]];
 		then 
 		echo no dcm files in $1
-		break
+		exit 1
 	fi
 
 	output=$(readlink -f $2)
