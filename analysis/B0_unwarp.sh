@@ -1,5 +1,3 @@
-B0_unwarp.sh $1
-
 dir_name=$(dirname $(readlink -f $1))
 
 fslcomplex -complexsplit $1 complex_acq
