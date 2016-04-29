@@ -1,9 +1,10 @@
 dir_name=$(dirname $(readlink -f $1))
+file_name=$(basename $1)
 
 echo converting to complex image from $1
 
 cd $dir_name
-fslcomplex -complexsplit $1 complex_acq
+fslcomplex -complexsplit $file_name complex_acq
 
 fslcomplex -realabs complex_acq fieldmap_mag
 
