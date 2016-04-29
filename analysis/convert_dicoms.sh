@@ -8,11 +8,10 @@ elif [[ ! -z $(ls $dicom_dir/../*nii.gz) ]]
 	echo nifti files already exist for $1
 	echo please check directory and delete nifti before continuing
 else 
-	cd $dicom_dir
 	echo converting dicoms in $dicom_dir
-	dcm2nii *
-	mv *nii.gz ..
-	for i in ../*nii.gz;
+	dcm2nii $dicom_dir/*
+	mv $dicom_dir/*nii.gz $dicom_dir/..
+	for i in $dicom_dir/../*nii.gz;
 	do
 		fslreorient2std $i;
 	done
