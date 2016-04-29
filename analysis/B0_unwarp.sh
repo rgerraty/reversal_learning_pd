@@ -14,8 +14,7 @@ else
 	mv $dir_name/vol0001.nii.gz $dir_name/fieldmap_mag.nii.gz
 
 	echo regularizing field map
-	fugue --loadfmap=$dir_name/fieldmap_rads -s 1 --savefmap=$dir_name/fieldmap_rads
+	fugue --loadfmap=$dir_name/fieldmap_rads -s 2 --savefmap=$dir_name/fieldmap_rads
 	fugue --loadfmap=$dir_name/fieldmap_rads --despike --savefmap=$dir_name/fieldmap_rads
 	fugue --loadfmap=$dir_name/fieldmap_rads -m --savefmap=$dir_name/fieldmap_rads
-
 fi
