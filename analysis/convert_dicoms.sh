@@ -3,7 +3,7 @@ dicom_dir=$(readlink -f $1)
 if [[ -z $(ls $dicom_dir/*dcm) ]];
 	then 
 	echo no dcm files in $1
-elif [[ ! -z $($dicom_dir/../nifti/*nii.gz) ]]
+elif [[ ! -z $(ls $dicom_dir/../nifti/*nii.gz) ]]
 	then
 	echo nifti files already exist for $1
 	echo please check directory and delete nifti before continuing
