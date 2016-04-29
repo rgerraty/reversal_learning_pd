@@ -11,7 +11,8 @@ else
 	cd $dicom_dir
 	echo converting dicoms in $dicom_dir
 	dcm2nii *
-	mv -p *nii.gz ../nifti/
+	mkdir -p ../nifti/
+	mv *nii.gz ../nifti/
 	for i in ../nifti/*nii.gz;
 	do
 		fslreorient2std $i;
