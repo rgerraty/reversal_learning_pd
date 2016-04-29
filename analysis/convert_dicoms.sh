@@ -4,7 +4,7 @@ niftis=$(ls $dicom_dir/../*nii.gz 2>/dev/null)
 if [[ -z $(ls $dicom_dir/*dcm) ]];
 	then 
 	echo no dcm files in $1
-elif [ ! -z $niftis ]
+elif [[] ! -z $niftis ]]
 	then
 	echo nifti files already exist for $1
 	echo please check directory and delete nifti before continuing
