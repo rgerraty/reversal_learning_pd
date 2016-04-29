@@ -10,7 +10,7 @@ elif [[ -z $dicom_dir/../nifti/*nii.gz ]]
 else 
 	cd $dicom_dir
 	echo converting dicoms in $dicom_dir
-	dcm2nii ./*
+	dcm2nii *
 	mv -p *nii.gz ../nifti/
 	for i in ../nifti/*nii.gz;
 	do
