@@ -1,10 +1,10 @@
 #Analysis Code for Network Dynamics and Dopamine in Parkinson's Disease
-##Raphael Gerraty, Madeleine Sharpe, Amanda Buch 2016
+##Raphael Gerraty, Madeleine Sharp, Amanda Buch 2016
 
 Descriptions and example scripts for running network preprocessing and analysis functions contained in this repository. 
 
 
-### Set up Directory Structure
+### Set up directory structure
 ```{.bash}
 for i in /data/engine/abuch/NETPD/unzipped/*/scans/*T2*/resources/DICOM/files/
 do
@@ -16,7 +16,7 @@ done
 ```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/{B0,T*}/dicoms/
 do
-	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/B0_unwarp.sh $i
+	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/convert_dicoms.sh $i
 done
 ```
 
