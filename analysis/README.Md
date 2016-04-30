@@ -13,7 +13,7 @@ done
 ```
 
 ### Convert dicoms to niftis and reorient
-``{.bash}
+```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/{B0,T*}/dicoms/
 do
 	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/B0_unwarp.sh $i
@@ -21,7 +21,7 @@ done
 ```
 
 ### Generate field map for B0 correction
-``{.bash}
+```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/B0;  
 do 
 	bo=$(ls $i/2*nii.gz); 
@@ -31,7 +31,7 @@ done
 ```
 
 ### Run anatomical preprocessing
-``{.bash}
+```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/T1/;
 do 
 	if [ -d $i/bravo.anat ]
@@ -48,7 +48,7 @@ done
 ```
 
 ### B0 field correction for EPI scans
-``{.bash}
+```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}
 do
 
@@ -78,7 +78,7 @@ do
 done
 ```
 ### Get partially saturated first volume from every 4D epi volume as reference image
-``{.bash}
+```{.bash}
 for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/*unwarp.nii.gz
 do
 	if [ ! -e $(dirname $i)/example_func.nii.gz ]
