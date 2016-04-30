@@ -6,7 +6,8 @@ Descriptions and example scripts for running network preprocessing and analysis 
 
 ### Set up directory structure
 ```{.bash}
-for i in /data/engine/abuch/NETPD/unzipped/*/scans/*T2*/resources/DICOM/files/
+#make sure only IDs corresponding to correct session are included in this loop
+for i in /data/engine/abuch/NETPD/unzipped/<sess_2 ids>/scans/*/resources/DICOM/files/
 do
 	bash move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
 done
