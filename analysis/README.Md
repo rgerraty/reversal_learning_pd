@@ -8,7 +8,7 @@ Descriptions and example scripts for running network preprocessing and analysis 
 ```{.bash}
 for i in /data/engine/abuch/NETPD/unzipped/*/scans/*T2*/resources/DICOM/files/
 do
-bash move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
+	bash move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
 done
 ```
 
