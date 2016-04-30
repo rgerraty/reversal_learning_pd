@@ -30,7 +30,7 @@ set fmri(featwatcher_yn) 0
 set fmri(sscleanup_yn) 0
 
 # Output directory
-set fmri(outputdir) "preproc_5mm_5del_100s_mc"
+set fmri(outputdir) "xxDIRxx/preproc_5mm_5del_100s_mc"
 
 # TR(s)
 set fmri(tr) xxTRxx
