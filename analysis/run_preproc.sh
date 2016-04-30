@@ -36,7 +36,7 @@ elif [ -d $dir_name/$feat\.feat ]
 	echo please delete and try again
 else
 	TR=$(fslinfo $fullpath | grep pixdim4 | awk '{ print $2}')
-	NVOLS=$(fslinfo $filtdata | grep ^dim4 | awk '{ print $2}')
+	NVOLS=$(fslinfo $fullpath | grep ^dim4 | awk '{ print $2}')
 
 	sed -e 's:xxTRxx:'$TR':g' -e 's:xxNVOLSxx:'$NVOLS':g' -e \
 	's:xxDIRxx:'$dir_name':g' -e 's:xxNIFTIxx:'$nifti':g' -e \
