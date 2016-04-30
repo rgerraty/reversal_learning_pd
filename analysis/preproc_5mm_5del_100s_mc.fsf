@@ -33,10 +33,10 @@ set fmri(sscleanup_yn) 0
 set fmri(outputdir) "preproc_5mm_5del_100s_mc"
 
 # TR(s)
-set fmri(tr) 0.850000
+set fmri(tr) xxTRxx
 
 # Total volumes
-set fmri(npts) 430
+set fmri(npts) xxNVOLSxx
 
 # Delete volumes
 set fmri(ndelete) 5
@@ -267,16 +267,16 @@ set fmri(totalVoxels) 261550080
 set fmri(ncopeinputs) 0
 
 # 4D AVW data or FEAT directory (1)
-set feat_files(1) "/data/engine/abuch/NETPD/801/sess_1/REST/E12816_S13_mux6_arc1_unwarp"
+set feat_files(1) "xxDIRxx/xxNIFTIxx"
 
 # Add confound EVs text file
 set fmri(confoundevs) 0
 
 # Session's alternate reference image for analysis 1
-set alt_ex_func(1) "/data/engine/abuch/NETPD/801/sess_1/REST/example_func"
+set alt_ex_func(1) "xxDIRxx/example_func"
 
 # Subject's structural image for analysis 1
-set highres_files(1) "/data/engine/abuch/NETPD/801/sess_1/T1/bravo.anat/T1_biascorr_brain"
+set highres_files(1) "xxSTRUCxx"
 
 # EV 1 title
 set fmri(evtitle1) ""
