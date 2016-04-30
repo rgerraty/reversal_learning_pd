@@ -92,4 +92,11 @@ done
 ```
 
 ###Run preprocessing (need to generate template .fsf file first)
-Coming Soon
+```{.bash}
+for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/*unwarp.nii.gz
+do
+	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/run_preproc.sh $i \
+	/data/engine/abuch/NETPD/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
+	$(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
+done
+```
