@@ -38,8 +38,9 @@ else
 	TR=$(fslinfo $fullpath | grep pixdim4 | awk '{ print $2}')
 	NVOLS=$(fslinfo $filtdata | grep ^dim4 | awk '{ print $2}')
 
-	sed -e 's:xxTRxx:'$TR':g' -e 's:xxNVOLSxx:'$NVOLS':g' -e 's:xxDIRxx:'$dir_name':g' -e 's:xxNIFTIxx:'$nifti':g' -e 's:xxSTRUCxx:'$struc':g'<
-	$fsf>tmp.fsf
+	sed -e 's:xxTRxx:'$TR':g' -e 's:xxNVOLSxx:'$NVOLS':g' -e \
+	's:xxDIRxx:'$dir_name':g' -e 's:xxNIFTIxx:'$nifti':g' -e \
+	's:xxSTRUCxx:'$struc':g'<$fsf>tmp.fsf
 	feat tmp.fsf #run temp file
 	rm -rf tmp.fsf
 fi
