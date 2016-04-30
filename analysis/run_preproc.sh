@@ -10,7 +10,7 @@ if [ -z $3 ]
 fi
 
 fullpath=$(readlink -f $1)
-nifti=$(basname $fullpath)
+nifti=$(basename $fullpath)
 dir_name=$(dirname $fullpath)
 
 feat=$(basename $2 .fsf)
