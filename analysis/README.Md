@@ -101,3 +101,18 @@ do
 	$(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
 done
 ```
+###Generate confounds and run extended preprocessing
+For now, need a bunch of code from github.com/rgerraty/rl_flexibility for this to work
+```{.bash}
+for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc_5mm_5del_100s_mc/filtered_func_data.nii.gz; 
+do
+	subdir=$(dirname $i);
+
+	#need fsl_extract_confoundts.sh and make_spike_regs.m from github.com/rgerraty/rl_flexibility
+	/home/rgerraty/GitHub/rl_flexibility/fsl_extract_confts.sh $subdir $subdir/../../T1/bravo.anat 3;
+
+	#need 1st_level_conf.sh and conf_reg_design.fsf from github.com/rgerraty/rl_flexibility
+	/home/rgerraty/GitHub/rl_flexibility/1st_level_conf.sh $i $subdir/36par+spikes.txt; 
+
+done
+```
