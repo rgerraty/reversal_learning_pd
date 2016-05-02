@@ -107,12 +107,26 @@ For now, need a bunch of code from github.com/rgerraty/rl_flexibility for this t
 for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc_5mm_5del_100s_mc/filtered_func_data.nii.gz; 
 do
 	subdir=$(dirname $i);
+	if [ -e $subdir/36par+spikes.txt ]
+		then
+		echo confound regressors already generated in $subdir
+		echo delete before continuing if you want to regenerate
+	else
+		#need fsl_extract_confoundts.sh and make_spike_regs.m from github.com/rgerraty/rl_flexibility
+		/home/rgerraty/GitHub/rl_flexibility/fsl_extract_confts.sh $subdir $subdir/../../T1/bravo.anat 3;
+	fi
 
-	#need fsl_extract_confoundts.sh and make_spike_regs.m from github.com/rgerraty/rl_flexibility
-	/home/rgerraty/GitHub/rl_flexibility/fsl_extract_confts.sh $subdir $subdir/../../T1/bravo.anat 3;
-
-	#need 1st_level_conf.sh and conf_reg_design.fsf from github.com/rgerraty/rl_flexibility
-	/home/rgerraty/GitHub/rl_flexibility/1st_level_conf.sh $i $subdir/36par+spikes.txt; 
-
+	if [ -e $subdir/36par+spikes.feat/stats/res4d.nii.gz ]
+		then
+		echo confound regression already run for $subdir
+		echo delete to run again
+	elif [ -d $subdir/36par+spikes.feat/ ]
+		then 
+		echo $subdir/36par+spikes.feat run but did not finish!
+		echo something went wrong
+	else
+		#need 1st_level_conf.sh and conf_reg_design.fsf from github.com/rgerraty/rl_flexibility
+		/home/rgerraty/GitHub/rl_flexibility/1st_level_conf.sh $i $subdir/36par+spikes.txt; 
+	fi
 done
 ```
