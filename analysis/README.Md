@@ -130,3 +130,30 @@ do
 	fi
 done
 ```
+
+###Apply non-linear registration
+```{.bash}
+for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc*feat
+ do 
+
+     echo warping $i;
+
+    #apply warp from FNIRT to preprocessed 4D data
+    applywarp --ref=$FSLDIR/data/standard/MNI152_T1_2mm.nii.gz\
+      --in=$i/36par+spikes.feat/stats/res4d.nii.gz\
+      --out=$i/36par+spikes.feat/stats/res4d_std.nii.gz\
+      --warp=$i/../../T1/bravo.anat/T1_to_MNI_nonlin_field.nii.gz\
+      --premat=$i/reg/example_func2highres.mat;  
+done
+
+```
+
+
+###Extract ROI Timecourses
+```{.bash}
+for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc*/36*feat
+	do 
+	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
+    ~/GitHub/rl_flexibility/extract_ROIs.sh $i/stats/res4d_std.nii.gz ~/Harvard-Oxford_ROIs/ $i/H-O_rois/;
+done
+```
