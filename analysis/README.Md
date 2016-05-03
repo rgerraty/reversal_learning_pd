@@ -154,6 +154,9 @@ done
 for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc*/36*feat
 	do 
 	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
-    ~/GitHub/rl_flexibility/extract_ROIs.sh $i/stats/res4d_std.nii.gz ~/Harvard-Oxford_ROIs/ $i/H-O_rois/;
+	echo exracting ROIs from $i
+    /home/rgerraty/GitHub/rl_flexibility/extract_ROIs.sh $i/stats/res4d_std.nii.gz\
+    	/home/rgerraty/Harvard-Oxford_ROIs/\
+    	$i/H-O_rois/;
 done
 ```
