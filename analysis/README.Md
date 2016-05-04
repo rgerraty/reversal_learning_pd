@@ -25,7 +25,7 @@ done
 ```{.bash}
 for i in /data/engine/abuch/NETPD/*/sess_?/B0;  
 do 
-	bo=$(ls $i/2*nii.gz); 
+	bo=$(ls $i/2*nii.gz);
 	echo $bo; 
 	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/B0_unwarp.sh $bo; 
 done
@@ -42,9 +42,9 @@ do
 		if [ ! -e $i/bravo.nii.gz ]
 			then
 			bravo=$(ls $i/co*nii.gz | head -n1)
-			mv $bravo bravo.nii.gz
+			mv $bravo $i/bravo.nii.gz
 		fi
-		fsl_anat $i/bravo.nii.gz
+		fsl_anat -i $i/bravo.nii.gz
 	fi
 done
 ```
@@ -140,7 +140,7 @@ for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/preproc*feat
  		then
      	echo warping already completed for $i
      else
-     	warping $i;
+     	echo warping $i;
     	#apply warp from FNIRT to preprocessed 4D data
     	applywarp --ref=$FSLDIR/data/standard/MNI152_T1_2mm.nii.gz\
     	--in=$i/36par+spikes.feat/stats/res4d.nii.gz\
