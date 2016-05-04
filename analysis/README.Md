@@ -182,8 +182,8 @@ for i=1:size(c,1)
     	filename=char(strcat(c(i),'/all_rois.txt'))
     	%need to specify filename, window length in TR, sampling rate, bandpass
     	%detect cycles as slow as 3s and as fast as ~nyqhuist 
-    	conn_cell=coherence_by_block(filename,60,1.177,.06,.5);
-    	save(char(strcat(c(i),'/conn_cells_25TR_06-5')),'conn_cell')
+    	conn_cell=coherence_by_block(filename,40,1.177,.06,.5);
+    	save(char(strcat(c(i),'/conn_cells_40TR_06-5')),'conn_cell')
     
     end
 end
