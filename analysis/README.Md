@@ -160,3 +160,22 @@ for i in /data/engine/abuch/NETPD/*/*/{REST,RUN_?}/preproc*/36*feat
     	$i/H-O_rois/;
 done
 ```
+
+###Calculate coherence matrices for each time window
+``` {.matlab}
+addpath /home/rgerraty/GitHub/rl_flexibility
+%read in all subject/run ROI timeseries directories 
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/*/{REST,RUN_?}/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+c=strread(b,'%s');
+
+for i=1:size(c,1)
+
+    %calculate coherence per time window from concatenated ROI file
+    filename=char(strcat(c(i),'/all_rois.txt'))
+    %need to specify filename, window length in TR, sampling rate, bandpass
+    %detect cycles as slow as 3s and as fast as ~nyqhuist 
+    conn_cell=coherence_by_block(filename,60,1.177,.06,.5);
+    save(char(strcat(c(i),'/conn_cells_25TR_06-5')),'conn_cell')
+
+end
+```
