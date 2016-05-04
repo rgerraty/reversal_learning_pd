@@ -45,6 +45,7 @@ do
 			mv $bravo bravo.nii.gz
 		fi
 		fsl_anat $i/bravo.nii.gz
+	fi
 done
 ```
 
