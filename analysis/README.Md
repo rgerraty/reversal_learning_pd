@@ -175,7 +175,7 @@ c=strread(b,'%s');
 for i=1:size(c,1)
 	if exist(char(strcat(c(i),'/all_rois.txt')))==0
 		'no ROI file'
-	elseif exist(char(strcat(c(i),'/conn_cells_25TR_06-5.mat')))==2
+	elseif exist(char(strcat(c(i),'/conn_cells_40TR_06-5.mat')))==2
     	'already done'
     else
     	%calculate coherence per time window from concatenated ROI file
@@ -211,7 +211,7 @@ for j=1:size(c,1)/numruns
     c(k)
     conn_cell_cat=[];
     for i=1:numruns 
-        load(strcat(char(c(k-1+i)),'/conn_cells_25TR_06-5'))
+        load(strcat(char(c(k-1+i)),'/conn_cells_40TR_06-5'))
         conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
     end
 
