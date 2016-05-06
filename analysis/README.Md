@@ -189,6 +189,36 @@ for i=1:size(c,1)
 end
 ```
 
+### Grid search for optimizing multi-layer community detection parameters
+```{.matlab}
+addpath /home/rgerraty/GitHub/rl_flexibility/
+addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
+addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
+
+
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_2/REST/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+c=strread(b,'%s')
+
+res_pars=10.^[-3:.5:1.8];
+gamma_pars=10.^[-3:.5:1.8];
+
+numruns=1
+k=1;
+for j=1:size(c,1)/numruns
+    c(k)
+    conn_cell_cat=[];
+    for i=1:numruns 
+        load(strcat(char(c(k-1+i)),'/conn_cells_40TR_06-5'))
+        conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
+    end
+    [q,q_tmp]=Q_grid(conn_cell_cat,10,res_pars,gamma_pars);
+    save(char(strcat(c(k),'/../../../../q_learning')),'q');
+    save(char(strcat(c(k),'/../../../../q_tmp_learning')),'q_tmp');
+    k=k+numruns;
+end
+
+```
+
 ### Run multi-slice community detection and flexibility statistics
 
 Input coherence matrix for each block. Also need number of blocks,
@@ -220,9 +250,9 @@ for j=1:size(c,1)/numruns
     %gives flexibility for each run
     %also allegiance matrix (not using yet)
     %need to specify number of blocks, simulations, coupling, resolution
-    [a_mat,flex]=network_diags(conn_cell_cat,8,500,1,1)
-    save(char(strcat(c(k),'/../../../../a_mat_learning')),'a_mat')
-    save(char(strcat(c(k),'/../../../../flex_learning')),'flex')
+    [a_mat,flex]=network_diags(conn_cell_cat,8,500,1,1);
+    save(char(strcat(c(k),'/../../../../a_mat_learning')),'a_mat');
+    save(char(strcat(c(k),'/../../../../flex_learning')),'flex');
     k=k+numruns;
 end
 ```
