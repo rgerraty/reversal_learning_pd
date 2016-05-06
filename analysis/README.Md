@@ -226,3 +226,18 @@ for j=1:size(c,1)/numruns
     k=k+numruns;
 end
 ```
+
+### Get Flexibility Statistics for Resting State and Task 
+```.{matlab}
+clear flex_rest flex_learning
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
+c=strread(b,'%s');
+for i=1:length(c)
+	for j=1:2
+		load(char(strcat(c(i),'sess_',num2str(j),'/flex_rest.mat')))
+		flex_rest(:,j,i)=flex;
+		load(char(strcat(c(i),'sess_',num2str(j),'/flex_learning.mat')))
+		flex_learning(:,:,j,i)=flex;
+	end
+end
+```
