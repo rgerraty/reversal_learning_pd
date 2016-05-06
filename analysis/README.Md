@@ -258,7 +258,7 @@ end
 ```
 
 ### Get Flexibility Statistics for Resting State and Task 
-```.{matlab}
+```{.matlab}
 clear flex_rest flex_learning
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
 c=strread(b,'%s');
