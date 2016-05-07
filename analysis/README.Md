@@ -196,11 +196,11 @@ addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_2/REST/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_?/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s')
 
-res_pars=10.^[-3:.5:1.8];
-gamma_pars=10.^[-3:.5:1.8];
+res_pars=10.^[-4:.5:.5];
+gamma_pars=10.^[-4:.5:.5];
 
 numruns=1
 k=1;
