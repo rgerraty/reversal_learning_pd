@@ -200,7 +200,7 @@ addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 c=strread(b,'%s')
 
 res_pars=10.^[-4:.5:.5];
-gamma_pars=10.^[-4:.5:.5];
+c_pars=10.^[-4:.5:.5];
 
 numruns=1
 k=1;
@@ -211,7 +211,7 @@ for j=1:size(c,1)/numruns
         load(strcat(char(c(k-1+i)),'/conn_cells_40TR_06-5'))
         conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
     end
-    [q,q_tmp]=Q_grid(conn_cell_cat,10,res_pars,gamma_pars);
+    [q,q_tmp]=Q_grid(conn_cell_cat,10,res_pars,c_pars);
     save(char(strcat(c(k),'/../../../../q_learning')),'q');
     save(char(strcat(c(k),'/../../../../q_tmp_learning')),'q_tmp');
     k=k+numruns;
