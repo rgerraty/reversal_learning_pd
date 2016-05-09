@@ -250,7 +250,7 @@ for j=1:size(c,1)/numruns
     %gives flexibility for each run
     %also allegiance matrix (not using yet)
     %need to specify number of blocks, simulations, coupling, resolution
-    [a_mat,flex]=network_diags(conn_cell_cat,8,500,1,1);
+    [a_mat,flex]=network_diags(conn_cell_cat,8,500,3.1623,.0001);
     save(char(strcat(c(k),'/../../../../a_mat_learning')),'a_mat');
     save(char(strcat(c(k),'/../../../../flex_learning')),'flex');
     k=k+numruns;
