@@ -251,7 +251,7 @@ for j=1:size(c,1)/numruns
     %also allegiance matrix (not using yet)
     %need to specify number of blocks, simulations, coupling, resolution
     %still working on optimizing these with previous Q_grid script
-    [a_mat,flex]=network_diags(conn_cell_cat,8,500,1,.3);
+    [a_mat,flex]=network_diags(conn_cell_cat,size(conn_cell,3),500,1,.3);
     save(char(strcat(c(k),'/../../../../a_mat_learning')),'a_mat');
     save(char(strcat(c(k),'/../../../../flex_learning')),'flex');
     k=k+numruns;
