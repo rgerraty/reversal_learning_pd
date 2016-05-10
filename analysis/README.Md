@@ -245,6 +245,9 @@ for j=1:size(c,1)/numruns
         conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
     end
 
+    %change NaN to zero in coherence matrices
+    for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
+    
     %network_diags code:
     %runs multi-slice community detection
     %gives flexibility for each run
