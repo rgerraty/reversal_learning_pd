@@ -199,10 +199,10 @@ addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_?/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s')
 
-res_pars=10.^[-4:.5:.5];
-c_pars=10.^[-4:.5:.5];
+res_pars=10.^[-2:.25:.25];
+c_pars=10.^[-2:.25:.25];
 
-numruns=1
+numruns=5
 k=1;
 for j=1:size(c,1)/numruns
     c(k)
