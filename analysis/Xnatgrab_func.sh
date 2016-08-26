@@ -24,5 +24,3 @@ echo setting filename to $filename
 curl -u ${username}:${password} https://xnat.nyspi.org/data/archive/projects/${project}/subjects/${subject}/experiments/${session}/scans/ALL/files?format=zip > $filename.zip
 unzip ${filename}.zip $filename
 
-
-#make a function that takes username password project subject.txt and sessions.txt
