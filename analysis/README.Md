@@ -3,7 +3,26 @@
 
 Descriptions and example scripts for running network preprocessing and analysis functions contained in this repository. 
 
+### Grab files from XNat Server
+```{.bash}
 
+# Xnatgrab_func.sh [user] [password] [project] [subject] [subject]
+
+user= # enter username for XNat Server
+pw= # enter password for XNat Server
+project=
+subjs=(801 802 803)
+sess1=(12816 12951 13000)
+sess2=(12822 12956 13008)
+
+last=${#subjs[@]}
+
+for ((i=0; i <= last-1; i++))
+do
+	Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess1[$i]}
+	Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess2[$i]}
+done
+```
 ### Set up directory structure
 ```{.bash}
 #make sure only IDs corresponding to correct session are included in this loop
