@@ -10,7 +10,7 @@ Descriptions and example scripts for running network preprocessing and analysis 
 
 user= # enter username for XNat Server
 pw= # enter password for XNat Server
-project=
+project= # enter project directory for XNat Server
 subjs=(801 802 803)
 sess1=(12816 12951 13000)
 sess2=(12822 12956 13008)
