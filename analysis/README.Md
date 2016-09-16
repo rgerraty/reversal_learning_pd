@@ -71,7 +71,7 @@ done
 
 ### B0 field correction for EPI scans
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}
 do
 
 	unwarp=$(ls $i/*_unwarp.nii.gz 2>/dev/null)
@@ -101,7 +101,7 @@ done
 ```
 ### Get partially saturated first volume from every 4D epi volume as reference image
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/*unwarp.nii.gz
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	if [ ! -e $(dirname $i)/example_func.nii.gz ]
 		then
@@ -115,7 +115,7 @@ done
 
 ###Run preprocessing (need to generate template .fsf file first)
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/*unwarp.nii.gz
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/run_preproc.sh $i \
 	/data/engine/abuch/NETPD/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
@@ -154,7 +154,7 @@ done
 
 ###Apply non-linear registration
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/preproc*feat
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*feat
  do 
  	if [ -e $i/36par+spikes.feat/stats/res4d_std.nii.gz ];
  		then
@@ -175,7 +175,7 @@ done
 
 ###Extract ROI Timecourses
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/preproc*/36*feat
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 	do 
 	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
 	echo exracting ROIs from $i
