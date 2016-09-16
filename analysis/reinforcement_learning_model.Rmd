@@ -1,0 +1,86 @@
+---
+title: "Parkinson’s RL"
+author: "Raphael Gerraty"
+output: html_document
+---
+
+
+```{r, eval=FALSE}
+library("lme4")
+library("doBy")
+library("ggplot2")
+
+#read in learning data from MATLAB output
+learndata=read.table("~/Dropbox/reversal_learning_pd/Subjects/LearnGroup_newest.txt", header=FALSE, sep="")
+
+#add header row 
+headerlearn=c("SubNum", "Trial","Day",'Med','StimOnLeft','rewCat','Resp','RewProb','Rew','Optimal','ChosenCat','Old','RT', 'Bin')
+
+names(learndata)<-headerlearn
+
+head(learndata)
+#will need to remove trials where data was saved incorrectly
+#Subject 822 Trials 22-30
+
+# effect coding for reward and day and med
+learndata$RewEff<-(2*learndata$Rew-1)/2 #RewEff is -.5/.5 
+learndata$DayEff<-(2*learndata$Day-3)/2 #went from 1/2 to -.5/.5 
+learndata$MedEff<-(2*learndata$Med-1)/2 #medEff is -.5/.5 
+
+#abs(choice-3) is a hack to get unchosen from chosen [1,2];
+learndata$UnChosenCat<-abs(learndata$ChosenCat-3)
+
+#Change DV coding to p(Choose Cat2)
+learndata$ChooseTwo<-(learndata$ChosenCat==2)+0
+
+#code lucky category .5/-.5
+learndata$LuckCatTwo<-((learndata$rewCat==2)-(learndata$rewCat==1))/2
+learndata$LuckCatTwo[is.na(learndata$LuckCatTwo)]<-0
+```
+
+Set up data for Stan Model
+
+```{r, echo=FALSE}
+#set up variables in subjects by trials format for Stan
+subs = unique(learndata$SubNum)
+NS = length(subs);
+MT=max(learningdata$Trial);
+NT = array(0,NS);
+choice = array(0,c(NS,MT));
+unchoice=choice;
+cat_choice=choice;
+rew = array(0.0,c(NS,MT));
+
+#convert data to subjects by trials format for Stan
+for (i in 1:NS) {
+  NT[i] = nrow(subset(learndata,SubNum==subs[i]));
+  
+  #choice and reward history
+  choice[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$ChosenCat;
+  unchoice[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$UnChosenCat;
+  rew[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$Rew;
+  
+  #based on choosing category 2
+  cat_two_choice[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$ChooseTwo;
+}
+
+#for skipping missed trials
+choice[is.na(choice)]<--1
+choice[choice==0]<--1
+unchoice[is.na(unchoice)]<--1
+unchoice[choice==0]<--1
+rew[is.na(rew)]<--1
+cat_two_choice[is.na(red_choice)]<--1
+
+#standard rl model fit heirarchically in Stan
+standard_standata = list(NS=NS, NC=2,K=2, MT=MT, NT= NT, choice=choice, red_choice=red_choice, rew=rew )
+standard_fit <- stan(file = '~/GitHub/hybrid_reinforcement_learning/standard_rl.stan', data = standard_standata, iter = 1250, warmup = 250, chains = 4)
+save(standard_fit,file='stanfit_rl_PD')
+
+#add 
+
+
+#lme4 models for comparison
+
+```
+
