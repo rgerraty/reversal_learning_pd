@@ -9,6 +9,9 @@ output: html_document
 library("lme4")
 library("doBy")
 library("ggplot2")
+library("rstan")
+rstan_options(auto_write = TRUE)
+options(mc.cores = parallel::detectCores())
 
 #read in learning data from MATLAB output
 learndata=read.table("~/Dropbox/reversal_learning_pd/Subjects/LearnGroup_newest.txt", header=FALSE, sep="")
@@ -44,12 +47,14 @@ Set up data for Stan Model
 #set up variables in subjects by trials format for Stan
 subs = unique(learndata$SubNum)
 NS = length(subs);
-MT=max(learningdata$Trial);
+MT=max(learndata$Trial*learndata$Day);
 NT = array(0,NS);
 choice = array(0,c(NS,MT));
 unchoice=choice;
 cat_choice=choice;
 rew = array(0.0,c(NS,MT));
+day = rew;
+med = rew;
 
 #convert data to subjects by trials format for Stan
 for (i in 1:NS) {
@@ -61,7 +66,11 @@ for (i in 1:NS) {
   rew[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$Rew;
   
   #based on choosing category 2
-  cat_two_choice[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$ChooseTwo;
+  cat_choice[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$ChooseTwo;
+  
+  #Day and Med
+  day[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$DayEff;
+  med[i,1:NT[i]] = subset(learndata,SubNum==subs[i])$MedEff;
 }
 
 #for skipping missed trials
@@ -70,11 +79,13 @@ choice[choice==0]<--1
 unchoice[is.na(unchoice)]<--1
 unchoice[choice==0]<--1
 rew[is.na(rew)]<--1
-cat_two_choice[is.na(red_choice)]<--1
+cat_choice[is.na(cat_choice)]<--1
+day[day==0] <- -1
+med[med==0] <- -1
 
 #standard rl model fit heirarchically in Stan
-standata = list(NS=NS, NC=2,K=2, MT=MT, NT= NT, choice=choice, cat_choice=cat_two_choice, rew=rew )
-standard_fit <- stan(file = '~/GitHub/reversal_learning_pd/rl.stan', data = standard_standata, iter = 1250, warmup = 250, chains = 4)
+standata = list(NS=NS, NC=2,K=4, MT=MT, NT= NT, choice=choice, cat_choice=cat_choice, rew=rew, day=day,med=med )
+standard_fit <- stan(file = '~/GitHub/reversal_learning_pd/rl.stan', data = standard_standata, iter = 1250, warmup = 50, chains = 4)
 save(standard_fit,file='stanfit_rl_PD')
 
 #add day, med info?
