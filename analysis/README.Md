@@ -26,9 +26,10 @@ done
 ### Set up directory structure
 ```{.bash}
 #make sure only IDs corresponding to correct session are included in this loop
-for i in /data/engine/abuch/NETPD/unzipped/<sess_2 ids>/scans/*/resources/DICOM/files/
+for i in /data/engine/abuch/NETPD/unzipped_tmp/<sess_2 ids>/scans/*/resources/DICOM/files/
 do
-	bash move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
+	#indicate whether session 1 or 2 since this is not contained in dicom header
+	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
 done
 ```
 
