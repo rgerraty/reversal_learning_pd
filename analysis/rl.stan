@@ -7,8 +7,8 @@ data {
 	real<lower=-1,upper=1> rew[NS,MT];//subject x trial reward, -1 for missed
 	int choice[NS,MT];//chosen option, -1 for missed
 	int cat_choice[NS,MT];//1=chose red,0=chose blue, -1 for missed
-	real<lower=-.5,upper=.5> med[NS,MT];//subject x trial day
-	real<lower=-.5,upper=.5> day[NS,MT];//subject x trial med
+	real<lower=-1,upper=.5> med[NS,MT];//subject x trial day
+	real<lower=-1,upper=.5> day[NS,MT];//subject x trial med
 }
 
 parameters {

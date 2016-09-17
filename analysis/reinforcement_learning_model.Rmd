@@ -85,10 +85,10 @@ med[med==0] <- -1
 
 #standard rl model fit heirarchically in Stan
 standata = list(NS=NS, NC=2,K=4, MT=MT, NT= NT, choice=choice, cat_choice=cat_choice, rew=rew, day=day,med=med )
-standard_fit <- stan(file = '~/GitHub/reversal_learning_pd/rl.stan', data = standard_standata, iter = 1250, warmup = 50, chains = 4)
+standard_fit <- stan(file = '~/GitHub/reversal_learning_pd/analysis/rl.stan', data = standata, iter = 1250, warmup = 250, chains = 4)
 save(standard_fit,file='stanfit_rl_PD')
 
-#add day, med info?
+#maybe make model with different alphas for ON vs OFF?
 
 
 #lme4 models for comparison
