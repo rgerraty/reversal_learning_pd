@@ -125,7 +125,7 @@ done
 ###Generate confounds and run extended preprocessing
 For now, need a bunch of code from github.com/rgerraty/rl_flexibility for this to work
 ```{.bash}
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN_?}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
+for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN*}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
 do
 	subdir=$(dirname $i);
 	if [ -e $subdir/36par+spikes.txt ]
