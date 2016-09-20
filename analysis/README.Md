@@ -189,7 +189,7 @@ done
 ``` {.matlab}
 addpath /home/rgerraty/GitHub/rl_flexibility
 %read in all subject/run ROI timeseries directories 
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/{REST,RUN_?}/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/{RUN*,REST*}/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s');
 
 for i=1:size(c,1)
@@ -216,7 +216,7 @@ addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_?/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_*/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s')
 
 res_pars=10.^[-2:.25:.25];
@@ -251,7 +251,7 @@ addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 %read in data
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_?/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_*/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s');
 
 %concatenate runs for each subject
