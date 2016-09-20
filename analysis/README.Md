@@ -195,15 +195,15 @@ c=strread(b,'%s');
 for i=1:size(c,1)
 	if exist(char(strcat(c(i),'/all_rois.txt')))==0
 		'no ROI file'
-	elseif exist(char(strcat(c(i),'/conn_cells_40TR_06-5.mat')))==2
+	elseif exist(char(strcat(c(i),'/conn_cells_25TR_06-5.mat')))==2
     	'already done'
     else
     	%calculate coherence per time window from concatenated ROI file
     	filename=char(strcat(c(i),'/all_rois.txt'))
     	%need to specify filename, window length in TR, sampling rate, bandpass
     	%detect cycles as slow as 3s and as fast as ~nyqhuist 
-    	conn_cell=coherence_by_block(filename,40,1.177,.06,.5);
-    	save(char(strcat(c(i),'/conn_cells_40TR_06-5')),'conn_cell')
+    	conn_cell=coherence_by_block(filename,25,1.177,.06,.5);
+    	save(char(strcat(c(i),'/conn_cells_25TR_06-5')),'conn_cell')
     
     end
 end
@@ -228,7 +228,7 @@ for j=1:size(c,1)/numruns
     c(k)
     conn_cell_cat=[];
     for i=1:numruns 
-        load(strcat(char(c(k-1+i)),'/conn_cells_40TR_06-5'))
+        load(strcat(char(c(k-1+i)),'/conn_cells_25TR_06-5'))
         conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
     end
     [q,q_tmp]=Q_grid(conn_cell_cat,10,res_pars,c_pars);
@@ -261,7 +261,7 @@ for j=1:size(c,1)/numruns
     c(k)
     conn_cell_cat=[];
     for i=1:numruns 
-        load(strcat(char(c(k-1+i)),'/conn_cells_40TR_06-5'))
+        load(strcat(char(c(k-1+i)),'/conn_cells_25TR_06-5'))
         conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
     end
 
