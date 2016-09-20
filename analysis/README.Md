@@ -19,8 +19,8 @@ last=${#subjs[@]}
 
 for ((i=0; i <= last-1; i++))
 do
-	Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess1[$i]}
-	Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess2[$i]}
+	/home/rgerraty/GitHub/reversal_learning_pd/analysis/Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess1[$i]}
+	/home/rgerraty/GitHub/reversal_learning_pd/analysis/Xnatgrab_func.sh $user $pw $project ${subjs[$i]} ${sess2[$i]}
 done
 ```
 ### Set up directory structure
@@ -37,7 +37,7 @@ done
 ```{.bash}
 for i in /data/engine/abuch/NETPD/*/sess_?/{B0,T*}/dicoms/
 do
-	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/convert_dicoms.sh $i
+	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/convert_dicoms.sh $i
 done
 ```
 
@@ -47,7 +47,7 @@ for i in /data/engine/abuch/NETPD/*/sess_?/B0;
 do 
 	bo=$(ls $i/2*nii.gz);
 	echo $bo; 
-	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/B0_unwarp.sh $bo; 
+	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/B0_unwarp.sh $bo; 
 done
 ```
 
@@ -118,7 +118,7 @@ done
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	bash /data/engine/abuch/NETPD/reversal_learning_pd/analysis/run_preproc.sh $i \
-	/data/engine/abuch/NETPD/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
+	/home/rgerraty/GitHub/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
 	$(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
 done
 ```
