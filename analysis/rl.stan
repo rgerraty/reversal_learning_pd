@@ -99,7 +99,8 @@ model {
 		  if (choice[s,t] > 0) {
 		    cat_choice[s,t] ~ bernoulli_logit(beta[s,1]+
 		    beta[s,2]*(Q[s,t,2]-Q[s,t,1])+
-		    beta[s,3]*med[s,t]+beta[s,4]*day[s,t]);
+		    beta[s,3]*med[s,t]+beta[s,4]*day[s,t]+
+		    beta[s,5]*med[s,t]*(Q[s,t,2]-Q[s,t,1]));
 		  }
 		}
 	}
