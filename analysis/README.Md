@@ -259,12 +259,13 @@ c=strread(b,'%s');
 
 for j=1:size(c,1)
 
-    c(k)
-    conn_cell_cat=[];
+    c(j)
+    
     sess=dir(strcat(c{j},'/sess_*'))
-    for k=1:size(sess,1)
-    	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'))
-    	numruns=size(runs,1)
+    for i=1:size(sess,1)
+    	conn_cell_cat=[];
+    	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
+    	numruns=size(runs,1);
     	for i=1:numruns 
         	load(strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_25TR_06-5.mat'))
         	conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
@@ -278,9 +279,9 @@ for j=1:size(c,1)
     	%also allegiance matrix (not using yet)
     	%need to specify number of blocks, simulations, coupling, resolution
     	%still working on optimizing these with previous Q_grid script
-    	[a_mat,flex]=network_diags(conn_cell_cat,8,500,1,.7);
-    	save(char(strcat(c(k),sess(k).name,'/a_mat_learning')),'a_mat');
-    	save(char(strcat(c(k),sess(k).name,'/flex_learning')),'flex');
+    	[a_mat,flex]=network_diags(conn_cell_cat,8,100,1,.7);
+    	save(char(strcat(c(j),sess(k).name,'/a_mat_learning')),'a_mat');
+    	save(char(strcat(c(j),sess(k).name,'/flex_learning')),'flex');
 
     end
 end
