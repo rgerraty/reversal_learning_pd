@@ -262,7 +262,7 @@ for j=1:size(c,1)
     c(j)
     
     sess=dir(strcat(c{j},'/sess_*'))
-    for i=1:size(sess,1)
+    for k=1:size(sess,1)
     	conn_cell_cat=[];
     	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
     	numruns=size(runs,1);
