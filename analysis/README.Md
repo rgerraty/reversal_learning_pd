@@ -251,33 +251,38 @@ addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 %read in data
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_*/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
 c=strread(b,'%s');
 
 %concatenate runs for each subject
-numruns=5
-k=1;
-for j=1:size(c,1)/numruns
+
+
+for j=1:size(c,1)
+
     c(k)
     conn_cell_cat=[];
-    for i=1:numruns 
-        load(strcat(char(c(k-1+i)),'/conn_cells_25TR_06-5'))
-        conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
-    end
+    sess=dir(strcat(c{j},'/sess_*'))
+    for k=1:size(sess,1)
+    	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'))
+    	numruns=size(runs,1)
+    	for i=1:numruns 
+        	load(strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_25TR_06-5.mat'))
+        	conn_cell_cat=cat(3,conn_cell_cat,conn_cell)
+    	end
 
-    %change NaN to zero in coherence matrices
-    for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
-    
-    %network_diags code:
-    %runs multi-slice community detection
-    %gives flexibility for each run
-    %also allegiance matrix (not using yet)
-    %need to specify number of blocks, simulations, coupling, resolution
-    %still working on optimizing these with previous Q_grid script
-    [a_mat,flex]=network_diags(conn_cell_cat,8,500,1,.3);
-    save(char(strcat(c(k),'/../../../../a_mat_learning')),'a_mat');
-    save(char(strcat(c(k),'/../../../../flex_learning')),'flex');
-    k=k+numruns;
+   		%change NaN to zero in coherence matrices
+    	for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
+    	%network_diags code:
+    	%runs multi-slice community detection
+    	%gives flexibility for each run
+    	%also allegiance matrix (not using yet)
+    	%need to specify number of blocks, simulations, coupling, resolution
+    	%still working on optimizing these with previous Q_grid script
+    	[a_mat,flex]=network_diags(conn_cell_cat,8,500,1,.7);
+    	save(char(strcat(c(k),sess(k).name,'/a_mat_learning')),'a_mat');
+    	save(char(strcat(c(k),sess(k).name,'/flex_learning')),'flex');
+
+    end
 end
 ```
 
