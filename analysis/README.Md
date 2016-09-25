@@ -271,8 +271,8 @@ for j=1:size(c,1)
         	if exist(connfile, 'file') == 2
         		load(connfile);
         		conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
-        	else
-        		conn_cell_cat=cat(3,conn_cell_cat,conn_cell-conn_cell);
+        	%else
+        		%conn_cell_cat=cat(3,conn_cell_cat,conn_cell-conn_cell);
         	end
     	end
 
