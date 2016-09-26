@@ -187,7 +187,7 @@ done
 
 ###Calculate coherence matrices for each time window
 ``` {.matlab}
-addpath /home/rgerraty/GitHub/rl_flexibility
+addpath /home/rgerraty/GitHub/reversal_learning_pd/analysis/
 %read in all subject/run ROI timeseries directories 
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/{RUN*,REST*}/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s');
