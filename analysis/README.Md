@@ -268,7 +268,7 @@ for j=1:size(c,1)
     	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
     	numruns=size(runs,1);
     	for i=1:numruns 
-    		connfile=strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_25TR_06-5.mat');
+    		connfile=strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
         	if exist(connfile, 'file') == 2
         		load(connfile);
         		conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
@@ -286,9 +286,9 @@ for j=1:size(c,1)
     	%need to specify number of blocks, simulations, coupling, resolution
     	%still working on optimizing these with previous Q_grid script
     	if  ~isempty(conn_cell_cat)
-    		[a_mat,flex]=network_diags(conn_cell_cat,10,100,1,.7);
-    		save(char(strcat(c(j),sess(k).name,'/a_mat_learning')),'a_mat');
-    		save(char(strcat(c(j),sess(k).name,'/flex_learning')),'flex');
+    		[a_mat,flex]=network_diags(conn_cell_cat,5,100,1,.7);
+    		save(char(strcat(c(j),sess(k).name,'/a_mat_learning_50TR-0612')),'a_mat');
+    		save(char(strcat(c(j),sess(k).name,'/flex_learning_50TR-0612')),'flex');
     	end
     end
 end
