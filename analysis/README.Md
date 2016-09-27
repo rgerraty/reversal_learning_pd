@@ -286,7 +286,7 @@ for j=1:size(c,1)
     	%need to specify number of blocks, simulations, coupling, resolution
     	%still working on optimizing these with previous Q_grid script
     	if  ~isempty(conn_cell_cat)
-    		[a_mat,flex]=network_diags(conn_cell_cat,5,100,1,.7);
+    		[a_mat,flex]=network_diags(conn_cell_cat,5,100,1,1.18);
     		save(char(strcat(c(j),sess(k).name,'/a_mat_learning_50TR-0612')),'a_mat');
     		save(char(strcat(c(j),sess(k).name,'/flex_learning_50TR-0612')),'flex');
     	end
