@@ -212,21 +212,15 @@ end
 
 ### Grid search for optimizing multi-layer community detection parameters
 ```{.matlab}
+%need multi-slice, flexibility codes not yet on GitHub 
 addpath /home/rgerraty/GitHub/rl_flexibility/
 addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
-
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_*/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
-c=strread(b,'%s')
-
+%create grid of resolution and coupling parameters 
 res_pars=(.1:.1:1);
 c_pars=(.1:.1:1);
 
-%need multi-slice, flexibility codes not yet on GitHub for network_diags to run 
-addpath /home/rgerraty/GitHub/rl_flexibility/
-addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
-addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 %read in data
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
