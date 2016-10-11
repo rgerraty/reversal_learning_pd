@@ -220,23 +220,69 @@ addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/RUN_*/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
 c=strread(b,'%s')
 
-res_pars=10.^[-2:.25:.25];
-c_pars=10.^[-2:.25:.25];
+res_pars=(.1:.1:1);
+c_pars=(.1:.1:1);
 
-numruns=5
-k=1;
-for j=1:size(c,1)/numruns
-    c(k)
-    conn_cell_cat=[];
-    for i=1:numruns 
-        load(strcat(char(c(k-1+i)),'/conn_cells_25TR_06-5'))
-        conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
+%need multi-slice, flexibility codes not yet on GitHub for network_diags to run 
+addpath /home/rgerraty/GitHub/rl_flexibility/
+addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
+addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
+
+%read in data
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
+c=strread(b,'%s');
+
+for j=1:size(c,1)
+	%get sessions
+    c(j)
+    sess=dir(strcat(c{j},'/sess_*'))
+    for k=1:size(sess,1)
+    	%concatenate runs within session
+        conn_cell=[];
+        conn_cell_cat=[];
+        runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
+        numruns=size(runs,1);
+        for i=1:numruns 
+            connfile=strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
+            if exist(connfile, 'file') == 2
+                load(connfile);
+                conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
+            end
+        end
+
+        %change NaN to zero in coherence matrices
+        for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
+
+        save(strcat(c{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat',conn_cell_cat);
+
+        %optimize parameters over grids for q, mean and std flexibility
+        if  ~isempty(conn_cell_cat)
+    		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),...,std_flex(:,:,j,k),std_flex_tmp(:,:,j,k)]=...
+    		Q_grid(conn_cell_cat,10,res_pars,c_pars);
+    		save(char(strcat(c(j),sess(k).name,,'q_grid')),'q(:,:,j,k)');
+    		save(char(strcat(c(j),sess(k).name,,'q_tmp_grid')),'q_tmp(:,:,j,k)');
+    		save(char(strcat(c(j),sess(k).name,,'mean_flex_grid')),'mean_flex(:,:,j,k)');
+    		save(char(strcat(c(j),sess(k).name,,'mean_flex_tmp_grid')),'mean_flex_tmp(:,:,j,k)');
+    		save(char(strcat(c(j),sess(k).name,,'std_flex_grid')),'std_flex(:,:,j,k)');
+    		save(char(strcat(c(j),sess(k).name,,'std_flex_tmp_grid')),'std_flex_tmp(:,:,j,k)');
+    	end
     end
-    [q,q_tmp]=Q_grid(conn_cell_cat,10,res_pars,c_pars);
-    save(char(strcat(c(k),'/../../../../q_learning')),'q');
-    save(char(strcat(c(k),'/../../../../q_tmp_learning')),'q_tmp');
-    k=k+numruns;
 end
+%save group averages
+savedir='/data/engine/abuch/NETPD/gridopt/';
+q=mean(mean(q_grid,4),3);
+q_tmp=mean(mean(q_tmp_grid,4),3);
+mean_flex=mean(mean(mean_flex,4),3);
+mean_flex_tmp=mean(mean(mean_flex_tmp,4),3);
+std_flex=mean(mean(std_flex,4),3);
+std_flex_tmp=mean(mean(std_flex_tmp,4),3);
+
+save(strcat(savedir,'q_grid'),q);
+save(strcat(savedir,'q_tmp_grid'),q_tmp);
+save(strcat(savedir,'mean_flex_grid'),mean_flex);
+save(strcat(savedir,'mean_flex_tmp_grid'),mean_flex_tmp);
+save(strcat(savedir,'std_flex_grid'),std_flex);
+save(strcat(savedir,'std_flex_tmp_grid'),std_flex_tmp);
 
 ```
 
