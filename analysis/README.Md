@@ -263,7 +263,7 @@ for j=1:size(c,1)
     end
 end
 %save group averages
-savedir='/data/engine/abuch/NETPD/gridopt/';
+savdire='/data/engine/abuch/NETPD/gridopt/';
 q=mean(mean(q_grid,4),3);
 q_tmp=mean(mean(q_tmp_grid,4),3);
 mean_flex=mean(mean(mean_flex,4),3);
