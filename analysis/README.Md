@@ -247,7 +247,7 @@ for j=1:size(c,1)
         %change NaN to zero in coherence matrices
         for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
 
-        save(strcat(c{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat'),conn_cell_cat);
+        save(strcat(c{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat'),'conn_cell_cat');
 
         %optimize parameters over grids for q, mean and std flexibility
         if  ~isempty(conn_cell_cat)
