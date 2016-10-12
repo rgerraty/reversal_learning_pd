@@ -270,12 +270,12 @@ mean_flex_tmp=mean(mean(mean_flex_tmp,4),3);
 std_flex=mean(mean(std_flex,4),3);
 std_flex_tmp=mean(mean(std_flex_tmp,4),3);
 
-save(strcat(savedir,'q_grid'),q);
-save(strcat(savedir,'q_tmp_grid'),q_tmp);
-save(strcat(savedir,'mean_flex_grid'),mean_flex);
-save(strcat(savedir,'mean_flex_tmp_grid'),mean_flex_tmp);
-save(strcat(savedir,'std_flex_grid'),std_flex);
-save(strcat(savedir,'std_flex_tmp_grid'),std_flex_tmp);
+save(strcat(savdire,'q_grid'),q);
+save(strcat(savdire,'q_tmp_grid'),q_tmp);
+save(strcat(savdire,'mean_flex_grid'),mean_flex);
+save(strcat(savdire,'mean_flex_tmp_grid'),mean_flex_tmp);
+save(strcat(savdire,'std_flex_grid'),std_flex);
+save(strcat(savdire,'std_flex_tmp_grid'),std_flex_tmp);
 
 ```
 
