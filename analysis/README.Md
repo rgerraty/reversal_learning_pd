@@ -228,7 +228,7 @@ sublist=strread(b,'%s');
 
 for j=1:size(sublist,1)
 	%get sessions
-    c(j)
+    subjlist(j)
     sess=dir(strcat(sublist{j},'/sess_*'))
     for k=1:size(sess,1)
     	%concatenate runs within session
