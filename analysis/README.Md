@@ -251,7 +251,7 @@ for j=1:size(c,1)
 
         %optimize parameters over grids for q, mean and std flexibility
         if  ~isempty(conn_cell_cat)
-    		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),std_flex(:,:,j,k),std_flex_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,10,res_pars,coup_pars);
+    		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),std_flex(:,:,j,k),std_flex_tmp(:,:,j,k),num_com(:,:,j,k),num_com_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,10,res_pars,coup_pars);
     		q_sub=q(:,:,j,k);
     		save(char(strcat(c(j),sess(k).name,'q_grid')),'q_sub');
     		q_tmp_sub=q_tmp(:,:,j,k);
@@ -264,6 +264,11 @@ for j=1:size(c,1)
     		save(char(strcat(c(j),sess(k).name,'std_flex_grid')),'std_flex_sub');
     		std_flex_tmp_sub=std_flex_tmp(:,:,j,k);
     		save(char(strcat(c(j),sess(k).name,'std_flex_tmp_grid')),'std_flex_tmp_sub');
+    		num_com_sub=num_com(:,:,j,k);
+    		save(char(strcat(c(j),sess(k).name),'num_com_grid')),'num_com_sub');
+    		num_com_tmp_sub=num_com_tmp(:,:,j,k);
+    		save(char(strcat(c(j),sess(k).name),'num_com_tmp_grid')),'num_com_tmp_sub');
+
     	end
     end
 end
@@ -275,13 +280,17 @@ mean_flex=mean(mean(mean_flex,4),3);
 mean_flex_tmp=mean(mean(mean_flex_tmp,4),3);
 std_flex=mean(mean(std_flex,4),3);
 std_flex_tmp=mean(mean(std_flex_tmp,4),3);
+num_com=mean(mean(num_com,4),3);
+num_com_tmp=mean(mean(num_com_tmp,4),3);
 
-save(strcat(savdire,'q_grid'),q);
-save(strcat(savdire,'q_tmp_grid'),q_tmp);
-save(strcat(savdire,'mean_flex_grid'),mean_flex);
-save(strcat(savdire,'mean_flex_tmp_grid'),mean_flex_tmp);
-save(strcat(savdire,'std_flex_grid'),std_flex);
-save(strcat(savdire,'std_flex_tmp_grid'),std_flex_tmp);
+save(strcat(savdire,'q_grid'),'q');
+save(strcat(savdire,'q_tmp_grid'),'q_tmp');
+save(strcat(savdire,'mean_flex_grid'),'mean_flex');
+save(strcat(savdire,'mean_flex_tmp_grid'),'mean_flex_tmp');
+save(strcat(savdire,'std_flex_grid'),'std_flex');
+save(strcat(savdire,'std_flex_tmp_grid'),'std_flex_tmp');
+save(strcat(savdire,'num_com_grid'),'num_com');
+save(strcat(savdire,'num_com_tmp_grid'),'num_com_tmp');
 
 ```
 
