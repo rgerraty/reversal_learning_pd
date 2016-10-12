@@ -218,8 +218,8 @@ addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
 %create grid of resolution and coupling parameters 
-res_pars=(.1:.1:1);
-coup_pars=(.1:.1:1);
+res_pars=(.3:.1:1.3);
+coup_pars=(.3:.1:1.3);
 
 
 %read in data
