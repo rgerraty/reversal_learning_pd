@@ -265,9 +265,9 @@ for j=1:size(sublist,1)
     		std_flex_tmp_sub=std_flex_tmp(:,:,j,k);
     		save(char(strcat(sublist(j),sess(k).name,'/std_flex_tmp_grid')),'std_flex_tmp_sub');
     		num_com_sub=num_com(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name),'/num_com_grid')),'num_com_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/num_com_grid')),'num_com_sub');
     		num_com_tmp_sub=num_com_tmp(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name),'/num_com_tmp_grid')),'num_com_tmp_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/num_com_tmp_grid')),'num_com_tmp_sub');
 
     	end
     end
