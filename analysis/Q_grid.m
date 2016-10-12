@@ -20,8 +20,8 @@ q_tmp=zeros(size(res_pars,1),size(coup_pars,1),nsim);
 
           std_flex_tmp(r,o,s)=std(flex_tmp);
 
-          num_com(r,o,s)=max(c);
-          num_com_tmp(r,o,s)=max(c_tmp);
+          num_com(r,o,s)=max(max(c));
+          num_com_tmp(r,o,s)=max(max(c_tmp));
     			o=o+1;
   			end
   			r=r+1;
