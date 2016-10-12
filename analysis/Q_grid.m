@@ -1,4 +1,4 @@
-function [q,q_tmp,mean_flex,mean_flex_tmp,std_flex,std_flex_tmp]=Q_grid(conn_cell,nsim,res_pars,c_pars)
+function [q,q_tmp,mean_flex,mean_flex_tmp,std_flex,std_flex_tmp]=Q_grid(conn_cell,nsim,res_pars,coup_pars)
 
 q=zeros(size(res_pars,1),size(c_pars,1),nsim);
 q_tmp=zeros(size(res_pars,1),size(c_pars,1),nsim);
