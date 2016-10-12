@@ -1,4 +1,4 @@
-function [q,q_tmp,mean_flex,mean_flex_tmp,std_flex,std_flex_tmp]=Q_grid(conn_cell,nsim,res_pars,coup_pars)
+function [q,q_tmp,mean_flex,mean_flex_tmp,std_flex,std_flex_tmp,num_com,num_com_tmp]=Q_grid(conn_cell,nsim,res_pars,coup_pars)
 
 q=zeros(size(res_pars,1),size(coup_pars,1),nsim);
 q_tmp=zeros(size(res_pars,1),size(coup_pars,1),nsim);
@@ -19,6 +19,9 @@ q_tmp=zeros(size(res_pars,1),size(coup_pars,1),nsim);
           mean_flex_tmp(r,o,s)=mean(flex_tmp);
 
           std_flex_tmp(r,o,s)=std(flex_tmp);
+
+          num_com(r,o,s)=max(c);
+          num_com_tmp(r,o,s)=max(c_tmp);
     			o=o+1;
   			end
   			r=r+1;
@@ -30,3 +33,5 @@ q_tmp=zeros(size(res_pars,1),size(coup_pars,1),nsim);
     std_flex=mean(std_flex,3);
     mean_flex_tmp=mean(mean_flex_tmp,3);
     std_flex_tmp=mean(std_flex_tmp,3);
+    num_com=mean(num_com,3);
+    num_com_tmp=mean(num_com_tmp,3);
