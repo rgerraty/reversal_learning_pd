@@ -7,9 +7,9 @@ q_tmp=zeros(size(res_pars,1),size(c_pars,1),nsim);
 			r=1;
 			for res = res_pars
 			o=1;
-  			for c = c_pars
-    			[c,q(r,o,s)]=multiord_res_norm(conn_cell,c, res);
-    			[c_tmp,q_tmp(r,o,s)]=multiord_res_norm_temporal(conn_cell,c, res);
+  			for coup = coup_pars
+    			[c,q(r,o,s)]=multiord_res_norm(conn_cell,res,coup);
+    			[c_tmp,q_tmp(r,o,s)]=multiord_res_norm_temporal(conn_cell,res,coup);
           flex=flexibility(c');
           flex_tmp=flexibility(c_tmp');
 
