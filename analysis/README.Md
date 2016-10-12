@@ -224,20 +224,20 @@ coup_pars=(.3:.1:1.3);
 
 %read in data
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
-c=strread(b,'%s');
+sublist=strread(b,'%s');
 
-for j=1:size(c,1)
+for j=1:size(sublist,1)
 	%get sessions
     c(j)
-    sess=dir(strcat(c{j},'/sess_*'))
+    sess=dir(strcat(sublist{j},'/sess_*'))
     for k=1:size(sess,1)
     	%concatenate runs within session
         conn_cell=[];
         conn_cell_cat=[];
-        runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
+        runs=dir(strcat(sublist{j},sess(k).name,'/RUN_*'));
         numruns=size(runs,1);
         for i=1:numruns 
-            connfile=strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
+            connfile=strcat(sublist{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
             if exist(connfile, 'file') == 2
                 load(connfile);
                 conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
@@ -247,27 +247,27 @@ for j=1:size(c,1)
         %change NaN to zero in coherence matrices
         for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
 
-        save(strcat(c{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat'),'conn_cell_cat');
+        save(strcat(sublist{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat'),'conn_cell_cat');
 
         %optimize parameters over grids for q, mean and std flexibility
         if  ~isempty(conn_cell_cat)
     		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),std_flex(:,:,j,k),std_flex_tmp(:,:,j,k),num_com(:,:,j,k),num_com_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,3,res_pars,coup_pars);
     		q_sub=q(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/q_grid')),'q_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/q_grid')),'q_sub');
     		q_tmp_sub=q_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/q_tmp_grid')),'q_tmp_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/q_tmp_grid')),'q_tmp_sub');
     		mean_flex_sub=mean_flex(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/mean_flex_grid')),'mean_flex_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/mean_flex_grid')),'mean_flex_sub');
     		mean_flex_tmp_sub=mean_flex_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/mean_flex_tmp_grid')),'mean_flex_tmp_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/mean_flex_tmp_grid')),'mean_flex_tmp_sub');
     		std_flex_sub=std_flex(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/std_flex_grid')),'std_flex_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/std_flex_grid')),'std_flex_sub');
     		std_flex_tmp_sub=std_flex_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'/std_flex_tmp_grid')),'std_flex_tmp_sub');
+    		save(char(strcat(sublist(j),sess(k).name,'/std_flex_tmp_grid')),'std_flex_tmp_sub');
     		num_com_sub=num_com(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name),'/num_com_grid')),'num_com_sub');
+    		save(char(strcat(sublist(j),sess(k).name),'/num_com_grid')),'num_com_sub');
     		num_com_tmp_sub=num_com_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name),'/num_com_tmp_grid')),'num_com_tmp_sub');
+    		save(char(strcat(sublist(j),sess(k).name),'/num_com_tmp_grid')),'num_com_tmp_sub');
 
     	end
     end
