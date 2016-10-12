@@ -252,8 +252,7 @@ for j=1:size(c,1)
         %optimize parameters over grids for q, mean and std flexibility
         if  ~isempty(conn_cell_cat)
     		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),
-    		std_flex(:,:,j,k),std_flex_tmp(:,:,j,k)]=
-    		Q_grid(conn_cell_cat,10,res_pars,coup_pars);
+    		std_flex(:,:,j,k),std_flex_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,10,res_pars,coup_pars);
     		save(char(strcat(c(j),sess(k).name,'q_grid')),'q(:,:,j,k)');
     		save(char(strcat(c(j),sess(k).name,'q_tmp_grid')),'q_tmp(:,:,j,k)');
     		save(char(strcat(c(j),sess(k).name,'mean_flex_grid')),'mean_flex(:,:,j,k)');
