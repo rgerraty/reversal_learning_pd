@@ -213,7 +213,7 @@ end
 ### Grid search for optimizing multi-layer community detection parameters
 ```{.matlab}
 %need multi-slice, flexibility codes not yet on GitHub 
-addpath /home/rgerraty/GitHub/rl_flexibility/
+addpath /home/rgerraty/GitHub/reversal_learning_pd/analysis/
 addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
 
