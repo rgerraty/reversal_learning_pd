@@ -253,21 +253,21 @@ for j=1:size(c,1)
         if  ~isempty(conn_cell_cat)
     		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),std_flex(:,:,j,k),std_flex_tmp(:,:,j,k),num_com(:,:,j,k),num_com_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,10,res_pars,coup_pars);
     		q_sub=q(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'q_grid')),'q_sub');
+    		save(char(strcat(c(j),sess(k).name,'/q_grid')),'q_sub');
     		q_tmp_sub=q_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'q_tmp_grid')),'q_tmp_sub');
+    		save(char(strcat(c(j),sess(k).name,'/q_tmp_grid')),'q_tmp_sub');
     		mean_flex_sub=mean_flex(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'mean_flex_grid')),'mean_flex_sub');
+    		save(char(strcat(c(j),sess(k).name,'/mean_flex_grid')),'mean_flex_sub');
     		mean_flex_tmp_sub=mean_flex_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'mean_flex_tmp_grid')),'mean_flex_tmp_sub');
+    		save(char(strcat(c(j),sess(k).name,'/mean_flex_tmp_grid')),'mean_flex_tmp_sub');
     		std_flex_sub=std_flex(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'std_flex_grid')),'std_flex_sub');
+    		save(char(strcat(c(j),sess(k).name,'/std_flex_grid')),'std_flex_sub');
     		std_flex_tmp_sub=std_flex_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name,'std_flex_tmp_grid')),'std_flex_tmp_sub');
+    		save(char(strcat(c(j),sess(k).name,'/std_flex_tmp_grid')),'std_flex_tmp_sub');
     		num_com_sub=num_com(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name),'num_com_grid')),'num_com_sub');
+    		save(char(strcat(c(j),sess(k).name),'/num_com_grid')),'num_com_sub');
     		num_com_tmp_sub=num_com_tmp(:,:,j,k);
-    		save(char(strcat(c(j),sess(k).name),'num_com_tmp_grid')),'num_com_tmp_sub');
+    		save(char(strcat(c(j),sess(k).name),'/num_com_tmp_grid')),'num_com_tmp_sub');
 
     	end
     end
