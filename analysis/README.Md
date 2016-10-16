@@ -226,22 +226,25 @@ coup_pars=(.3:.1:1.3);
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
 sublist=strread(b,'%s');
 
+l=1;
 for j=1:size(sublist,1)
 	%get sessions
     sublist(j)
     sess=dir(strcat(sublist{j},'/sess_*'))
+    m=1;
     for k=1:size(sess,1)
     	%concatenate runs within session
-        conn_cell=[];
         conn_cell_cat=[];
         runs=dir(strcat(sublist{j},sess(k).name,'/RUN_*'));
         numruns=size(runs,1);
         for i=1:numruns 
+        	conn_cell=[];
             connfile=strcat(sublist{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
             if exist(connfile, 'file') == 2
                 load(connfile);
                 conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
             end
+            count_t(i,j,k)=size(conn_cell,3);
         end
 
         %change NaN to zero in coherence matrices
