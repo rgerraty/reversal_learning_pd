@@ -259,19 +259,17 @@ for i=1:dim(4)
         for k=1:dim(2)
             for l=1:dim(1)
                 flex_mat(h,1)=flex(l,k,j,i);
-                flex_mat(h,2)=BT_bin(l,k,j,i);
-                flex_mat(h,3)=WT_bin(l,k,j,i);
-                flex_mat(h,4)=k;
-                flex_mat(h,5)=j;
-                flex_mat(h,6)=~(i-1);
-                flex_mat(h,8)=l;
-                flex_mat(h,9)=flex(l,k,j,i)-(flex(l,1,j,i));
+                flex_mat(h,2)=k;
+                flex_mat(h,3)=j;
+                flex_mat(h,4)=~(i-1);
+                flex_mat(h,6)=l;
+                flex_mat(h,7)=flex(l,k,j,i)-(flex(l,1,j,i));
                 h=h+1;
             end
         end
     end
 end
-flex_mat(:,7)=~flex_mat(:,6);
+flex_mat(:,5)=~flex_mat(:,4);
 
 dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
 ```
