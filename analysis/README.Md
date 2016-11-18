@@ -274,7 +274,10 @@ flex_mat(:,5)=~flex_mat(:,4);
 dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
 ```
 
-###Fit multilevel models of flexibility in R
+###Multilevel models of flexibility in R
+For now these are ML estimates, will eventually run fully bayesian models
+
+####Load data and libraries
 ```{.R}
 #R code 
 library(lme4)
@@ -285,9 +288,11 @@ library(reshape2)
 flexdat<-read.csv('/data/engine/abuch/NETPD/flexmat_long.csv',header=F)
 names(flexdat)<-c("flex","bin","sub","on","off","ROI","flex_debase")
 str_ind<-c(49,51,54,104,106,109);
+```
 
 
-#models
+####Fit ML models
+```{.R}
 #whole-brain (contains all ROIs varying randomly by average flexibility)
 #estimate on and off effects separately
 m1<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat)
@@ -308,7 +313,10 @@ m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off
     subset=ROI%in%str_ind & bin>1)
 m1_str_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,
     subset=ROI%in%str_ind & bin>1)
+```
 
+####Bootstrap uncertainty for varying estimates ("random" effects)
+```{.R}
 #Bootstrap ON estimates for each time Bin
 myfun<-function(.){
 coef(.)$bin$on 
@@ -360,7 +368,10 @@ myfun<-function(.){
 coef(.)$ROI$"I(on - off)"
 }
 boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+```
 
+####Save and write out results
+```{.R}
 #save workspace
 save.image(file="/data/engine/abuch/NETPD/flex_boots.RData")
 
