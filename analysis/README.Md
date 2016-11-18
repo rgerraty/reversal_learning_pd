@@ -372,8 +372,13 @@ write(roi_coeffs,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_coefs.txt",n
 ```
 
 ###Plot flexibility over time
+
+####Libraries and functions for plots
 ```{.R}
-####functions for plots
+library(ggplot2)
+library(gridExtra)
+library(reshape2)
+
 stat_sum_single <- function(fun, geom="point",color="black", ...) {
   stat_summary(fun.y=fun, colour=color, geom=geom, size = 2, ...)
 }
@@ -384,16 +389,12 @@ hi_ci<-function(.){
 lo_ci<-function(.){
   quantile(x=.,.025)
 }
-
-
-library(ggplot2)
-library(gridExtra)
-library(reshape2)
-
 load(file="/data/engine/abuch/NETPD/flex_boots.RData")
+```
 
-
-#plot mean flexibility (delete _str from next line for whole-brain)
+####Plot mean flexibility 
+```{.R}
+#(delete _str from next line for whole-brain)
 mean_re<-melt(boot_mean_str$t)
 names(mean_re)<-c(" ","LearnignBlock","Flexibility")
 ggplot(mean_re,aes(x=LearnignBlock,y=Flexibility))+
@@ -409,9 +410,10 @@ ggplot(mean_re,aes(x=LearnignBlock,y=Flexibility))+
   xlab("Learning Block")+
   ylab("Whole-Brain Flexibility")+#ylim(c(0.18,0.2))+
   scale_x_continuous(expand=c(0,0),breaks=seq(2,10,2),labels=seq(2,10,2))
+```
 
-#Plot OFF and ON flexibility 
-
+####Plot flexibility ON and OFF L-Dopa
+```{.R}
 #ON
 #(delete _str from next line for whole-brain)
 on_re<-melt(boot_on_str$t)
