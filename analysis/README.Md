@@ -274,5 +274,98 @@ flex_mat(:,5)=~flex_mat(:,4);
 dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
 ```
 
+###Fit multilevel models of flexibility in R
+```{.R}
+#R code 
+library(lme4)
+library(doBy)
+library(ggplot2)
+library(reshape2)
+
+flexdat<-read.csv('/data/engine/abuch/NETPD/flexmat_long.csv',header=F)
+names(flexdat)<-c("flex","bin","sub","on","off","ROI","flex_debase")
+str_ind<-c(49,51,54,104,106,109);
+
+
+#models
+#whole-brain (contains all ROIs varying randomly by average flexibility)
+#estimate on and off effects separately
+m1<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat)
+#estimate med difference
+m1_diff<-lmer(flex~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat)
+
+#striatum (contains striatal ROIs varying randomly by average flexibility)
+m1_str<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
+    subset=ROI%in%str_ind)
+#estimate med difference
+m1_str_diff<-lmer(flex~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,
+    subset=ROI%in%str_ind)
+
+
+#same as above (striatum), but for baseline subtracted flexibility
+m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
+    subset=ROI%in%str_ind & bin>1)
+m1_str_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,
+    subset=ROI%in%str_ind & bin>1)
+
+#Bootstrap ON estimates for each time Bin
+myfun<-function(.){
+coef(.)$bin$on 
+}
+#whole-brain
+boot_on<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum
+boot_on_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum baseline-subtracted
+boot_on_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+
+#Bootstrap OFF estimates for each time Bin
+myfun<-function(.){
+coef(.)$bin$off 
+}
+#whole-brain
+boot_off<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum
+boot_off_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum baseline-subtracted
+boot_off_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+
+#Bootstrap mean estimate for each time bin
+myfun<-function(.){
+coef(.)$bin$"(Intercept)"
+}
+#whole-brain
+boot_mean<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum
+boot_mean_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum baseline-subtracted
+boot_mean_str_debase<-bootMer(m1_str_diff_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+
+#Bootstrap medication effect estimates for each time bin
+myfun<-function(.){
+coef(.)$bin$"I(on - off)"
+}
+#whole-brain
+boot_onvoff<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum
+boot_onvoff_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+#striatum baseline-subtracted
+boot_onvoff_str_debase<-bootMer(m1_str_diff_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+
+#Bootstrap medication effect estimates for each ROI
+myfun<-function(.){
+coef(.)$ROI$"I(on - off)"
+}
+boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+
+#save workspace
+save.image(file="/data/engine/abuch/NETPD/flex_boots.RData")
+
+#write out ROI files for brain map
+roi_inds<-which((apply(boot_onvoff_debase_ROIs$t>0,2,sum)/100)>=.99)
+roi_coeffs<-coef(m1_diff_debase)$ROI[,2]
+write(roi_inds,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_inds.txt",ncolumns=1)
+write(roi_coeffs,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_coefs.txt",ncolumns=1)
+```
 
 
