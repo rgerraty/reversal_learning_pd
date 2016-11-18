@@ -211,6 +211,7 @@ end
 ```
 
 ###Compute flexibility statistics for each time bin
+####Load in data and libraries
 ```{.matlab}
 addpath ~/scripts/MATLAB/Bassett_Code
 str_ind=[49,51,54,104,106,109];
@@ -218,7 +219,9 @@ wb_ind=1:110;
 meds=~dlmread('/data/engine/abuch/NETPD/meds.txt')+1
 wins=10
 subs=801:823
-
+```
+####Compute flexibility for ON and OFF states at each time bin
+```{.matlab}
 medind=1
 s=1
 for sub=subs
@@ -249,9 +252,10 @@ for sub=subs
     medind=medind+1
     s=s+1
 end
+```
 
-%%write out
-%%longform csv for R
+####Write out in long form csv for analyzing in R
+```{.matlab}
 dim=size(flex)
 h=1
 for i=1:dim(4)
@@ -291,7 +295,7 @@ str_ind<-c(49,51,54,104,106,109);
 ```
 
 
-####Fit ML models
+####Fit ML approximations
 ```{.R}
 #whole-brain (contains all ROIs varying randomly by average flexibility)
 #estimate on and off effects separately
