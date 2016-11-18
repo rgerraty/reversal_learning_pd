@@ -185,183 +185,96 @@ for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 done
 ```
 
-###Calculate coherence matrices for each time window
-``` {.matlab}
-addpath /home/rgerraty/GitHub/rl_flexibility/
-addpath /home/rgerraty/GitHub/reversal_learning_pd/analysis/
-%read in all subject/run ROI timeseries directories 
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/{RUN*,REST*}/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois');
-c=strread(b,'%s');
+###Multiplication of temporal derivatives for time-resolved connectivity and multislice community detection
+Taken from Shine et al. 2015 (http://dx.doi.org/10.1016/j.neuroimage.2015.07.064)
 
-for i=1:size(c,1)
-	if exist(char(strcat(c(i),'/all_rois.txt')))==0
-		'no ROI file'
-	elseif exist(char(strcat(c(i),'/conn_cells_50TR_06-12.mat')))==2
-    	'already done'
-    else
-    	%calculate coherence per time window from concatenated ROI file
-    	filename=char(strcat(c(i),'/all_rois.txt'))
-    	%need to specify filename, window length in TR, sampling rate, bandpass
-    	%detect cycles as slow as 3s and as fast as ~nyqhuist 
-    	conn_cell=coherence_by_block(filename,50,1.177,.06,.12);
-    	save(char(strcat(c(i),'/conn_cells_50TR_06-12')),'conn_cell')
-    
-    end
+```{.matlab}
+addpath ~/scripts/MATLAB/  
+addpath ~/scripts/MATLAB/GenLouvain_for_Raphael/
+addpath ~/scripts/MATLAB/Bassett_Code
+addpath ~/scripts/MATLAB/2013_12_25' BCT'/
+
+base='/data/engine/abuch/NETPD/8'
+for i=1:23
+for j=1:2
+    learnfile=char(strcat(base,sprintf('%02d',i),'/sess_',num2str(j),'/all_rois_all_runs.txt'));
+    tss=dlmread(learnfile);
+    a=coupling(tss,13);
+    a_mean=mean(a,3);
+    a_z=weight_conversion(a_mean,'normalize');
+    [m n t]=size(a);
+    conn_cell=mat2cell(a,m,n,[ones(1,t)]);
+    [c,Q]=multiord_res_norm(conn_cell,1,1);
+    save(char(strcat(base,sprintf('%02d',i),'/sess_',num2str(j),'/mtd_commdet.mat')));
+end
 end
 ```
 
-### Grid search for optimizing multi-layer community detection parameters
+###Compute flexibility statistics for each time bin
 ```{.matlab}
-%need multi-slice, flexibility codes not yet on GitHub 
-addpath /home/rgerraty/GitHub/reversal_learning_pd/analysis/
-addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
-addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
+addpath ~/scripts/MATLAB/Bassett_Code
+str_ind=[49,51,54,104,106,109];
+wb_ind=1:110;
+meds=~dlmread('/data/engine/abuch/NETPD/meds.txt')+1
+wins=10
+subs=801:823
 
-%create grid of resolution and coupling parameters 
-res_pars=(.3:.1:1.3);
-coup_pars=(.3:.1:1.3);
-
-
-%read in data
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
-sublist=strread(b,'%s');
-
-l=1;
-for j=1:size(sublist,1)
-	%get sessions
-    sublist(j)
-    sess=dir(strcat(sublist{j},'/sess_*'))
-    m=1;
-    for k=1:size(sess,1)
-    	%concatenate runs within session
-        conn_cell_cat=[];
-        runs=dir(strcat(sublist{j},sess(k).name,'/RUN_*'));
-        numruns=size(runs,1);
-        for i=1:numruns 
-        	conn_cell=[];
-            connfile=strcat(sublist{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
-            if exist(connfile, 'file') == 2
-                load(connfile);
-                conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
-            end
-            count_t(i,j,k)=size(conn_cell,3);
+medind=1
+s=1
+for sub=subs
+    cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
+    load('sess_1/mtd_commdet.mat')
+    k=1;
+    for i=1:t
+        flex(:,k,s,meds(medind))=flexibility(c(:,i:floor((t)/wins)*k)');
+        k=k+1;
+        if k<(wins+1)
+            i=i+floor((t)/wins);
+            else
+            break
         end
+    end
+    load('sess_2/mtd_commdet.mat')
+    medind=medind+1
+    k=1;
+    for i=1:t
+        flex(:,k,s,meds(medind))=flexibility(c(:,i:floor((t)/wins)*k)');
+        k=k+1;
+        if k<(wins+1)
+            i=i+floor((t)/wins);
+        else
+            break
+        end
+    end
+    medind=medind+1
+    s=s+1
+end
 
-        %change NaN to zero in coherence matrices
-        for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
-
-        save(strcat(sublist{j},sess(k).name,'/','conn_cells_cat_50TR_06-12.mat'),'conn_cell_cat');
-
-        %optimize parameters over grids for q, mean and std flexibility
-        if  ~isempty(conn_cell_cat)
-    		[q(:,:,j,k),q_tmp(:,:,j,k),mean_flex(:,:,j,k),mean_flex_tmp(:,:,j,k),std_flex(:,:,j,k),std_flex_tmp(:,:,j,k),num_com(:,:,j,k),num_com_tmp(:,:,j,k)]=Q_grid(conn_cell_cat,3,res_pars,coup_pars);
-    		q_sub=q(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/q_grid')),'q_sub');
-    		q_tmp_sub=q_tmp(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/q_tmp_grid')),'q_tmp_sub');
-    		mean_flex_sub=mean_flex(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/mean_flex_grid')),'mean_flex_sub');
-    		mean_flex_tmp_sub=mean_flex_tmp(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/mean_flex_tmp_grid')),'mean_flex_tmp_sub');
-    		std_flex_sub=std_flex(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/std_flex_grid')),'std_flex_sub');
-    		std_flex_tmp_sub=std_flex_tmp(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/std_flex_tmp_grid')),'std_flex_tmp_sub');
-    		num_com_sub=num_com(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/num_com_grid')),'num_com_sub');
-    		num_com_tmp_sub=num_com_tmp(:,:,j,k);
-    		save(char(strcat(sublist(j),sess(k).name,'/num_com_tmp_grid')),'num_com_tmp_sub');
-
-    	end
+%%write out
+%%longform csv for R
+dim=size(flex)
+h=1
+for i=1:dim(4)
+    for j=1:dim(3)
+        for k=1:dim(2)
+            for l=1:dim(1)
+                flex_mat(h,1)=flex(l,k,j,i);
+                flex_mat(h,2)=BT_bin(l,k,j,i);
+                flex_mat(h,3)=WT_bin(l,k,j,i);
+                flex_mat(h,4)=k;
+                flex_mat(h,5)=j;
+                flex_mat(h,6)=~(i-1);
+                flex_mat(h,8)=l;
+                flex_mat(h,9)=flex(l,k,j,i)-(flex(l,1,j,i));
+                h=h+1;
+            end
+        end
     end
 end
-%save group averages
-savdir='/data/engine/abuch/NETPD/gridopt/';
-q=mean(mean(q_grid,4),3);
-q_tmp=mean(mean(q_tmp_grid,4),3);
-mean_flex=mean(mean(mean_flex,4),3);
-mean_flex_tmp=mean(mean(mean_flex_tmp,4),3);
-std_flex=mean(mean(std_flex,4),3);
-std_flex_tmp=mean(mean(std_flex_tmp,4),3);
-num_com=mean(mean(num_com,4),3);
-num_com_tmp=mean(mean(num_com_tmp,4),3);
+flex_mat(:,7)=~flex_mat(:,6);
 
-save(strcat(savdir,'q_grid'),'q');
-save(strcat(savdir,'q_tmp_grid'),'q_tmp');
-save(strcat(savdir,'mean_flex_grid'),'mean_flex');
-save(strcat(savdir,'mean_flex_tmp_grid'),'mean_flex_tmp');
-save(strcat(savdir,'std_flex_grid'),'std_flex');
-save(strcat(savdir,'std_flex_tmp_grid'),'std_flex_tmp');
-save(strcat(savdir,'num_com_grid'),'num_com');
-save(strcat(savdir,'num_com_tmp_grid'),'num_com_tmp');
-
+dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
 ```
 
-### Run multi-slice community detection and flexibility statistics
-
-Input coherence matrix for each block. Also need number of blocks,
-resolution and coupling parameters. In Matlab
-
-``` {.matlab}
-%need multi-slice, flexibility codes not yet on GitHub for network_diags to run 
-addpath /home/rgerraty/GitHub/rl_flexibility/
-addpath /home/rgerraty/scripts/MATLAB/GenLouvain_for_Raphael/
-addpath /home/rgerraty/scripts/MATLAB/Bassett_Code/
-
-%read in data
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
-c=strread(b,'%s');
-
-%concatenate runs for each subject
 
 
-for j=1:size(c,1)
-
-    c(j)
-    sess=dir(strcat(c{j},'/sess_*'))
-    for k=1:size(sess,1)
-    	conn_cell=[];
-    	conn_cell_cat=[];
-    	runs=dir(strcat(c{j},sess(k).name,'/RUN_*'));
-    	numruns=size(runs,1);
-    	for i=1:numruns 
-    		connfile=strcat(c{j},sess(k).name,'/',runs(i).name,'/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/conn_cells_50TR_06-12.mat');
-        	if exist(connfile, 'file') == 2
-        		load(connfile);
-        		conn_cell_cat=cat(3,conn_cell_cat,conn_cell);
-        	%else
-        		%conn_cell_cat=cat(3,conn_cell_cat,conn_cell-conn_cell);
-        	end
-    	end
-
-   		%change NaN to zero in coherence matrices
-    	for ii = 1:length(conn_cell_cat),conn_cell_cat{ii}(isnan(conn_cell_cat{ii})) = 0;end
-    	%network_diags code:
-    	%runs multi-slice community detection
-    	%gives flexibility for each run
-    	%also allegiance matrix (not using yet)
-    	%need to specify number of blocks, simulations, coupling, resolution
-    	%still working on optimizing these with previous Q_grid script
-    	if  ~isempty(conn_cell_cat)
-    		[a_mat,flex]=network_diags(conn_cell_cat,5,100,1,1.18);
-    		save(char(strcat(c(j),sess(k).name,'/a_mat_learning_50TR-0612')),'a_mat');
-    		save(char(strcat(c(j),sess(k).name,'/flex_learning_50TR-0612')),'flex');
-    	end
-    end
-end
-```
-
-### Get Flexibility Statistics for Resting State and Task 
-```{.matlab}
-clear flex_rest flex_learning
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/');
-c=strread(b,'%s');
-for i=1:length(c)
-	for j=1:2
-		load(char(strcat(c(i),'sess_',num2str(j),'/flex_rest.mat')))
-		flex_rest(:,j,i)=flex;
-		load(char(strcat(c(i),'sess_',num2str(j),'/flex_learning.mat')))
-		flex_learning(:,:,j,i)=flex;
-	end
-end
-```
