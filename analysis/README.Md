@@ -411,7 +411,6 @@ ggplot(mean_re,aes(x=LearnignBlock,y=Flexibility))+
   ylab("Whole-Brain Flexibility")+#ylim(c(0.18,0.2))+
   scale_x_continuous(expand=c(0,0),breaks=seq(2,10,2),labels=seq(2,10,2))
 ```
-
 ####Plot flexibility ON and OFF L-Dopa
 ```{.R}
 #ON
@@ -462,3 +461,52 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
 grid.arrange( g2, g1, ncol=2)
 ```
 
+####Plot baseline-subtracted flexibility ON and OFF L-Dopa
+```{.R}
+#ON
+#(delete _str from next line for whole-brain)
+on_re<-melt(boot_on_str_debase$t)
+names(on_re)<-c(" ","LearningBlock","Flexibility")
+on_re$Flexibility<-(on_re$Flexibility-
+    rep(on_re$Flexibility[on_re$LearningBlock==1],times=length(unique(on_re$LearningBlock))))
+
+
+g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
+  stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
+               position=position_dodge(0),color = NA, size=.5,
+               fill="darkturquoise",alpha=.5)  +
+  theme_classic()+
+  stat_sum_single(mean,geom="line")+
+  theme(legend.position="none",
+        axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
+  xlab("Learning Block")+
+  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+ ggtitle("On L-Dopa")+
+  scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
+
+
+#OFF
+#(delete _str from next line for whole-brain)
+off_re<-melt(boot_off_str_debase$t)
+names(off_re)<-c(" ","LearningBlock","Flexibility")
+off_re$Flexibility<-off_re$Flexibility-
+    rep(off_re$Flexibility[off_re$LearningBlock==1],times=length(unique(off_re$LearningBlock)))
+
+g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
+  stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
+               position=position_dodge(0),color = NA, size=.5,fill="red",alpha=.5)  +
+  theme_classic()+
+  stat_sum_single(mean,geom="line")+
+  theme(legend.position="none",
+        axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
+  xlab("Learning Block")+
+  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+  ggtitle("Off L-Dopa")+
+  scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
+
+grid.arrange( g2, g1, ncol=2)
+```
