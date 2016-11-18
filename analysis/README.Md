@@ -294,6 +294,7 @@ m1<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat
 #estimate med difference
 m1_diff<-lmer(flex~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat)
 
+
 #striatum (contains striatal ROIs varying randomly by average flexibility)
 m1_str<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
     subset=ROI%in%str_ind)
@@ -353,6 +354,8 @@ boot_onvoff_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100
 boot_onvoff_str_debase<-bootMer(m1_str_diff_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
 
 #Bootstrap medication effect estimates for each ROI
+#estimate med difference
+m1_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat)
 myfun<-function(.){
 coef(.)$ROI$"I(on - off)"
 }
@@ -368,4 +371,92 @@ write(roi_inds,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_inds.txt",ncol
 write(roi_coeffs,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_coefs.txt",ncolumns=1)
 ```
 
+###Plot flexibility over time
+```{.R}
+####functions for plots
+stat_sum_single <- function(fun, geom="point",color="black", ...) {
+  stat_summary(fun.y=fun, colour=color, geom=geom, size = 2, ...)
+}
+
+hi_ci<-function(.){
+  quantile(x=.,.975)
+}
+lo_ci<-function(.){
+  quantile(x=.,.025)
+}
+
+
+library(ggplot2)
+library(gridExtra)
+library(reshape2)
+
+load(file="/data/engine/abuch/NETPD/flex_boots.RData")
+
+
+#plot mean flexibility (delete _str from next line for whole-brain)
+mean_re<-melt(boot_mean_str$t)
+names(mean_re)<-c(" ","LearnignBlock","Flexibility")
+ggplot(mean_re,aes(x=LearnignBlock,y=Flexibility))+
+  stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
+               position=position_dodge(.4),color = NA, size=.5,fill="darkorchid4",alpha=.5)  +
+  theme_classic()+
+  stat_sum_single(mean,geom="line")+
+  theme(legend.position="none",
+        axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
+  xlab("Learning Block")+
+  ylab("Whole-Brain Flexibility")+#ylim(c(0.18,0.2))+
+  scale_x_continuous(expand=c(0,0),breaks=seq(2,10,2),labels=seq(2,10,2))
+
+#Plot OFF and ON flexibility 
+
+#ON
+#(delete _str from next line for whole-brain)
+on_re<-melt(boot_on_str$t)
+names(on_re)<-c(" ","LearningBlock","Flexibility")
+on_re$Flexibility<-(on_re$Flexibility-
+    rep(on_re$Flexibility[on_re$LearningBlock==1],times=length(unique(on_re$LearningBlock))))
+
+
+g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
+  stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
+               position=position_dodge(0),color = NA, size=.5,
+               fill="darkturquoise",alpha=.5)  +
+  theme_classic()+
+  stat_sum_single(mean,geom="line")+
+  theme(legend.position="none",
+        axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
+  xlab("Learning Block")+
+  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+ ggtitle("On L-Dopa")+
+  scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
+
+
+#OFF
+#(delete _str from next line for whole-brain)
+off_re<-melt(boot_off_str$t)
+names(off_re)<-c(" ","LearningBlock","Flexibility")
+off_re$Flexibility<-off_re$Flexibility-
+    rep(off_re$Flexibility[off_re$LearningBlock==1],times=length(unique(off_re$LearningBlock)))
+
+g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
+  stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
+               position=position_dodge(0),color = NA, size=.5,fill="red",alpha=.5)  +
+  theme_classic()+
+  stat_sum_single(mean,geom="line")+
+  theme(legend.position="none",
+        axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18),
+        axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
+        axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
+  xlab("Learning Block")+
+  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+  ggtitle("Off L-Dopa")+
+  scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
+
+grid.arrange( g2, g1, ncol=2)
+```
 
