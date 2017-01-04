@@ -217,10 +217,11 @@ addpath ~/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath ~/scripts/MATLAB/Bassett_Code
 addpath ~/scripts/MATLAB/2013_12_25' BCT'/
 
-base='/data/engine/abuch/NETPD/8'
-for i=1:23
-for j=1:2
-    learnfile=char(strcat(base,sprintf('%02d',i),'/sess_',num2str(j),'/all_rois_all_runs.txt'));
+[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/all_rois_all_runs.txt');
+tsslist=strread(b,'%s');
+
+for i=size(tsslist,1)
+    learnfile=char(tsslist(i));
     tss=dlmread(learnfile);
     a=coupling(tss,13);
     a_mean=mean(a,3);
@@ -228,7 +229,8 @@ for j=1:2
     [m n t]=size(a);
     conn_cell=mat2cell(a,m,n,[ones(1,t)]);
     [c,Q]=multiord_res_norm(conn_cell,1,1);
-    save(char(strcat(base,sprintf('%02d',i),'/sess_',num2str(j),'/mtd_commdet.mat')));
+    base=tsslist{1}(1:end-21)
+    save(char(strcat(base,'mtd_commdet.mat')));
 end
 end
 ```
