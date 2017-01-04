@@ -185,6 +185,29 @@ for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 done
 ```
 
+
+###Combine ROI timecourses accross runs
+```{.bash}
+for i in /data/engine/abuch/NETPD/8??
+  do
+  for j in $i/sess_?;
+    do 
+    touch $j/all_rois_all_runs.txt
+    touch $j/missing_runs.txt
+    for k in $j/RUN_*
+      do 
+      if [ -e $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/all_rois.txt ]
+        then 
+        cat $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/all_rois.txt>>$j/all_rois_all_runs.txt
+      else
+        echo no ROI data for $k
+        echo $k | cut -d_ -f3 >> $j/missing.txt
+      fi
+    done
+  done
+done
+```
+
 ###Multiplication of temporal derivatives for time-resolved connectivity and multislice community detection
 Taken from Shine et al. 2015 (http://dx.doi.org/10.1016/j.neuroimage.2015.07.064)
 
