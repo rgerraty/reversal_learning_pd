@@ -220,7 +220,8 @@ addpath ~/scripts/MATLAB/2013_12_25' BCT'/
 [a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/all_rois_all_runs.txt');
 tsslist=strread(b,'%s');
 
-for i=size(tsslist,1)
+for i=1:size(tsslist,1)
+    tsslist(i)
     learnfile=char(tsslist(i));
     tss=dlmread(learnfile);
     a=coupling(tss,13);
