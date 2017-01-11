@@ -230,7 +230,7 @@ for i=1:size(tsslist,1)
     [m n t]=size(a);
     conn_cell=mat2cell(a,m,n,[ones(1,t)]);
     [c,Q]=multiord_res_norm(conn_cell,1,1);
-    base=tsslist{1}(1:end-21)
+    base=tsslist{i}(1:end-21)
     save(char(strcat(base,'mtd_commdet.mat')));
 end
 end
