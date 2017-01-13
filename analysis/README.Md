@@ -223,15 +223,21 @@ tsslist=strread(b,'%s');
 for i=1:size(tsslist,1)
     tsslist(i)
     learnfile=char(tsslist(i));
-    tss=dlmread(learnfile);
-    a=coupling(tss,13);
-    a_mean=mean(a,3);
-    a_z=weight_conversion(a_mean,'normalize');
-    [m n t]=size(a);
-    conn_cell=mat2cell(a,m,n,[ones(1,t)]);
-    [c,Q]=multiord_res_norm(conn_cell,1,1);
     base=tsslist{i}(1:end-21)
-    save(char(strcat(base,'mtd_commdet.mat')));
+    if exist(strcat(base,'mtd_commdet.mat'),'file')==0
+      tss=dlmread(learnfile);
+      a=coupling(tss,13);
+      a_mean=mean(a,3);
+      a_z=weight_conversion(a_mean,'normalize');
+      [m n t]=size(a);
+      conn_cell=mat2cell(a,m,n,[ones(1,t)]);
+      [c,Q]=multiord_res_norm(conn_cell,1,1);
+    
+      save(char(strcat(base,'mtd_commdet.mat')));
+    else 
+      sprintf('MTD already completed for:\n%s',base)
+    end
+
 end
 end
 ```
@@ -244,7 +250,7 @@ str_ind=[49,51,54,104,106,109];
 wb_ind=1:110;
 meds=~dlmread('/data/engine/abuch/NETPD/meds.txt')+1
 wins=10
-subs=801:823
+subs=801:830
 ```
 ####Compute flexibility for ON and OFF states at each time bin
 ```{.matlab}
