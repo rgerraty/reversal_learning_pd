@@ -201,7 +201,7 @@ for i in /data/engine/abuch/NETPD/8??
         cat $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/all_rois.txt>>$j/all_rois_all_runs.txt
       else
         echo no ROI data for $k
-        echo $k | cut -d_ -f3 >> $j/missing.txt
+        echo $k | cut -d_ -f3 >> $j/missing_runs.txt
       fi
     done
   done
@@ -248,7 +248,7 @@ end
 addpath ~/scripts/MATLAB/Bassett_Code
 str_ind=[49,51,54,104,106,109];
 wb_ind=1:110;
-medsfull=dlmread('/data/engine/abuch/NETPD/medlist.txt')
+medsfull=dlmread('/data/engine/abuch/NETPD/medlist.txt');
 meds=~medsfull(:,3)+1;
 wins=10;
 subs=unique(medsfull(:,1));
