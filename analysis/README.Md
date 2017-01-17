@@ -223,7 +223,7 @@ tsslist=strread(b,'%s');
 for i=1:size(tsslist,1)
     tsslist(i)
     learnfile=char(tsslist(i));
-    base=tsslist{i}(1:end-21)
+    base=tsslist{i}(1:end-21);
     if exist(strcat(base,'mtd_commdet.mat'),'file')==0
       tss=dlmread(learnfile);
       a=coupling(tss,13);
@@ -248,9 +248,10 @@ end
 addpath ~/scripts/MATLAB/Bassett_Code
 str_ind=[49,51,54,104,106,109];
 wb_ind=1:110;
-meds=~dlmread('/data/engine/abuch/NETPD/meds.txt')+1
-wins=10
-subs=801:830
+medsfull=dlmread('/data/engine/abuch/NETPD/medlist.txt')
+meds=~medsfull(:,3)+1;
+wins=10;
+subs=unique(medsfull(:,1));
 ```
 ####Compute flexibility for ON and OFF states at each time bin
 ```{.matlab}
