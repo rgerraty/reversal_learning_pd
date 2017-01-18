@@ -260,13 +260,13 @@ subs=unique(medsfull(:,1));
 medind=1
 s=1
 for sub=subs(1):subs(end)
-    cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
-    load('sess_1/mtd_commdet.mat')
-  missing=textread('sess_1/missing_runs.txt')    
+  cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
+  load('sess_1/mtd_commdet.mat')
+  missing=textread('sess_1/missing_runs.txt');  
 
   n=1;
   for b=1:blocks
-    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b)
+    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
@@ -277,11 +277,12 @@ for sub=subs(1):subs(end)
     end
   end
 
-    load('sess_2/mtd_commdet.mat')
-    medind=medind+1
+  load('sess_2/mtd_commdet.mat')
+  missing=textread('sess_2/missing_runs.txt');  
+  medind=medind+1
   n=1;
   for b=1:blocks
-    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b)
+    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
@@ -291,8 +292,8 @@ for sub=subs(1):subs(end)
       end
     end
   end
-    medind=medind+1
-    s=s+1
+  medind=medind+1
+  s=s+1
 end
 ```
 
