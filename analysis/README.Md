@@ -248,9 +248,11 @@ end
 addpath ~/scripts/MATLAB/Bassett_Code
 str_ind=[49,51,54,104,106,109];
 wb_ind=1:110;
+blocks=5;
+block_lengths=[278 264 264 263 311]';
 medsfull=dlmread('/data/engine/abuch/NETPD/medlist.txt');
 meds=~medsfull(:,3)+1;
-wins=10;
+bins=10;
 subs=unique(medsfull(:,1));
 ```
 ####Compute flexibility for ON and OFF states at each time bin
@@ -260,28 +262,35 @@ s=1
 for sub=subs(1):subs(end)
     cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
     load('sess_1/mtd_commdet.mat')
-    k=1;
-    for i=1:t
-        flex(:,k,s,meds(medind))=flexibility(c(:,i:floor((t)/wins)*k)');
-        k=k+1;
-        if k<(wins+1)
-            i=i+floor((t)/wins);
-            else
-            break
-        end
+  missing=textread('sess_1/missing_runs.txt')    
+
+  n=1;
+  for b=1:blocks
+    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b)
+    if any(b==missing)
+      flex(:,k,s,meds(medind))=NaN;
+    else
+      for i=k(1):k(end)
+        flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
+        n=n+floor(block_lengths(b)/(bins/blocks))
+      end
     end
+  end
+
     load('sess_2/mtd_commdet.mat')
     medind=medind+1
-    k=1;
-    for i=1:t
-        flex(:,k,s,meds(medind))=flexibility(c(:,i:floor((t)/wins)*k)');
-        k=k+1;
-        if k<(wins+1)
-            i=i+floor((t)/wins);
-        else
-            break
-        end
+  n=1;
+  for b=1:blocks
+    k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b)
+    if any(b==missing)
+      flex(:,k,s,meds(medind))=NaN;
+    else
+      for i=k(1):k(end)
+        flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
+        n=n+floor(block_lengths(b)/(bins/blocks))
+      end
     end
+  end
     medind=medind+1
     s=s+1
 end
