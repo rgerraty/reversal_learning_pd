@@ -257,7 +257,7 @@ subs=unique(medsfull(:,1));
 ```{.matlab}
 medind=1
 s=1
-for sub=subs
+for sub=subs(1):subs(end)
     cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
     load('sess_1/mtd_commdet.mat')
     k=1;
