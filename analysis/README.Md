@@ -267,16 +267,17 @@ for s=1:size(subs,1)
   missing=textread('sess_1/missing_runs.txt');  
 
   n=1;
+  if exist('empty_rois')
+    for e=1:length(empty_rois)
+      c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
+    end
+    clear empty_rois
+  end
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
-      if exist('empty_rois')
-        for e=1:length(empty_rois)
-          c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
-        end
-      end
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
         n=n+floor(block_lengths(b)/(bins/blocks))
@@ -288,16 +289,17 @@ for s=1:size(subs,1)
   missing=textread('sess_2/missing_runs.txt');  
   medind=medind+1
   n=1;
+  if exist('empty_rois')
+    for e=1:length(empty_rois)
+      c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
+    end
+    clear empty_rois
+  end
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
-      if exist('empty_rois')
-        for e=1:length(empty_rois)
-          c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
-        end
-      end
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
         n=n+floor(block_lengths(b)/(bins/blocks))
