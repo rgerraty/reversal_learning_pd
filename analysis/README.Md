@@ -274,7 +274,7 @@ for s=1:size(subs,1)
     else
       if exist('empty_rois')
         for e=1:length(empty_rois)
-          c=[c(1:e-1,:);repmat(NaN,1,size(c,2));c(e:end,:)];
+          c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
         end
       end
       for i=k(1):k(end)
@@ -295,7 +295,7 @@ for s=1:size(subs,1)
     else
       if exist('empty_rois')
         for e=1:length(empty_rois)
-          c=[c(1:e-1,:);repmat(NaN,1,size(c,2));c(e:end,:)];
+          c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
         end
       end
       for i=k(1):k(end)
