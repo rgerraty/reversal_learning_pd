@@ -226,6 +226,8 @@ for i=1:size(tsslist,1)
     base=tsslist{i}(1:end-21);
     if exist(strcat(base,'mtd_commdet.mat'),'file')==0
       tss=dlmread(learnfile);
+      empty_rois=find(sum(tss==0)==size(tss,1)) 
+      tss(:,empty_rois)=[];
       a=coupling(tss,13);
       a_mean=mean(a,3);
       a_z=weight_conversion(a_mean,'normalize');
@@ -270,6 +272,11 @@ for s=1:size(subs,1)
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
+      if exist('empty_rois')
+        for e=1:length(empty_rois)
+          c=[c(1:e-1,:);repmat(NaN,1,size(c,2));c(e:end,:)];
+        end
+      end
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
         n=n+floor(block_lengths(b)/(bins/blocks))
