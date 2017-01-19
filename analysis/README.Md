@@ -293,6 +293,11 @@ for s=1:size(subs,1)
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
     else
+      if exist('empty_rois')
+        for e=1:length(empty_rois)
+          c=[c(1:e-1,:);repmat(NaN,1,size(c,2));c(e:end,:)];
+        end
+      end
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
         n=n+floor(block_lengths(b)/(bins/blocks))
