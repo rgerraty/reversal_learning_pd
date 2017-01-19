@@ -258,8 +258,8 @@ subs=unique(medsfull(:,1));
 ####Compute flexibility for ON and OFF states at each time bin
 ```{.matlab}
 medind=1
-s=1
-for sub=subs(1):subs(end)
+for s=1:size(subs,1)
+  sub=subs(s)
   cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
   load('sess_1/mtd_commdet.mat')
   missing=textread('sess_1/missing_runs.txt');  
@@ -293,7 +293,6 @@ for sub=subs(1):subs(end)
     end
   end
   medind=medind+1
-  s=s+1
 end
 ```
 
