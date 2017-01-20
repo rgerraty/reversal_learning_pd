@@ -226,8 +226,10 @@ for i=1:size(tsslist,1)
     base=tsslist{i}(1:end-21);
     if exist(strcat(base,'mtd_commdet.mat'),'file')==0
       tss=dlmread(learnfile);
-      empty_rois=find(sum(tss==0)==size(tss,1)) 
-      tss(:,empty_rois)=[];
+      if ~isempty(find(sum(tss==0)==size(tss,1)))
+        empty_rois=find(sum(tss==0)==size(tss,1)) 
+        tss(:,empty_rois)=[];
+      end
       a=coupling(tss,13);
       a_mean=mean(a,3);
       a_z=weight_conversion(a_mean,'normalize');
