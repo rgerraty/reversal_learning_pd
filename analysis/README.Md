@@ -67,6 +67,15 @@ do
 		fsl_anat -i $i/bravo.nii.gz
 	fi
 done
+
+
+#after manual inspection re-extract brains with lower
+#fractional intensity in cases with too much non-brain
+for i in {812/sess_1,812/sess_2,}
+do
+  cd /data/engoine/abuch/NETPD/$i;
+  bet T1/bravo.anat/T1_biascorr.nii.gz T1/bravo.anat/T1_biascorr_brain -R -f .3
+done
 ```
 
 ### B0 field correction for EPI scans
