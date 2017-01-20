@@ -314,6 +314,10 @@ end
 
 ####Write out in long form csv for analyzing in R
 ```{.matlab}
+%change any rois with flexibilty of 1 to NaN
+%1 results from missing data
+
+flex(sub2ind(size(flex),find(flex==1)))=NaN  
 dim=size(flex)
 h=1
 for i=1:dim(4)
@@ -375,6 +379,10 @@ m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off
     subset=ROI%in%str_ind & bin>1)
 m1_str_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,
     subset=ROI%in%str_ind & bin>1)
+
+#whole-brain baseline subtracted
+m1_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat)
+m1_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat)
 ```
 
 ####Bootstrap uncertainty for varying estimates ("random" effects)
