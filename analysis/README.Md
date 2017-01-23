@@ -427,7 +427,7 @@ boot_mean<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
 #striatum
 boot_mean_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
 #striatum baseline-subtracted
-boot_mean_str_debase<-bootMer(m1_str_diff_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_mean_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
 
 #Bootstrap medication effect estimates for each time bin
 myfun<-function(.){
@@ -438,7 +438,7 @@ boot_onvoff<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
 #striatum
 boot_onvoff_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
 #striatum baseline-subtracted
-boot_onvoff_str_debase<-bootMer(m1_str_diff_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_onvoff_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
 
 #Bootstrap medication effect estimates for each ROI
 #estimate med difference
