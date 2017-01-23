@@ -14,6 +14,6 @@ else
 	mv $dicom_dir/*nii.gz $dicom_dir/..
 	for i in $dicom_dir/../*nii.gz;
 	do
-		fslreorient2std $i;
+		fslreorient2std $i $i;
 	done
 fi
