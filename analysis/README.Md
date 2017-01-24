@@ -510,7 +510,7 @@ names(on_re)<-c(" ","LearningBlock","Flexibility")
 
 #uncomment to subtract baseline
 #on_re$Flexibility<-(on_re$Flexibility-
-    rep(on_re$Flexibility[on_re$LearningBlock==1],times=length(unique(on_re$LearningBlock))))
+    #rep(on_re$Flexibility[on_re$LearningBlock==1],times=length(unique(on_re$LearningBlock)#)))
 
 
 g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
@@ -536,7 +536,7 @@ names(off_re)<-c(" ","LearningBlock","Flexibility")
 
 #uncomment to subtract baseline
 #off_re$Flexibility<-off_re$Flexibility-
-    rep(off_re$Flexibility[off_re$LearningBlock==1],times=length(unique(off_re$LearningBlock)))
+    #rep(off_re$Flexibility[off_re$LearningBlock==1],times=length(unique(#off_re$LearningBlock)))
 
 g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
   stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
