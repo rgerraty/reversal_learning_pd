@@ -474,10 +474,10 @@ stat_sum_single <- function(fun, geom="point",color="black", ...) {
 }
 
 hi_ci<-function(.){
-  quantile(x=.,.975)
+  quantile(x=.,.84)
 }
 lo_ci<-function(.){
-  quantile(x=.,.025)
+  quantile(x=.,.16)
 }
 load(file="/data/engine/abuch/NETPD/flex_boots.RData")
 ```
