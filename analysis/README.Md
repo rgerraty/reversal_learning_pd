@@ -525,7 +525,7 @@ g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+ ggtitle("On L-Dopa")+
+  ylab("Striatum Flexibility")+ylim(c(.18,.22))+xlim(2,10)+ ggtitle("On L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 
@@ -549,7 +549,7 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+  ggtitle("Off L-Dopa")+
+  ylab("Striatum Flexibility")+ylim(c(.18,.22))+xlim(2,10)+  ggtitle("Off L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 grid.arrange( g2, g1, ncol=2)
@@ -561,9 +561,7 @@ grid.arrange( g2, g1, ncol=2)
 #(delete _str from next line for whole-brain)
 on_re<-melt(boot_on_str_debase$t)
 names(on_re)<-c(" ","LearningBlock","Flexibility")
-on_re$Flexibility<-(on_re$Flexibility-
-    rep(on_re$Flexibility[on_re$LearningBlock==1],times=length(unique(on_re$LearningBlock))))
-
+on_re$LearningBlock<-on_re$LearningBlock+1
 
 g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
   stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
@@ -577,7 +575,7 @@ g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+ ggtitle("On L-Dopa")+
+  ylab("Striatum Flexibility")+ylim(c(0,.04))+ ggtitle("On L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 
@@ -585,8 +583,7 @@ g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
 #(delete _str from next line for whole-brain)
 off_re<-melt(boot_off_str_debase$t)
 names(off_re)<-c(" ","LearningBlock","Flexibility")
-off_re$Flexibility<-off_re$Flexibility-
-    rep(off_re$Flexibility[off_re$LearningBlock==1],times=length(unique(off_re$LearningBlock)))
+off_re$LearningBlock<-off_re$LearningBlock+1
 
 g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
   stat_summary(fun.ymin=lo_ci,fun.ymax=hi_ci,geom="ribbon",
@@ -599,7 +596,7 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(0,.025))+xlim(2,10)+  ggtitle("Off L-Dopa")+
+  ylab("Striatum Flexibility")+ylim(c(0,.04))+ ggtitle("Off L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 grid.arrange( g2, g1, ncol=2)
