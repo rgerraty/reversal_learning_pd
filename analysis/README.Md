@@ -1,10 +1,10 @@
-#Analysis Code for Network Dynamics and Dopamine in Parkinson's Disease
-##Raphael Gerraty, Madeleine Sharp, Amanda Buch 2016
+# Analysis Code for Network Dynamics and Dopamine in Parkinson's Disease
+## Raphael Gerraty, Madeleine Sharp, Amanda Buch 2016
 
 Descriptions and example scripts for running network preprocessing and analysis functions contained in this repository. 
 
 ### Grab files from XNat Server
-```{.bash}
+```.bash
 
 # Xnatgrab_func.sh [user] [password] [project] [subject] [subject]
 
@@ -24,7 +24,7 @@ do
 done
 ```
 ### Set up directory structure
-```{.bash}
+```.bash
 #make sure only IDs corresponding to correct session are included in this loop
 for i in /data/engine/abuch/NETPD/unzipped_tmp/<sess_2 ids>/scans/*/resources/DICOM/files/
 do
@@ -34,7 +34,7 @@ done
 ```
 
 ### Convert dicoms to niftis and reorient
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{B0,T*}/dicoms/
 do
 	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/convert_dicoms.sh $i
@@ -42,7 +42,7 @@ done
 ```
 
 ### Generate field map for B0 correction
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/B0;  
 do 
 	bo=$(ls $i/2*nii.gz);
@@ -52,7 +52,7 @@ done
 ```
 
 ### Run anatomical preprocessing
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/T1/;
 do 
 	if [ -d $i/bravo.anat ]
@@ -69,8 +69,8 @@ do
 done
 
 
-#after manual inspection re-extract brains with lower
-#fractional intensity in cases with too much non-brain
+# after manual inspection re-extract brains with lower
+# fractional intensity in cases with too much non-brain
 for i in {812/sess_1,812/sess_2}
 do
   cd /data/engoine/abuch/NETPD/$i;
@@ -79,7 +79,7 @@ done
 ```
 
 ### B0 field correction for EPI scans
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}
 do
 
@@ -109,7 +109,7 @@ do
 done
 ```
 ### Get partially saturated first volume from every 4D epi volume as reference image
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	if [ ! -e $(dirname $i)/example_func.nii.gz ]
@@ -122,8 +122,8 @@ do
 done
 ```
 
-###Run preprocessing (need to generate template .fsf file first)
-```{.bash}
+### Run preprocessing (need to generate template .fsf file first)
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/run_preproc.sh $i \
@@ -133,7 +133,7 @@ done
 ```
 ###Generate confounds and run extended preprocessing
 For now, need a bunch of code from github.com/rgerraty/rl_flexibility for this to work
-```{.bash}
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN*}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
 do
 	subdir=$(dirname $i);
@@ -161,8 +161,8 @@ do
 done
 ```
 
-###Apply non-linear registration
-```{.bash}
+### Apply non-linear registration
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*feat
  do 
  	if [ -e $i/36par+spikes.feat/stats/res4d_std.nii.gz ];
@@ -182,8 +182,8 @@ done
 ```
 
 
-###Extract ROI Timecourses
-```{.bash}
+### Extract ROI Timecourses
+```.bash
 for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 	do 
 	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
@@ -195,8 +195,8 @@ done
 ```
 
 
-###Combine ROI timecourses accross runs
-```{.bash}
+### Combine ROI timecourses accross runs
+```.bash
 for i in /data/engine/abuch/NETPD/8??
   do
   for j in $i/sess_?;
@@ -217,10 +217,10 @@ for i in /data/engine/abuch/NETPD/8??
 done
 ```
 
-###Multiplication of temporal derivatives for time-resolved connectivity and multislice community detection
+### Multiplication of temporal derivatives for time-resolved connectivity and multislice community detection
 Taken from Shine et al. 2015 (http://dx.doi.org/10.1016/j.neuroimage.2015.07.064)
 
-```{.matlab}
+```.matlab
 addpath ~/scripts/MATLAB/  
 addpath ~/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath ~/scripts/MATLAB/Bassett_Code
@@ -255,9 +255,9 @@ end
 end
 ```
 
-###Compute flexibility statistics for each time bin
-####Load in data and libraries
-```{.matlab}
+### Compute flexibility statistics for each time bin
+#### Load in data and libraries
+```.matlab
 addpath ~/scripts/MATLAB/Bassett_Code
 str_ind=[49,51,54,104,106,109];
 wb_ind=1:110;
@@ -269,7 +269,7 @@ bins=10;
 subs=unique(medsfull(:,1));
 ```
 ####Compute flexibility for ON and OFF states at each time bin
-```{.matlab}
+```.matlab
 medind=1
 for s=1:size(subs,1)
   sub=subs(s)
@@ -321,8 +321,8 @@ for s=1:size(subs,1)
 end
 ```
 
-####Write out in long form csv for analyzing in R
-```{.matlab}
+#### Write out in long form csv for analyzing in R
+```.matlab
 %change any rois with flexibilty of 1 to NaN
 %1 results from missing data
 
@@ -349,11 +349,11 @@ flex_mat(:,5)=~flex_mat(:,4);
 dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
 ```
 
-###Multilevel models of flexibility in R
+### Multilevel models of flexibility in R
 For now these are ML estimates, will eventually run fully bayesian models
 
-####Load data and libraries
-```{.R}
+#### Load data and libraries
+```.r
 #R code 
 library(lme4)
 library(doBy)
@@ -366,8 +366,8 @@ str_ind<-c(49,51,54,104,106,109);
 ```
 
 
-####Fit ML approximations
-```{.R}
+#### Fit ML approximations
+```.r
 #whole-brain (contains all ROIs varying randomly by average flexibility)
 #estimate on and off effects separately
 m1<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat)
@@ -394,8 +394,8 @@ m1_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI
 m1_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,subset=bin>1)
 ```
 
-####Bootstrap uncertainty for varying estimates ("random" effects)
-```{.R}
+#### Bootstrap uncertainty for varying estimates ("random" effects)
+```.r
 #Bootstrap ON estimates for each time Bin
 myfun<-function(.){
 coef(.)$bin$on 
@@ -449,8 +449,8 @@ coef(.)$ROI$"I(on - off)"
 boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
 ```
 
-####Save and write out results
-```{.R}
+#### Save and write out results
+```.r
 #save workspace
 save.image(file="/data/engine/abuch/NETPD/flex_boots.RData")
 
@@ -461,10 +461,10 @@ write(roi_inds,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_inds.txt",ncol
 write(roi_coeffs,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_coefs.txt",ncolumns=1)
 ```
 
-###Plot flexibility over time
+### Plot flexibility over time
 
-####Libraries and functions for plots
-```{.R}
+#### Libraries and functions for plots
+```.r
 library(ggplot2)
 library(gridExtra)
 library(reshape2)
@@ -482,8 +482,8 @@ lo_ci<-function(.){
 load(file="/data/engine/abuch/NETPD/flex_boots.RData")
 ```
 
-####Plot mean flexibility 
-```{.R}
+#### Plot mean flexibility 
+```.r
 #(delete _str from next line for whole-brain)
 mean_re<-melt(boot_mean_str$t)
 names(mean_re)<-c(" ","LearnignBlock","Flexibility")
@@ -501,8 +501,8 @@ ggplot(mean_re,aes(x=LearnignBlock,y=Flexibility))+
   ylab("Striatum Flexibility")+#ylim(c(0.18,0.2))+
   scale_x_continuous(expand=c(0,0),breaks=seq(2,10,2),labels=seq(2,10,2))
 ```
-####Plot flexibility ON and OFF L-Dopa
-```{.R}
+#### Plot flexibility ON and OFF L-Dopa
+```.r
 #ON
 #(delete _str from next line for whole-brain)
 on_re<-melt(boot_on_str$t)
@@ -555,8 +555,8 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
 grid.arrange( g2, g1, ncol=2)
 ```
 
-####Plot baseline-subtracted flexibility ON and OFF L-Dopa
-```{.R}
+#### Plot baseline-subtracted flexibility ON and OFF L-Dopa
+```.r
 #ON
 #(delete _str from next line for whole-brain)
 on_re<-melt(boot_on_str_debase$t)
