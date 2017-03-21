@@ -601,3 +601,21 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
 
 grid.arrange( g2, g1, ncol=2)
 ```
+#### Make brain map for medication effect
+R
+```.r
+roi_names<-read.delim('~/GitHub/rl_flexibility/roi_names.txt',header=0)
+
+brain_p<-colMeans(boot_onvoff_debase_ROIs$t<0)
+med_eff_inds<-which(roi_names$V1 %in% roi_names$V1[brain_p<0.01])
+
+write.table(brain_p,
+            '~/Documents/med_eff_p.txt',
+            col.names = F,row.names = F)
+
+write.table(med_eff_inds,
+            '~/Documents/med_eff_p01_inds.txt',
+            col.names = F,row.names = F)
+
+
+```
