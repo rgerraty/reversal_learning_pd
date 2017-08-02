@@ -4,6 +4,7 @@ function [keyIsDown,RT_Response,keyCode] = KbQ_Func(device,allowKeys,endTime)
 % allowed
 % set endTime to 0 if responses are untimed 
 
+if 0 %work on below later, to allow string inputs for allowkeys
 if length(allowKeys)==1
 	if isstr(allowKeys)
 		allowKeys=KbName(allowKeys);
@@ -12,6 +13,7 @@ else
 	if iscellstr(allowKeys)
 		allowKeys=KbName(allowKeys);
 	end
+end
 end
 
 if allowKeys==0
