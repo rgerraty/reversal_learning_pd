@@ -25,17 +25,23 @@ done
 ```
 ### Set up directory structure
 ```.bash
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
 #make sure only IDs corresponding to correct session are included in this loop
-for i in /data/engine/abuch/NETPD/unzipped_tmp/<sess_2 ids>/scans/*/resources/DICOM/files/
+for i in $NETPD_dir/unzipped_tmp/<sess_2 ids>/scans/*/resources/DICOM/files/
 do
 	#indicate whether session 1 or 2 since this is not contained in dicom header
-	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/move_dicoms.sh $i /data/engine/abuch/NETPD/ 2
+	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/move_dicoms.sh $i $NETPD_dir 2
 done
 ```
 
 ### Convert dicoms to niftis and reorient
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{B0,T*}/dicoms/
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{B0,T*}/dicoms/
 do
 	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/convert_dicoms.sh $i
 done
@@ -43,7 +49,10 @@ done
 
 ### Generate field map for B0 correction
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/B0;  
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/B0;  
 do 
 	bo=$(ls $i/2*nii.gz);
 	echo $bo; 
@@ -53,7 +62,10 @@ done
 
 ### Run anatomical preprocessing
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/T1/;
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/T1/;
 do 
 	if [ -d $i/bravo.anat ]
 		then
@@ -80,7 +92,10 @@ done
 
 ### B0 field correction for EPI scans
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{REST*,RUN*}
 do
 
 	unwarp=$(ls $i/*_unwarp.nii.gz 2>/dev/null)
@@ -110,7 +125,10 @@ done
 ```
 ### Get partially saturated first volume from every 4D epi volume as reference image
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	if [ ! -e $(dirname $i)/example_func.nii.gz ]
 		then
@@ -124,17 +142,23 @@ done
 
 ### Run preprocessing (need to generate template .fsf file first)
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
 	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/run_preproc.sh $i \
 	/home/rgerraty/GitHub/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
 	$(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
 done
 ```
-###Generate confounds and run extended preprocessing
+### Generate confounds and run extended preprocessing
 For now, need a bunch of code from github.com/rgerraty/rl_flexibility for this to work
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST,RUN*}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{REST,RUN*}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
 do
 	subdir=$(dirname $i);
 	if [ -e $subdir/36par+spikes.txt ]
@@ -163,7 +187,10 @@ done
 
 ### Apply non-linear registration
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*feat
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/preproc*feat
  do 
  	if [ -e $i/36par+spikes.feat/stats/res4d_std.nii.gz ];
  		then
@@ -184,20 +211,30 @@ done
 
 ### Extract ROI Timecourses
 ```.bash
-for i in /data/engine/abuch/NETPD/*/sess_?/{REST*,RUN*}/preproc*/36*feat
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+
+ROI_dir=/home/rgerraty/Brainnetome_v1.0.1/Atlas/subregion_2mm/
+ts_dirname=brainnet_rois
+
+for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 	do 
 	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
 	echo exracting ROIs from $i
     /home/rgerraty/GitHub/rl_flexibility/extract_ROIs.sh $i/stats/res4d_std.nii.gz\
-    	/home/rgerraty/Harvard-Oxford_ROIs/\
-    	$i/H-O_rois/;
+    	$ROI_dir\ 
+    	$i/$ts_dirname/;
 done
 ```
 
 
 ### Combine ROI timecourses accross runs
 ```.bash
-for i in /data/engine/abuch/NETPD/8??
+#make sure SMB share is mounted in correct folder so that this directory exists
+NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
+ROIs=brainnet
+
+for i in $NETPD_dir/8??
   do
   for j in $i/sess_?;
     do 
@@ -205,9 +242,9 @@ for i in /data/engine/abuch/NETPD/8??
     touch $j/missing_runs.txt
     for k in $j/RUN_*
       do 
-      if [ -e $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/all_rois.txt ]
+      if [ -e $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/$ROIs\_rois/all_rois.txt ]
         then 
-        cat $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/H-O_rois/all_rois.txt>>$j/all_rois_all_runs.txt
+        cat $k/preproc_5mm_5del_100s_mc.feat/36par+spikes.feat/$ROIs\_rois/all_rois.txt>>$j/all_rois_all_runs_$ROIs.txt
       else
         echo no ROI data for $k
         echo $k | cut -d_ -f3 >> $j/missing_runs.txt
@@ -226,14 +263,14 @@ addpath ~/scripts/MATLAB/GenLouvain_for_Raphael/
 addpath ~/scripts/MATLAB/Bassett_Code
 addpath ~/scripts/MATLAB/2013_12_25' BCT'/
 
-[a,b]=system('ls -d /data/engine/abuch/NETPD/8*/sess_?/all_rois_all_runs.txt');
+[a,b]=system('ls -d /data/engine/engram_locker/rgerraty/NETPD/8*/sess_?/all_rois_all_runs_brainnet.txt');
 tsslist=strread(b,'%s');
 
 for i=1:size(tsslist,1)
     tsslist(i)
     learnfile=char(tsslist(i));
-    base=tsslist{i}(1:end-21);
-    if exist(strcat(base,'mtd_commdet.mat'),'file')==0
+    base=fileparts(tsslist{i});
+    if exist(strcat(base,'/mtd_commdet_brainnet.mat'),'file')==0
       tss=dlmread(learnfile);
       if ~isempty(find(sum(tss==0)==size(tss,1)))
         empty_rois=find(sum(tss==0)==size(tss,1)) 
@@ -246,7 +283,7 @@ for i=1:size(tsslist,1)
       conn_cell=mat2cell(a,m,n,[ones(1,t)]);
       [c,Q]=multiord_res_norm(conn_cell,1,1);
     
-      save(char(strcat(base,'mtd_commdet.mat')));
+      save(char(strcat(base,'/mtd_commdet_brainnet.mat')));
     else 
       sprintf('MTD already completed for:\n%s',base)
     end
@@ -268,7 +305,7 @@ meds=~medsfull(:,3)+1;
 bins=10;
 subs=unique(medsfull(:,1));
 ```
-####Compute flexibility for ON and OFF states at each time bin
+#### Compute flexibility for ON and OFF states at each time bin
 ```.matlab
 medind=1
 for s=1:size(subs,1)
