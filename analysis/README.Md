@@ -296,26 +296,33 @@ end
 #### Load in data and libraries
 ```.matlab
 addpath ~/scripts/MATLAB/Bassett_Code
-str_ind=[49,51,54,104,106,109];
-wb_ind=1:110;
+
+%Harvard Oxford Numbers
+%str_ind=[49,51,54,104,106,109];
+%wb_ind=1:110;
+
+%Brainnetome numbers
+str_ind=211:222;
+wb_ind=1:246;
+
 blocks=5;
 block_lengths=[278 264 264 263 311]';
-medsfull=dlmread('/data/engine/abuch/NETPD/medlist.txt');
+medsfull=dlmread('/data/engine/engram_locker/rgerraty/NETPD/medlist.txt');
 meds=~medsfull(:,3)+1;
 bins=10;
 subs=unique(medsfull(:,1));
 ```
-#### Compute flexibility for ON and OFF states at each time bin
+#### Compute flexibility and allegiance for ON and OFF states at each time bin
 ```.matlab
 medind=1
 for s=1:size(subs,1)
   sub=subs(s)
-  cd(strcat('/data/engine/abuch/NETPD/',num2str(sub)))
-  load('sess_1/mtd_commdet.mat')
+  cd(strcat('/data/engine/engram_locker/rgerraty/NETPD/',num2str(sub)))
+  load('sess_1/mtd_commdet_brainnet.mat')
   missing=textread('sess_1/missing_runs.txt');  
 
   n=1;
-  if exist('empty_rois')
+  if exist('empty_rois') & size(c,1)<246
     for e=1:length(empty_rois)
       c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
     end
@@ -333,11 +340,13 @@ for s=1:size(subs,1)
     end
   end
 
-  load('sess_2/mtd_commdet.mat')
+
+
+  load('sess_2/mtd_commdet_brainnet.mat')
   missing=textread('sess_2/missing_runs.txt');  
   medind=medind+1
   n=1;
-  if exist('empty_rois')
+  if exist('empty_rois') & size(c,1)<246
     for e=1:length(empty_rois)
       c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
     end
@@ -383,7 +392,7 @@ for i=1:dim(4)
 end
 flex_mat(:,5)=~flex_mat(:,4);
 
-dlmwrite('/data/engine/abuch/NETPD/flexmat_long.csv',flex_mat)
+dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/flexmat_long_brainnet.csv',flex_mat)
 ```
 
 ### Multilevel models of flexibility in R
@@ -397,9 +406,11 @@ library(doBy)
 library(ggplot2)
 library(reshape2)
 
-flexdat<-read.csv('/data/engine/abuch/NETPD/flexmat_long.csv',header=F)
+flexdat<-read.csv('/data/engine/engram_locker/rgerraty/NETPD/flexmat_long_brainnet.csv',header=F)
 names(flexdat)<-c("flex","bin","sub","on","off","ROI","flex_debase")
-str_ind<-c(49,51,54,104,106,109);
+#str_ind<-c(49,51,54,104,106,109);
+
+str_ind<-seq(211,222,1);
 ```
 
 
@@ -489,7 +500,7 @@ boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametri
 #### Save and write out results
 ```.r
 #save workspace
-save.image(file="/data/engine/abuch/NETPD/flex_boots.RData")
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/flex_boots_brainnet.RData")
 
 #write out ROI files for brain map
 roi_inds<-which((apply(boot_onvoff_debase_ROIs$t>0,2,sum)/100)>=.99)
