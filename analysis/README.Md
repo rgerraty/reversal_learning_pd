@@ -328,6 +328,18 @@ for s=1:size(subs,1)
     end
     clear empty_rois
   end
+
+  for t=1:size(c,2)
+    for r=1:size(c,1)
+      for rr=1:r
+        a_mat_all(r,rr,t,meds(medind))=c(r,t)==c(rr,t);
+      end
+    end
+        a_mat_all(:,:,t,meds(medind))=a_mat_all(:,:,t,meds(medind))+tril(a_mat_all(:,:,t,meds(medind)),-1)';
+
+  end
+
+
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
@@ -352,6 +364,18 @@ for s=1:size(subs,1)
     end
     clear empty_rois
   end
+
+    for t=1:size(c,2)
+    for r=1:size(c,1)
+      for rr=1:r
+        a_mat_all(r,rr,t,meds(medind))=c(r,t)==c(rr,t);
+      end
+    end
+    a_mat_all(:,:,t,meds(medind))=a_mat_all(:,:,t,meds(medind))+tril(a_mat_all(:,:,t,meds(medind)),-1)';
+  end
+
+
+
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
