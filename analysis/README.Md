@@ -321,7 +321,7 @@ for s=1:size(subs,1)
   load('sess_1/mtd_commdet_brainnet.mat')
   missing=textread('sess_1/missing_runs.txt');  
 
-  n=1;
+  
   if exist('empty_rois') & size(c,1)<246
     for e=1:length(empty_rois)
       c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
@@ -332,14 +332,14 @@ for s=1:size(subs,1)
   for t=1:size(c,2)
     for r=1:size(c,1)
       for rr=1:r
-        a_mat_all(r,rr,t,meds(medind))=c(r,t)==c(rr,t);
+        a_mat_all(r,rr,t,s,meds(medind))=c(r,t)==c(rr,t);
       end
     end
-        a_mat_all(:,:,t,meds(medind))=a_mat_all(:,:,t,meds(medind))+tril(a_mat_all(:,:,t,meds(medind)),-1)';
+        a_mat_all(:,:,t,s,meds(medind))=a_mat_all(:,:,t,s,meds(medind))+tril(a_mat_all(:,:,t,s,meds(medind)),-1)';
 
   end
 
-
+  n=1;
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
@@ -347,6 +347,7 @@ for s=1:size(subs,1)
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
+        a_mat_bin(:,:,i,s,meds(medind))=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,meds(medind)),3);
         n=n+floor(block_lengths(b)/(bins/blocks))
       end
     end
@@ -357,7 +358,7 @@ for s=1:size(subs,1)
   load('sess_2/mtd_commdet_brainnet.mat')
   missing=textread('sess_2/missing_runs.txt');  
   medind=medind+1
-  n=1;
+  
   if exist('empty_rois') & size(c,1)<246
     for e=1:length(empty_rois)
       c=[c(1:empty_rois(e)-1,:);repmat(NaN,1,size(c,2));c(empty_rois(e):end,:)];
@@ -368,14 +369,14 @@ for s=1:size(subs,1)
     for t=1:size(c,2)
     for r=1:size(c,1)
       for rr=1:r
-        a_mat_all(r,rr,t,meds(medind))=c(r,t)==c(rr,t);
+        a_mat_all(r,rr,t,s,meds(medind))=c(r,t)==c(rr,t);
       end
     end
-    a_mat_all(:,:,t,meds(medind))=a_mat_all(:,:,t,meds(medind))+tril(a_mat_all(:,:,t,meds(medind)),-1)';
+    a_mat_all(:,:,t,s,meds(medind))=a_mat_all(:,:,t,s,meds(medind))+tril(a_mat_all(:,:,t,s,meds(medind)),-1)';
   end
 
 
-
+  n=1;
   for b=1:blocks
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
@@ -383,12 +384,16 @@ for s=1:size(subs,1)
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
+        a_mat_bin(:,:,i,s,meds(medind))=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,meds(medind)),3);
+
         n=n+floor(block_lengths(b)/(bins/blocks))
       end
     end
   end
   medind=medind+1
 end
+
+save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_all','flex') 
 ```
 
 #### Write out in long form csv for analyzing in R
