@@ -353,7 +353,7 @@ for s=1:size(subs,1)
     end
   end
 
-
+save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_all','a_mat_bin','flex') 
 
   load('sess_2/mtd_commdet_brainnet.mat')
   missing=textread('sess_2/missing_runs.txt');  
@@ -391,9 +391,11 @@ for s=1:size(subs,1)
     end
   end
   medind=medind+1
+
+save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_all','a_mat_bin','flex') 
 end
 
-save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_all','flex') 
+
 ```
 
 #### Write out in long form csv for analyzing in R
@@ -422,6 +424,80 @@ end
 flex_mat(:,5)=~flex_mat(:,4);
 
 dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/flexmat_long_brainnet.csv',flex_mat)
+```
+
+### Write out long form allegiance for analysis and R
+```.matlab
+obj_inds=[ 31 34 76 79 83 86 112 116 ];
+place_inds=[22 36 148];
+str_ind=[211:222];
+
+load('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet')
+a_mat(a_mat==1)=NaN;
+
+h=1
+for s=1:size(a_mat_bin,4)
+    for j=str_inds 
+    for i=obj_inds
+      for k=1:size(a_mat_str,3)
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
+        h=h+1;
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
+        h=h+1;
+      end
+    end
+    for i=place_inds
+      for k=1:size(a_mat_str,3)
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
+        h=h+1;
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
+        h=h+1;
+      end
+    end
+  end
+end
+
+header={'allegiance','ROI','str_roi','bin','sub','med','object_roi_1'};
+header2=sprintf('%s,',header{:});header2(end)=[];
+dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long_objpl.csv',...
+  header2,'')
+
+dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long_objpl.csv',...
+  a_mat_long,'-append','delimiter',',')
+
+h=1
+for s=1:size(a_mat_bin,4)
+    for j=str_inds 
+    for i=1:size(a_mat_bin,1)
+      for k=1:size(a_mat_str,3)
+        if ismember(i,obj_inds)
+          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
+          h=h+1;
+          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
+          h=h+1;
+      elseif ismember(i,place_inds)
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
+          h=h+1;
+          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
+          h=h+1;
+        else
+          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,NaN];
+          h=h+1;
+          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,NaN];
+          h=h+1;
+        end
+      end
+    end
+  end
+end
+
+header={'allegiance','ROI','str_roi','bin','sub','med','object_roi_1'};
+header2=sprintf('%s,',header{:});header2(end)=[];
+dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long.csv',...
+  header2,'')
+
+dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long.csv',...
+  a_mat_long,'-append','delimiter',',')
 ```
 
 ### Multilevel models of flexibility in R
