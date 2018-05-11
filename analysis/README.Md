@@ -430,60 +430,61 @@ dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/flexmat_long_brainnet.csv',f
 ```.matlab
 obj_inds=[ 31 34 76 79 83 86 112 116 ];
 place_inds=[22 36 148];
-str_ind=[211:222];
+str_inds=[211:222];
+medsfull=dlmread('/data/engine/engram_locker/rgerraty/NETPD/medlist_wstim.txt');
 
 load('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet')
-a_mat(a_mat==1)=NaN;
+a_mat_bin(a_mat_bin==1)=NaN;
 
 h=1
 for s=1:size(a_mat_bin,4)
     for j=str_inds 
     for i=obj_inds
-      for k=1:size(a_mat_str,3)
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
+      for k=1:size(a_mat_bin,3)
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
         h=h+1;
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),1,abs(medsfull((s*2),4)-(t>5)*3)];
         h=h+1;
       end
     end
     for i=place_inds
-      for k=1:size(a_mat_str,3)
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
+      for k=1:size(a_mat_bin,3)
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
         h=h+1;
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),0,abs(medsfull((s*2),4)-(t>5)*3)];
         h=h+1;
       end
     end
   end
 end
 
-header={'allegiance','ROI','str_roi','bin','sub','med','object_roi_1'};
+header={'allegiance','ROI','str_roi','bin','sub','day','med','object_roi_1','optstim'};
 header2=sprintf('%s,',header{:});header2(end)=[];
-dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long_objpl.csv',...
+dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long_objpl.csv',...
   header2,'')
 
-dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long_objpl.csv',...
+dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long_objpl.csv',...
   a_mat_long,'-append','delimiter',',')
 
 h=1
 for s=1:size(a_mat_bin,4)
     for j=str_inds 
     for i=1:size(a_mat_bin,1)
-      for k=1:size(a_mat_str,3)
+      for k=1:size(a_mat_bin,3)
         if ismember(i,obj_inds)
-          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
           h=h+1;
-          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
           h=h+1;
       elseif ismember(i,place_inds)
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
+        a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
           h=h+1;
-          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
           h=h+1;
         else
-          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,NaN];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,NaN];
           h=h+1;
-          a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,NaN];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,NaN];
           h=h+1;
         end
       end
@@ -493,11 +494,11 @@ end
 
 header={'allegiance','ROI','str_roi','bin','sub','med','object_roi_1'};
 header2=sprintf('%s,',header{:});header2(end)=[];
-dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long.csv',...
+dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv',...
   header2,'')
 
-dlmwrite('/data/engine/rgerraty/learn_dyncon/alleg_long.csv',...
-  a_mat_long,'-append','delimiter',',')
+dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv',...
+  a_mat_longer,'-append','delimiter',',')
 ```
 
 ### Multilevel models of flexibility in R
@@ -771,4 +772,53 @@ write.table(med_eff_inds,
             col.names = F,row.names = F)
 
 
+```
+
+#### Multi-level models of allegiance in R
+```.r
+library(lme4)
+library(reshape2)
+
+str_ind=seq(211,222,1);
+nrois<-length(str_ind)/2
+
+alleg_dat<-read.csv("/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long_objpl.csv",header=1)
+
+#not finished anything below yet, modifying template code from last paper
+alleg_dat$bin<-factor(alleg_dat$bin)
+alleg_dat$sub<-as.factor(alleg_dat$sub)
+alleg_dat$ROI<-as.factor(alleg_dat$ROI)
+alleg_dat$str_roi<-as.factor(alleg_dat$str_roi)
+levels(alleg_dat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
+                             "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
+
+
+m1<-lmer(log(allegiance+0.000001)~ optstim*object_roi_1+(optstim*object_roi_1|sub)+(optstim*object_roi_1|str_roi),data=alleg_dat)
+
+alleg_dat_melt<-melt(tapply(alleg_dat$allegiance,
+            list(alleg_dat$sub,alleg_dat$ROI,alleg_dat$bin),
+            mean,na.rm=1))
+names(alleg_dat_melt)<-c("sub","ROI","bin","allegiance")
+
+#write out allegiance scores broken down by block and striatal seed
+alleg_dat_avgbyblock<-tapply(alleg_dat_melt$allegiance,
+                                 list(alleg_dat_melt$ROI,alleg_dat_melt$bin),
+                                      mean,na.rm=1)
+
+alleg_dat_avgbystroi<-apply(tapply(alleg_dat$allegiance,
+                                   list(alleg_dat$ROI,alleg_dat$bin,alleg_dat$str_roi),
+                                   mean,na.rm=1),c(1,3),mean)
+
+alleg_dat_avg<-melt(rowMeans(alleg_dat_avgbyblock))
+
+str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)))
+str_sub_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi)))
+
+#load task data
+learndata=read.table("~/Dropbox/reversal_learning_pd/Subjects/LearnGroup_newest.txt", header=FALSE, sep="")
+
+#add header row 
+headerlearn=c("SubNum", "Trial","Day",'Med','StimOnLeft','rewCat','Resp','RewProb','Rew','Optimal','ChosenCat','Old','RT', 'Bin')
+names(learndata)<-headerlearn
 ```
