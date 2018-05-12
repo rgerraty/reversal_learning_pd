@@ -332,10 +332,10 @@ for s=1:size(subs,1)
   for t=1:size(c,2)
     for r=1:size(c,1)
       for rr=1:r
-        a_mat_all(r,rr,t,s,meds(medind))=c(r,t)==c(rr,t);
+        a_mat_all(r,rr,t,s,1)=c(r,t)==c(rr,t);
       end
     end
-        a_mat_all(:,:,t,s,meds(medind))=a_mat_all(:,:,t,s,meds(medind))+tril(a_mat_all(:,:,t,s,meds(medind)),-1)';
+        a_mat_all(:,:,t,s,1)=a_mat_all(:,:,t,s,1)+tril(a_mat_all(:,:,t,s,1),-1)';
 
   end
 
@@ -347,7 +347,7 @@ for s=1:size(subs,1)
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
-        a_mat_bin(:,:,i,s,meds(medind))=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,meds(medind)),3);
+        a_mat_bin(:,:,i,s,1)=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,1),3);
         n=n+floor(block_lengths(b)/(bins/blocks))
       end
     end
@@ -369,10 +369,10 @@ save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_
     for t=1:size(c,2)
     for r=1:size(c,1)
       for rr=1:r
-        a_mat_all(r,rr,t,s,meds(medind))=c(r,t)==c(rr,t);
+        a_mat_all(r,rr,t,s,2)=c(r,t)==c(rr,t);
       end
     end
-    a_mat_all(:,:,t,s,meds(medind))=a_mat_all(:,:,t,s,meds(medind))+tril(a_mat_all(:,:,t,s,meds(medind)),-1)';
+    a_mat_all(:,:,t,s,2)=a_mat_all(:,:,t,s,2)+tril(a_mat_all(:,:,t,s,2),-1)';
   end
 
 
@@ -384,7 +384,7 @@ save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
-        a_mat_bin(:,:,i,s,meds(medind))=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,meds(medind)),3);
+        a_mat_bin(:,:,i,s,2)=mean(a_mat_all(:,:,n:n+floor(block_lengths(b)/(bins/blocks))-1,s,2),3);
 
         n=n+floor(block_lengths(b)/(bins/blocks))
       end
@@ -472,19 +472,19 @@ for s=1:size(a_mat_bin,4)
     for i=1:size(a_mat_bin,1)
       for k=1:size(a_mat_bin,3)
         if ismember(i,obj_inds)
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,1];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,1];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
       elseif ismember(i,place_inds)
-        a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,0];
+        a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,0];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
         else
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,s,1,NaN];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,s,2,NaN];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(t>5)*3)];
           h=h+1;
         end
       end
@@ -492,7 +492,7 @@ for s=1:size(a_mat_bin,4)
   end
 end
 
-header={'allegiance','ROI','str_roi','bin','sub','med','object_roi_1'};
+header={'allegiance','ROI','str_roi','bin','sub','day','med','object_roi_1','optstim'};
 header2=sprintf('%s,',header{:});header2(end)=[];
 dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv',...
   header2,'')
