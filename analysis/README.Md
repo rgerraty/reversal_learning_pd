@@ -441,17 +441,17 @@ for s=1:size(a_mat_bin,4)
     for j=str_inds 
     for i=obj_inds
       for k=1:size(a_mat_bin,3)
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
         h=h+1;
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),1,abs(medsfull((s*2),4)-(t>5)*3)];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),1,abs(medsfull((s*2),4)-(k>5)*3)];
         h=h+1;
       end
     end
     for i=place_inds
       for k=1:size(a_mat_bin,3)
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
         h=h+1;
-        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),0,abs(medsfull((s*2),4)-(t>5)*3)];
+        a_mat_long(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull(s*2,3),0,abs(medsfull((s*2),4)-(k>5)*3)];
         h=h+1;
       end
     end
@@ -472,19 +472,19 @@ for s=1:size(a_mat_bin,4)
     for i=1:size(a_mat_bin,1)
       for k=1:size(a_mat_bin,3)
         if ismember(i,obj_inds)
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
       elseif ismember(i,place_inds)
-        a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+        a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
         else
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(t>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
         end
       end
