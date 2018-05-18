@@ -466,11 +466,18 @@ dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_lo
 dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long_objpl.csv',...
   a_mat_long,'-append','delimiter',',')
 
+
+header={'allegiance','ROI','str_roi','bin','sub','day','med','object_roi_1','optstim'};
+a_length=size(a_mat_bin,4)*length(str_inds)*(size(a_mat_bin,1)-length(str_inds))*size(a_mat_bin,3)*2
+a_mat_longer=zeros(a_length,size(header,2));
+
+
 h=1
 for s=1:size(a_mat_bin,4)
     for j=str_inds 
     for i=1:size(a_mat_bin,1)
       for k=1:size(a_mat_bin,3)
+      if ~ismember(i,str_inds)
         if ismember(i,obj_inds)
           a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
@@ -488,11 +495,14 @@ for s=1:size(a_mat_bin,4)
           h=h+1;
         end
       end
+      end
     end
+    j
   end
+  s
 end
 
-header={'allegiance','ROI','str_roi','bin','sub','day','med','object_roi_1','optstim'};
+
 header2=sprintf('%s,',header{:});header2(end)=[];
 dlmwrite('/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv',...
   header2,'')
@@ -793,7 +803,62 @@ levels(alleg_dat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
                              "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
 
 
-m1<-lmer(log(allegiance+0.000001)~ optstim*object_roi_1+(optstim*object_roi_1|sub)+(optstim*object_roi_1|str_roi),data=alleg_dat)
+alleg_dat$med<-alleg_dat$med-.5
+alleg_dat$object_roi_1<-alleg_dat$object_roi_1-.5
+alleg_dat$optstim<-alleg_dat$optstim-1.5
+
+alleg_dat$rev_bin<-as.numeric(alleg_dat$bin)
+alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
+
+alleg_dat$allegiance[alleg_dat$allegiance==0]<-NA
+library(lme4)
+
+myfun<-function(.){
+  coef(.)$str_roi$"optstim:object_roi_1:med"
+}
+
+m1<-lmer(allegiance ~ optstim*object_roi_1*med+(optstim+object_roi_1+med||sub)+(optstim*object_roi_1*med||str_roi)+(optstim*med||ROI)+(optstim+object_roi_1+med||rev_bin),data=alleg_dat)
+
+
+
+m1_bootmer<-bootMer(m1,myfun,use.u=TRUE, type="parametric",parallel="multicore",ncpus=5,nsim=200)
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_boots.RData")
+
+
+
+library(rstanarm)
+options(mc.cores = parallel::detectCores())
+m1_stan<-stan_lmer(allegiance ~ optstim*object_roi_1*med+(optstim+object_roi_1+med|sub)+(optstim*object_roi_1*med|str_roi)+(optstim*med|ROI)+(optstim+object_roi_1+med|rev_bin),data=alleg_dat)
+
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_stan.RData")
+
+
+
+str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)))
+str_sub_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi)))
+
+for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
+  #effect of average striatal allegiance averaged across seeds
+  m_tmp<-lmer(allegiance~optstim*med+(optstim*med|sub),
+               data=alleg_dat,
+               subset=ROI==unique(alleg_dat$ROI)[i])
+  str_alleg_p[i]<-Anova(m_tmp)[3,3]
+  print(i)
+  for(j in seq(1,length(unique(alleg_dat$str_roi)),1)){
+    #if(str_ind[j]!=i){
+      #print(j)
+      m_str_tmp<-lmer(allegiance~optstim*med+(optstim*med|sub),
+                      data=alleg_dat,
+                      subset=ROI==unique(alleg_dat$ROI)[i] & str_roi==unique(alleg_dat$str_roi)[j])
+      str_sub_alleg_p[i,j]<-Anova(m_str_tmp)[3,3]
+   # }else{
+      #str_sub_alleg_p[i,j]=NA
+    #}
+  }
+}
+
+str_sub_alleg_fdrp<-matrix(p.adjust(c(str_sub_alleg_p),method='BH'),ncol=6)
 
 alleg_dat_melt<-melt(tapply(alleg_dat$allegiance,
             list(alleg_dat$sub,alleg_dat$ROI,alleg_dat$bin),
