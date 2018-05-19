@@ -921,23 +921,26 @@ myfun<-function(.){
 
 m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med|str_roi)+(optstim*med|ROI),data=alleg_dat)
 
-str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),3)
-str_alleg_b<-matrix(0,length(unique(alleg_dat$ROI)),3)
-str_sub_alleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi)),3))
+str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),4)
+str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),4)
+str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi)),4))
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of average striatal allegiance averaged across seeds
-  m_tmp<-lmer(allegiance~optstim*med+(optstim+med|sub)+(optstim*med|str_roi),
+  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med+(optstim+med|sub)+(optstim*med|str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_alleg_p[i,]<-Anova(m_tmp)[,3]
-              str_alleg_b[i,]<-fixef(m_tmp)[2:4]
-              str_sub_alleg_b[i,,1]<-coef(m_tmp)$str_roi$"optstim:med" 
-              str_sub_alleg_b[i,,2]<-coef(m_tmp)$str_roi$optstim
-              str_sub_alleg_b[i,,3]<-coef(m_tmp)$str_roi$med
+              str_logalleg_p[i,1:3]<-Anova(m_tmp)[,3]
+              str_logalleg_p[i,4]<-unique(alleg_dat$ROI)[i]
+              str_logalleg_b[i,1:3]<-fixef(m_tmp)[2:4]
+              str_logalleg_b[i,4]<-unique(alleg_dat$ROI)[i]
+              str_sub_logalleg_b[i,1:3,1]<-coef(m_tmp)$str_roi$"optstim:med" 
+              str_sub_logalleg_b[i,1:3,2]<-coef(m_tmp)$str_roi$optstim
+              str_sub_logalleg_b[i,1:3,3]<-coef(m_tmp)$str_roi$med
+              str_sub_logalleg_b[i,4,]<-unique(alleg_dat$ROI)[i]
   
 }
 
