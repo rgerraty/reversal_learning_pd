@@ -919,30 +919,35 @@ myfun<-function(.){
   coef(.)$str_roi$"optstim:object_roi_1:med"
 }
 
-m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med|str_roi)+(optstim*med|ROI),data=alleg_dat)
+m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med||str_roi)+(optstim*med|ROI),data=alleg_dat)
 
-str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),4)
-str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),4)
+str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),8)
+str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),8)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi))+1,4))
+                        length(unique(alleg_dat$str_roi))+1,7))
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of average striatal allegiance averaged across seeds
-  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med+(optstim+med|sub)+(optstim*med|str_roi),
+  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin+(optstim+med+rev_bin|sub)+(optstim*med*rev_bin||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_logalleg_p[i,1:3]<-Anova(m_tmp)[,3]
-              str_logalleg_p[i,4]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:3]<-fixef(m_tmp)[2:4]
-              str_logalleg_b[i,4]<-unique(alleg_dat$ROI)[i]
-              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$"optstim:med" 
+              str_logalleg_p[i,1:7]<-Anova(m_tmp)[,3]
+              str_logalleg_p[i,8]<-unique(alleg_dat$ROI)[i]
+              str_logalleg_b[i,1:7]<-fixef(m_tmp)[2:8]
+              str_logalleg_b[i,8]<-unique(alleg_dat$ROI)[i]
+              str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin" 
+              str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"med:rev_bin" 
+              str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"optstim:rev_bin" 
+              str_sub_logalleg_b[i,1:6,4]<-coef(m_tmp)$str_roi$"optstim:med" 
+              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$rev_bin
               str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$optstim
-              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$med
+              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$med
               str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
   
 }
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
 
 
 
