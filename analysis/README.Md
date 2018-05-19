@@ -858,6 +858,8 @@ for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   }
 }
 
+
+
 str_sub_alleg_fdrp<-matrix(p.adjust(c(str_sub_alleg_p),method='BH'),ncol=6)
 
 alleg_dat_melt<-melt(tapply(alleg_dat$allegiance,
@@ -886,4 +888,61 @@ learndata=read.table("~/Dropbox/reversal_learning_pd/Subjects/LearnGroup_newest.
 #add header row 
 headerlearn=c("SubNum", "Trial","Day",'Med','StimOnLeft','rewCat','Resp','RewProb','Rew','Optimal','ChosenCat','Old','RT', 'Bin')
 names(learndata)<-headerlearn
+
+
+
+library(lme4)
+library(reshape2)
+
+str_ind=seq(211,222,1);
+nrois<-length(str_ind)/2
+
+alleg_dat<-read.csv("/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv",header=1)
+
+#not finished anything below yet, modifying template code from last paper
+alleg_dat$bin<-factor(alleg_dat$bin)
+alleg_dat$sub<-as.factor(alleg_dat$sub)
+alleg_dat$ROI<-as.factor(alleg_dat$ROI)
+alleg_dat$str_roi<-as.factor(alleg_dat$str_roi)
+levels(alleg_dat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
+                             "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
+
+
+alleg_dat$med<-alleg_dat$med-.5
+alleg_dat$object_roi_1<-alleg_dat$object_roi_1-.5
+alleg_dat$optstim<-alleg_dat$optstim-1.5
+
+alleg_dat$rev_bin<-as.numeric(alleg_dat$bin)
+alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
+
+myfun<-function(.){
+  coef(.)$str_roi$"optstim:object_roi_1:med"
+}
+
+m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med|str_roi)+(optstim*med|ROI),data=alleg_dat)
+
+str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),3)
+str_alleg_b<-matrix(0,length(unique(alleg_dat$ROI)),3)
+str_sub_alleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi)),3))
+
+for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
+  print(i)
+  #effect of average striatal allegiance averaged across seeds
+  m_tmp<-lmer(allegiance~optstim*med+(optstim+med|sub)+(optstim*med|str_roi),
+               data=alleg_dat,
+               subset=ROI==unique(alleg_dat$ROI)[i])
+
+              str_alleg_p[i,]<-Anova(m_tmp)[,3]
+              str_alleg_b[i,]<-fixef(m_tmp)[2:4]
+              str_sub_alleg_b[i,,1]<-coef(m_tmp)$str_roi$"optstim:med" 
+              str_sub_alleg_b[i,,2]<-coef(m_tmp)$str_roi$optstim
+              str_sub_alleg_b[i,,3]<-coef(m_tmp)$str_roi$med
+  
+}
+
+
+
+
+
 ```
