@@ -924,7 +924,7 @@ m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med|str_roi)+(
 str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),4)
 str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),4)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi)),4))
+                        length(unique(alleg_dat$str_roi))+1,4))
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
@@ -937,10 +937,10 @@ for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
               str_logalleg_p[i,4]<-unique(alleg_dat$ROI)[i]
               str_logalleg_b[i,1:3]<-fixef(m_tmp)[2:4]
               str_logalleg_b[i,4]<-unique(alleg_dat$ROI)[i]
-              str_sub_logalleg_b[i,1:3,1]<-coef(m_tmp)$str_roi$"optstim:med" 
-              str_sub_logalleg_b[i,1:3,2]<-coef(m_tmp)$str_roi$optstim
-              str_sub_logalleg_b[i,1:3,3]<-coef(m_tmp)$str_roi$med
-              str_sub_logalleg_b[i,4,]<-unique(alleg_dat$ROI)[i]
+              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$"optstim:med" 
+              str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$optstim
+              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$med
+              str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
   
 }
 
