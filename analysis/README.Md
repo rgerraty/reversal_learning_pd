@@ -926,10 +926,12 @@ str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),8)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
                         length(unique(alleg_dat$str_roi))+1,7))
 
+alleg_data$rev_bin_cent<-alleg_data$rev_bin-3
+
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
-  #effect of average striatal allegiance averaged across seeds
-  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin+(optstim+med+rev_bin|sub)+(optstim*med*rev_bin||str_roi),
+  #effect of optimal stimulus, trials since onset/rev, med
+  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin_cent+(optstim+med+rev_bin_cent|sub)+(optstim*med*rev_bin_cent||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
@@ -937,11 +939,11 @@ for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
               str_logalleg_p[i,8]<-unique(alleg_dat$ROI)[i]
               str_logalleg_b[i,1:7]<-fixef(m_tmp)[2:8]
               str_logalleg_b[i,8]<-unique(alleg_dat$ROI)[i]
-              str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin" 
+              str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"med:rev_bin" 
-              str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"optstim:rev_bin" 
+              str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"optstim:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,4]<-coef(m_tmp)$str_roi$"optstim:med" 
-              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$rev_bin
+              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$rev_bin_cent
               str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$optstim
               str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$med
               str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
