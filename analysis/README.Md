@@ -481,17 +481,17 @@ for s=1:size(a_mat_bin,4)
         if ismember(i,obj_inds)
           a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),1,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
       elseif ismember(i,place_inds)
         a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),0,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
         else
           a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),NaN,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
         end
       end
@@ -893,6 +893,8 @@ names(learndata)<-headerlearn
 
 library(lme4)
 library(reshape2)
+library(car)
+library(ggplot2)
 
 str_ind=seq(211,222,1);
 nrois<-length(str_ind)/2
@@ -906,14 +908,17 @@ alleg_dat$ROI<-as.factor(alleg_dat$ROI)
 alleg_dat$str_roi<-as.factor(alleg_dat$str_roi)
 levels(alleg_dat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
                              "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
-
+alleg_dat$allegiance[alleg_dat$allegiance==0]<-NA
 
 alleg_dat$med<-alleg_dat$med-.5
 alleg_dat$object_roi_1<-alleg_dat$object_roi_1-.5
 alleg_dat$optstim<-alleg_dat$optstim-1.5
+alleg_dat$day<-alleg_dat$day-1.5
 
 alleg_dat$rev_bin<-as.numeric(alleg_dat$bin)
 alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
+
+alleg_dat$prepostrev<-(as.numeric(alleg_dat$bin)>5)-.5
 
 myfun<-function(.){
   coef(.)$str_roi$"optstim:object_roi_1:med"
@@ -926,33 +931,46 @@ str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),8)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
                         length(unique(alleg_dat$str_roi))+1,7))
 
-alleg_data$rev_bin_cent<-alleg_data$rev_bin-3
+alleg_dat$rev_bin_cent<-alleg_dat$rev_bin-3
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin_cent+(optstim+med+rev_bin_cent|sub)+(optstim*med*rev_bin_cent||str_roi),
+  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin_cent+day+prepostrev+(optstim*med*rev_bin_cent||sub)+(optstim*med*rev_bin_cent||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_logalleg_p[i,1:7]<-Anova(m_tmp)[,3]
+              str_logalleg_p[i,1:7]<-Anova(m_tmp)[c(1:3,6:9),3]
               str_logalleg_p[i,8]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:7]<-fixef(m_tmp)[2:8]
+              str_logalleg_b[i,1:7]<-fixef(m_tmp)[c(2:4,7:10)]
               str_logalleg_b[i,8]<-unique(alleg_dat$ROI)[i]
               str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"med:rev_bin" 
               str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"optstim:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,4]<-coef(m_tmp)$str_roi$"optstim:med" 
               str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$rev_bin_cent
-              str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$optstim
-              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$med
+              str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$med
+              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$optstim
               str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
   
 }
+
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
 
 
+write.table(which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05),file="p05_fdr_optstimxmedxrevbin.txt")
+write.table(p.adjust(str_logalleg_p[,7],method="fdr"),file="fdr_optstimxmedxrevbin.txt")
 
+write.table(which(p.adjust(str_logalleg_p[,4],method="fdr")<0.05),file="p05_fdr_optstimxmed.txt")
+write.table(p.adjust(str_logalleg_p[,4],method="fdr"),file="fdr_optstimxmed.txt")
+
+
+
+
+ str_sub_logalleg_b[which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05),1:6,7]
+
+library(ggplot2)
+ ggplot(data=subset(alleg_dat,ROI %in% which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05)),aes(y=allegiance,x=rev_bin,color=med))+stat_summary(fun.y=mean)+stat_smooth(method='lm')+facet_grid(med~optstim~ROI)
 
 
 ```
