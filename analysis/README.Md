@@ -66,18 +66,18 @@ done
 NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/T1/;
-do 
-	if [ -d $i/bravo.anat ]
-		then
-		echo fsl_anat already run for $i
-	else
-		if [ ! -e $i/bravo.nii.gz ]
-			then
-			bravo=$(ls $i/co*nii.gz | head -n1)
-			mv $bravo $i/bravo.nii.gz
-		fi
-		fsl_anat -i $i/bravo.nii.gz
-	fi
+    do 
+    if [ -d $i/bravo.anat ];
+        then
+        echo fsl_anat already run for $i;
+    else
+    if [ ! -e $i/bravo.nii.gz ];
+    then
+        bravo=$(ls $i/co*nii.gz | head -n1);
+        mv $bravo $i/bravo.nii.gz
+    fi
+    fsl_anat -i $i/bravo.nii.gz
+  fi
 done
 
 
@@ -97,30 +97,28 @@ NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/{REST*,RUN*}
 do
+    unwarp=$(ls $i/*_unwarp.nii.gz 2>/dev/null);
+    epi=$(ls $i/*nii.gz | grep -v unwarp)
+    if [[ -z $epi ]];
+        then 
+        echo no niftis in $i\!
+    elif [[ ! -z $unwarp ]];
+        then
+        echo B0 field already generated \in $i
+        echo delete before proceeding
+    else
+        dwell=$(echo $(dicom_hdr $i/dicoms/$(ls $i/dicoms/ | 
+          head -n 1) | 
+          grep 0043\ 102c | 
+          awk 'BEGIN{ FS="//" }; { print $3 }') /1000000 | 
+          bc -l) 
 
-	unwarp=$(ls $i/*_unwarp.nii.gz 2>/dev/null)
-	epi=$(ls $i/*nii.gz | grep -v unwarp)
+        fmap=$(ls $i/../B0/fieldmap_rads.nii.gz)
 
-	if [[ -z $epi ]]
-		then 
-		echo no niftis in $i\!
-	elif [[ ! -z $unwarp ]]
-		then
-		echo B0 field already generated \in $i
-		echo delete before proceeding
-	else
-		dwell=$(echo $(dicom_hdr $i/dicoms/$(ls $i/dicoms/ | 
-			head -n 1) | 
-			grep 0043\ 102c | 
-			awk 'BEGIN{ FS="//" }; { print $3 }') /1000000 | 
-			bc -l) 
-
-		fmap=$(ls $i/../B0/fieldmap_rads.nii.gz)
-
-		fugue -i $epi --dwell=$dwell \
-		--loadfmap=$fmap \
-		-u $(dirname $epi)/$(basename $epi .nii.gz)_unwarp.nii.gz
-	fi
+        fugue -i $epi --dwell=$dwell \
+        --loadfmap=$fmap \
+        -u $(dirname $epi)/$(basename $epi .nii.gz)_unwarp.nii.gz
+    fi
 done
 ```
 ### Get partially saturated first volume from every 4D epi volume as reference image
@@ -130,13 +128,13 @@ NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
-	if [ ! -e $(dirname $i)/example_func.nii.gz ]
-		then
-		fslroi $i $(dirname $i)/example_func.nii.gz 0 1
-		bet $(dirname $i)/example_func.nii.gz $(dirname $i)/example_func.nii.gz 
-	else
-		echo example_func.nii.gz already exists in $(dirname $i)
-	fi
+    if [ ! -e $(dirname $i)/example_func.nii.gz ];
+        then
+        fslroi $i $(dirname $i)/example_func.nii.gz 0 1;
+        bet $(dirname $i)/example_func.nii.gz $(dirname $i)/example_func.nii.gz;
+    else
+        echo example_func.nii.gz already exists in $(dirname $i)
+    fi
 done
 ```
 
@@ -147,9 +145,9 @@ NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/*unwarp.nii.gz
 do
-	bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/run_preproc.sh $i \
-	/home/rgerraty/GitHub/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
-	$(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
+    bash /home/rgerraty/GitHub/reversal_learning_pd/analysis/run_preproc.sh $i \
+    /home/rgerraty/GitHub/reversal_learning_pd/analysis/preproc_5mm_5del_100s_mc.fsf \
+    $(dirname $i)/../T1/bravo.anat/T1_biascorr_brain.nii.gz
 done
 ```
 ### Generate confounds and run extended preprocessing
@@ -160,28 +158,27 @@ NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/{REST,RUN*}/preproc_5mm_5del_100s_mc.feat/filtered_func_data.nii.gz; 
 do
-	subdir=$(dirname $i);
-	if [ -e $subdir/36par+spikes.txt ]
-		then
-		echo confound regressors already generated in $subdir
-		echo delete before continuing if you want to regenerate
-	else
-		#need fsl_extract_confoundts.sh and make_spike_regs.m from github.com/rgerraty/rl_flexibility
-		/home/rgerraty/GitHub/rl_flexibility/fsl_extract_confts.sh $subdir $subdir/../../T1/bravo.anat 3;
-	fi
-
-	if [ -e $subdir/36par+spikes.feat/stats/res4d.nii.gz ]
-		then
-		echo confound regression already run for $subdir
-		echo delete to run again
-	elif [ -d $subdir/36par+spikes.feat/ ]
-		then 
-		echo $subdir/36par+spikes.feat run but did not finish\!
-		echo something went wrong
-	else
-		#need 1st_level_conf.sh and conf_reg_design.fsf from github.com/rgerraty/rl_flexibility
-		/home/rgerraty/GitHub/rl_flexibility/1st_level_conf.sh $i $subdir/36par+spikes.txt; 
-	fi
+    subdir=$(dirname $i);
+    if [ -e $subdir/36par+spikes.txt ];
+        then
+            echo confound regressors already generated in $subdir;
+            echo delete before continuing if you want to regenerate
+        else
+            #need fsl_extract_confoundts.sh and make_spike_regs.m from github.com/rgerraty/rl_flexibility
+            /home/rgerraty/GitHub/rl_flexibility/fsl_extract_confts.sh $subdir $subdir/../../T1/bravo.anat 3;
+    fi
+    if [ -e $subdir/36par+spikes.feat/stats/res4d.nii.gz ];
+    then
+        echo confound regression already run for $subdir
+        echo delete to run again
+    elif [ -d $subdir/36par+spikes.feat/ ];
+    then 
+        echo $subdir/36par+spikes.feat run but did not finish\!
+        echo something went wrong
+    else
+        #need 1st_level_conf.sh and conf_reg_design.fsf from github.com/rgerraty/rl_flexibility
+        /home/rgerraty/GitHub/rl_flexibility/1st_level_conf.sh $i $subdir/36par+spikes.txt; 
+    fi
 done
 ```
 
@@ -481,17 +478,17 @@ for s=1:size(a_mat_bin,4)
         if ismember(i,obj_inds)
           a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),1,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),1,abs(medsfull((s*2),4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),1,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
       elseif ismember(i,place_inds)
         a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),0,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),0,abs(medsfull((s*2),4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),0,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
         else
           a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),1,medsfull((s*2)-1,3),NaN,abs(medsfull((s*2)-1,4)-(k>5)*3)];
           h=h+1;
-          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,1),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),NaN,abs(medsfull((s*2),4)-(k>5)*3)];
+          a_mat_longer(h,:)=[a_mat_bin(i,j,k,s,2),i,j,k,medsfull(s*2,1),2,medsfull((s*2),3),NaN,abs(medsfull((s*2),4)-(k>5)*3)];
           h=h+1;
         end
       end
@@ -545,6 +542,18 @@ m1_str<-lmer(flex~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=fle
 #estimate med difference
 m1_str_diff<-lmer(flex~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on-off)|ROI),data=flexdat,
     subset=ROI%in%str_ind)
+
+
+flexdat$str_roi<-flexdat$ROI %in% str_ind
+flexdat$str_roi<-flexdat$ROI*flexdat$str_roi
+flexdat$str_roi[flexdat$str_roi==0]<-NA
+flexdat$str_roi<-as.factor(flexdat$str_roi)
+levels(flexdat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
+                             "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
+
+ggplot(subset(flexdat,ROI %in% str_ind),aes(y=flex,x=bin,group=on,color=on))+stat_summary(fun.y=mean,geom='line')+facet_wrap('str_roi')
+
+m2_str<-lmer(flex~0+on+on:bin+off+off:bin+(0+on+on:bin+off+off:bin||sub)+(0+on+on:bin+off+off:bin||str_roi),data=flexdat,subset=ROI%in%str_ind)
 
 
 #same as above (striatum), but for baseline subtracted flexibility
@@ -689,7 +698,7 @@ g1<-ggplot(on_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(.18,.22))+xlim(2,10)+ ggtitle("On L-Dopa")+
+  ylab("Striatum Flexibility")+#ylim(c(.18,.22))+xlim(2,10)+ ggtitle("On L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 
@@ -713,7 +722,7 @@ g2<-ggplot(off_re,aes(x=LearningBlock,y=Flexibility))+
         axis.line.x = element_line(colour = 'black', size=0.5, linetype='solid'),
         axis.line.y = element_line(colour = 'black', size=0.5, linetype='solid'))+
   xlab("Learning Block")+
-  ylab("Striatum Flexibility")+ylim(c(.18,.22))+xlim(2,10)+  ggtitle("Off L-Dopa")+
+  ylab("Striatum Flexibility")+#ylim(c(.18,.22))+xlim(2,10)+  ggtitle("Off L-Dopa")+
   scale_x_continuous(expand=c(0,.2),breaks=seq(2,10,2),labels=seq(2,10,2))
 
 grid.arrange( g2, g1, ncol=2)
@@ -920,29 +929,33 @@ alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
 
 alleg_dat$prepostrev<-(as.numeric(alleg_dat$bin)>5)-.5
 
+alleg_dat$rev_bin_cent<-alleg_dat$rev_bin-3
+
 myfun<-function(.){
   coef(.)$str_roi$"optstim:object_roi_1:med"
 }
 
-m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med||str_roi)+(optstim*med|ROI),data=alleg_dat)
+obj_inds=c(31,34,76,79,83,86,112,116)
+place_inds=c(22,36,148)
 
 str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),8)
 str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),8)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
                         length(unique(alleg_dat$str_roi))+1,7))
 
-alleg_dat$rev_bin_cent<-alleg_dat$rev_bin-3
+
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp<-lmer(log(allegiance+0.00001)~optstim*med*rev_bin_cent+day+prepostrev+(optstim*med*rev_bin_cent||sub)+(optstim*med*rev_bin_cent||str_roi),
+  m_tmp<-lmer(log(allegiance+0.000001)~optstim*med*rev_bin_cent+#day+prepostrev+
+  (optstim*med*rev_bin_cent||sub)+(optstim*med*rev_bin_cent||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_logalleg_p[i,1:7]<-Anova(m_tmp)[c(1:3,6:9),3]
+              str_logalleg_p[i,1:7]<-Anova(m_tmp)[,3]#[c(1:3,6:9),3]
               str_logalleg_p[i,8]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:7]<-fixef(m_tmp)[c(2:4,7:10)]
+              str_logalleg_b[i,1:7]<-fixef(m_tmp)[2:8]#c(2:4,7:10)]
               str_logalleg_b[i,8]<-unique(alleg_dat$ROI)[i]
               str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"med:rev_bin" 
@@ -971,6 +984,16 @@ write.table(p.adjust(str_logalleg_p[,4],method="fdr"),file="fdr_optstimxmed.txt"
 
 library(ggplot2)
  ggplot(data=subset(alleg_dat,ROI %in% which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05)),aes(y=allegiance,x=rev_bin,color=med))+stat_summary(fun.y=mean)+stat_smooth(method='lm')+facet_grid(med~optstim~ROI)
+
+
+ m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med||str_roi)+(optstim*med|ROI),data=alleg_dat)
+
+ library(rstanarm)
+options(mc.cores = parallel::detectCores())
+
+ m1_long_bayes<-stan_lmer(I(log(allegiance+.0000000001)) ~ optstim*med+day+prepostrev+(optstim*med|sub)+(optstim*med|str_roi)+(optstim*med+day+prepostrev|ROI),data=alleg_dat,nsim=500)
+
+ save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_bayes.RData")
 
 
 ```
