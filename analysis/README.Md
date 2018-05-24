@@ -551,10 +551,20 @@ flexdat$str_roi<-as.factor(flexdat$str_roi)
 levels(flexdat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
                              "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
 
-ggplot(subset(flexdat,ROI %in% str_ind),aes(y=flex,x=bin,group=on,color=on))+stat_summary(fun.y=mean,geom='line')+facet_wrap('str_roi')
+ggplot(subset(flexdat,ROI %in% str_ind),aes(y=flex_debase,x=bin,group=on,color=on))+stat_summary(fun.y=mean,geom='line')+facet_wrap('str_roi')
 
 m2_str<-lmer(flex~0+on+on:bin+off+off:bin+(0+on+on:bin+off+off:bin||sub)+(0+on+on:bin+off+off:bin||str_roi),data=flexdat,subset=ROI%in%str_ind)
 
+
+
+m3<-lmer(flex~I(on-off)*I((bin>5)-(bin<5))+(I(on-off)+I((bin>5)-(bin<5))||sub)+(I(on-off)*I((bin>5)-(bin<5))||ROI),data=flex_str)
+
+m_bam<-bam(flex~on+s(bin)+s(bin,by=on)+s(bin,ROI,bs='fs',m=.5,k=3)+s(bin,sub,bs='fs',m=.5,k=3),data=flex_str)
+
+m_bam2<-bam(flex~on+s(bin)+s(bin,by=sub)+s(bin,by=ROI)+ti(bin,on,by=sub)+ti(bin,on,by=ROI),data=flex_str)
+
+bs='fs',m=.5)+s(bin,sub,bs='fs',m=.5),data=flex_str)
+plot_smooth(m_bam,view="bin",plot_all="on")
 
 #same as above (striatum), but for baseline subtracted flexibility
 m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
