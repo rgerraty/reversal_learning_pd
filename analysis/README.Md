@@ -559,12 +559,12 @@ m2_str<-lmer(flex~0+on+on:bin+off+off:bin+(0+on+on:bin+off+off:bin||sub)+(0+on+o
 
 m3<-lmer(flex~I(on-off)*I((bin>5)-(bin<5))+(I(on-off)+I((bin>5)-(bin<5))||sub)+(I(on-off)*I((bin>5)-(bin<5))||ROI),data=flex_str)
 
-m_bam<-bam(flex~on+s(bin)+s(bin,by=on)+s(bin,ROI,bs='fs',m=.5,k=3)+s(bin,sub,bs='fs',m=.5,k=3),data=flex_str)
 
-m_bam2<-bam(flex~on+s(bin)+s(bin,by=sub)+s(bin,by=ROI)+ti(bin,on,by=sub)+ti(bin,on,by=ROI),data=flex_str)
+m_bam<-gam(flex~ on+s(bin,by=sub)+s(bin,by=ROI)+s(bin,ROI,bs='fs',m=1)+s(bin,sub,bs='fs',m=1),data=flex_str)
 
-bs='fs',m=.5)+s(bin,sub,bs='fs',m=.5),data=flex_str)
-plot_smooth(m_bam,view="bin",plot_all="on")
+plot_smooth(m_bam,view="bin",plot_all="on",se=1,cond=list(ROI="dlPut"))
+
+plot_diff(m_bam,view="bin",comp=list(on=c(1,0)),cond=list(ROI="vmPut"),rm.ranef=1)
 
 #same as above (striatum), but for baseline subtracted flexibility
 m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
@@ -584,44 +584,44 @@ myfun<-function(.){
 coef(.)$bin$on 
 }
 #whole-brain
-boot_on<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_on<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum
-boot_on_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_on_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum baseline-subtracted
-boot_on_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_on_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 
 #Bootstrap OFF estimates for each time Bin
 myfun<-function(.){
 coef(.)$bin$off 
 }
 #whole-brain
-boot_off<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_off<-bootMer(m1,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum
-boot_off_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_off_str<-bootMer(m1_str,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum baseline-subtracted
-boot_off_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_off_str_debase<-bootMer(m1_str_debase,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 
 #Bootstrap mean estimate for each time bin
 myfun<-function(.){
 coef(.)$bin$"(Intercept)"
 }
 #whole-brain
-boot_mean<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_mean<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum
-boot_mean_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_mean_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum baseline-subtracted
-boot_mean_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_mean_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 
 #Bootstrap medication effect estimates for each time bin
 myfun<-function(.){
 coef(.)$bin$"I(on - off)"
 }
 #whole-brain
-boot_onvoff<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_onvoff<-bootMer(m1_diff,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum
-boot_onvoff_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_onvoff_str<-bootMer(m1_str_diff,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 #striatum baseline-subtracted
-boot_onvoff_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_onvoff_str_debase<-bootMer(m1_str_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
 
 #Bootstrap medication effect estimates for each ROI
 #estimate med difference
@@ -629,7 +629,9 @@ m1_diff_debase<-lmer(flex_debase~I(on-off)+(I(on-off)|sub)+(I(on-off)|bin)+(I(on
 myfun<-function(.){
 coef(.)$ROI$"I(on - off)"
 }
-boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=100)
+boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametric",nsim=1000,ncpu=5)
+
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/flex_boots_brainnet.RData")
 ```
 
 #### Save and write out results
@@ -955,17 +957,24 @@ str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
 
 
 
+str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),8)
+str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),8)
+str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi))+1,7))
+
+
+
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp<-lmer(log(allegiance+0.000001)~optstim*med*rev_bin_cent+#day+prepostrev+
+  m_tmp<-lmer(log(allegiance+0.000001)~optstim*med*rev_bin_cent+prepostrev+
   (optstim*med*rev_bin_cent||sub)+(optstim*med*rev_bin_cent||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_logalleg_p[i,1:7]<-Anova(m_tmp)[,3]#[c(1:3,6:9),3]
+              str_logalleg_p[i,1:7]<-Anova(m_tmp)[c(1:3,5:8),3]
               str_logalleg_p[i,8]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:7]<-fixef(m_tmp)[2:8]#c(2:4,7:10)]
+              str_logalleg_b[i,1:7]<-fixef(m_tmp)[c(2:4,6:9)]
               str_logalleg_b[i,8]<-unique(alleg_dat$ROI)[i]
               str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"optstim:med:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"med:rev_bin" 
@@ -977,6 +986,10 @@ for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
               str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
   
 }
+
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
+
+
 
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
 
