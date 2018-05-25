@@ -341,6 +341,7 @@ for s=1:size(subs,1)
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
+      a_mat_bin(:,:,k,s,1)=NaN;
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
@@ -378,6 +379,7 @@ save('/data/engine/engram_locker/rgerraty/NETPD/flex_alleg_brainnet.mat','a_mat_
     k=(bins/blocks*b)-((bins/blocks)-1):(bins/blocks*b);
     if any(b==missing)
       flex(:,k,s,meds(medind))=NaN;
+       a_mat_bin(:,:,k,s,2)=NaN;
     else
       for i=k(1):k(end)
         flex(:,i,s,meds(medind))=flexibility(c(:,n:n+floor(block_lengths(b)/(bins/blocks))-1)');
