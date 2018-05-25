@@ -188,18 +188,19 @@ done
 NETPD_dir=/data/engine/engram_locker/rgerraty/NETPD/
 
 for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/preproc*feat
- do 
- 	if [ -e $i/36par+spikes.feat/stats/res4d_std.nii.gz ];
- 		then
-     	echo warping already completed for $i
-     else
-     	echo warping $i;
-    	#apply warp from FNIRT to preprocessed 4D data
-    	applywarp --ref=$FSLDIR/data/standard/MNI152_T1_2mm.nii.gz\
-    	--in=$i/36par+spikes.feat/stats/res4d.nii.gz\
-    	--out=$i/36par+spikes.feat/stats/res4d_std.nii.gz\
-    	--warp=$i/../../T1/bravo.anat/T1_to_MNI_nonlin_field.nii.gz\
-    	--premat=$i/reg/example_func2highres.mat;  
+    do 
+    if [ -e $i/36par+spikes.feat/stats/res4d_std.nii.gz ];
+        then
+        echo warping already completed for $i
+    else
+        echo warping $i;
+        
+        #apply warp from FNIRT to preprocessed 4D data
+        applywarp --ref=$FSLDIR/data/standard/MNI152_T1_2mm.nii.gz\
+        --in=$i/36par+spikes.feat/stats/res4d.nii.gz\
+        --out=$i/36par+spikes.feat/stats/res4d_std.nii.gz\
+        --warp=$i/../../T1/bravo.anat/T1_to_MNI_nonlin_field.nii.gz\
+        --premat=$i/reg/example_func2highres.mat;  
     fi
 done
 
