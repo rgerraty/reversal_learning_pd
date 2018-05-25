@@ -219,9 +219,8 @@ for i in $NETPD_dir/*/sess_?/{REST*,RUN*}/preproc*/36*feat
 	do 
 	#extract timeseries (mean or 1st eigenvector, see function) data from each ROI in ~/Harvard-Oxford_ROIs/ 
 	echo exracting ROIs from $i
-    /home/rgerraty/GitHub/rl_flexibility/extract_ROIs.sh $i/stats/res4d_std.nii.gz\
-    	$ROI_dir\ 
-    	$i/$ts_dirname/;
+   bash  /home/rgerraty/GitHub/reversal_learning_pd/analysis/extract_ROIs.sh $i/stats/res4d_std.nii.gz\
+    	$ROI_dir $i/$ts_dirname/;
 done
 ```
 
@@ -954,27 +953,29 @@ obj_inds=c(31,34,76,79,83,86,112,116)
 place_inds=c(22,36,148)
 
 
-str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),9)
-str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),9)
+str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),11)
+str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),11)
 str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi))+1,8))
+                        length(unique(alleg_dat$str_roi))+1,10))
 
 
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp<-lmer(log(allegiance+0.000001)~prepostrev*med*rev_bin_cent+optstim+
+  m_tmp<-lmer(log(allegiance+0.000001)~prepostrev*med*rev_bin_cent+optstim+optstim:med+optstim:med:rev_bin_cent+
   (prepostrev+med+rev_bin_cent||sub)+(prepostrev*med*rev_bin_cent||str_roi),
                data=alleg_dat,
                subset=ROI==unique(alleg_dat$ROI)[i])
 
-              str_logalleg_p[i,1:8]<-Anova(m_tmp)[,3]
-              str_logalleg_p[i,9]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:8]<-fixef(m_tmp)[c(2:9)]
-              str_logalleg_b[i,9]<-unique(alleg_dat$ROI)[i]
-              str_sub_logalleg_b[i,1:6,8]<-coef(m_tmp)$str_roi$"prepostrev:med:rev_bin_cent" 
-              str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"med:rev_bin" 
+              str_logalleg_p[i,1:10]<-Anova(m_tmp)[,3]
+              str_logalleg_p[i,11]<-unique(alleg_dat$ROI)[i]
+              str_logalleg_b[i,1:10]<-fixef(m_tmp)[c(2:11)]
+              str_logalleg_b[i,11]<-unique(alleg_dat$ROI)[i]
+              str_sub_logalleg_b[i,1:6,10]<-coef(m_tmp)$str_roi$"med:rev_bin_cent:optstim" 
+              str_sub_logalleg_b[i,1:6,9]<-coef(m_tmp)$str_roi$"prepostrev:med:rev_bin_cent" 
+              str_sub_logalleg_b[i,1:6,8]<-coef(m_tmp)$str_roi$"med:optstim" 
+              str_sub_logalleg_b[i,1:6,7]<-coef(m_tmp)$str_roi$"med:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"prepostrev:rev_bin_cent" 
               str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"prepostrev:med"
               str_sub_logalleg_b[i,1:6,4]<-coef(m_tmp)$str_roi$optstim
