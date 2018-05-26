@@ -989,15 +989,55 @@ for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
 
 
+write.table(which(p.adjust(str_logalleg_p[,8],method="fdr")<0.05),file="p05_fdr_optstimxmed.txt")
+write.table(p.adjust(str_logalleg_p[,8],method="fdr"),file="fdr_optstimxmed.csv")
+
+write.table(which(p.adjust(str_logalleg_p[,5],method="fdr")<0.05),file="p05_fdr_prepostxmed.txt")
+write.table(p.adjust(str_logalleg_p[,5],method="fdr"),file="fdr_prepostxmed.csv")
+
+
+str_logalleg_b_optstim_on<-matrix(0,length(unique(alleg_dat$ROI)),11)
+str_logalleg_b_optstim_off<-matrix(0,length(unique(alleg_dat$ROI)),11)
+
+str_logalleg_b_prepost_on<-matrix(0,length(unique(alleg_dat$ROI)),11)
+str_logalleg_b_prepost_off<-matrix(0,length(unique(alleg_dat$ROI)),11)
+str_sub_logalleg_b_on<-array(0,c(length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi))+1,2))
+str_sub_logalleg_b_off<-array(0,c(length(unique(alleg_dat$ROI)),
+                        length(unique(alleg_dat$str_roi))+1,2))
+
+
+for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
+  print(i)
+  #effect of optimal stimulus, trials since onset/rev, med
+  m_tmp_on<-lmer(log(allegiance+0.000001)~prepostrev+optstim+
+  (prepostrev||sub)+(prepostrev+optstim||str_roi),
+               data=alleg_dat,
+               subset=ROI==unique(alleg_dat$ROI)[i] & med==.5)
+
+               m_tmp_off<-lmer(log(allegiance+0.000001)~prepostrev+optstim+
+               (prepostrev||sub)+(prepostrev+optstim||str_roi),
+                            data=alleg_dat,
+                            subset=ROI==unique(alleg_dat$ROI)[i] & med==-.5)
+
+              str_logalleg_b_optstim_on[i]<-fixef(m_tmp_on)[3]
+              str_logalleg_b_prepost_on[i]<-fixef(m_tmp_on)[2]
+
+              str_logalleg_b_optstim_off[i]<-fixef(m_tmp_off)[3]
+              str_logalleg_b_prepost_off[i]<-fixef(m_tmp_off)[2]
+
+              str_sub_logalleg_b_on[i,1:6,2]<-coef(m_tmp_on)$str_roi$optstim
+              str_sub_logalleg_b_on[i,1:6,1]<-coef(m_tmp_on)$str_roi$prepostrev
+              str_sub_logalleg_b_on[i,7,]<-unique(alleg_dat$ROI)[i]
+
+              str_sub_logalleg_b_off[i,1:6,2]<-coef(m_tmp_off)$str_roi$optstim
+              str_sub_logalleg_b_off[i,1:6,1]<-coef(m_tmp_off)$str_roi$prepostrev
+              str_sub_logalleg_b_on[i,7,]<-unique(alleg_dat$ROI)[i]
+  
+}
+
 
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
-
-
-write.table(which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05),file="p05_fdr_optstimxmedxrevbin.txt")
-write.table(p.adjust(str_logalleg_p[,7],method="fdr"),file="fdr_optstimxmedxrevbin.txt")
-
-write.table(which(p.adjust(str_logalleg_p[,4],method="fdr")<0.05),file="p05_fdr_optstimxmed.txt")
-write.table(p.adjust(str_logalleg_p[,4],method="fdr"),file="fdr_optstimxmed.txt")
 
 
 
