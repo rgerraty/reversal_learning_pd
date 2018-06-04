@@ -559,18 +559,6 @@ levels(flexdat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
 
 ggplot(subset(flexdat,ROI %in% str_ind),aes(y=flex_debase,x=bin,group=on,color=on))+stat_summary(fun.y=mean,geom='line')+facet_wrap('str_roi')
 
-m2_str<-lmer(flex~0+on+on:bin+off+off:bin+(0+on+on:bin+off+off:bin||sub)+(0+on+on:bin+off+off:bin||str_roi),data=flexdat,subset=ROI%in%str_ind)
-
-
-
-m3<-lmer(flex~I(on-off)*I((bin>5)-(bin<5))+(I(on-off)+I((bin>5)-(bin<5))||sub)+(I(on-off)*I((bin>5)-(bin<5))||ROI),data=flex_str)
-
-
-m_bam<-gam(flex~ on+s(bin,by=sub)+s(bin,by=ROI)+s(bin,ROI,bs='fs',m=1)+s(bin,sub,bs='fs',m=1),data=flex_str)
-
-plot_smooth(m_bam,view="bin",plot_all="on",se=1,cond=list(ROI="dlPut"))
-
-plot_diff(m_bam,view="bin",comp=list(on=c(1,0)),cond=list(ROI="vmPut"),rm.ranef=1)
 
 #same as above (striatum), but for baseline subtracted flexibility
 m1_str_debase<-lmer(flex_debase~0+on+off+(0+on+off|sub)+(0+on+off|bin)+(0+on+off|ROI),data=flexdat,
@@ -640,16 +628,11 @@ boot_onvoff_debase_ROIs<-bootMer(m1_diff_debase,myfun,use.u=TRUE,type="parametri
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/flex_boots_brainnet.RData")
 ```
 
-#### Save and write out results
+#### Save results
 ```.r
 #save workspace
 save.image(file="/data/engine/engram_locker/rgerraty/NETPD/flex_boots_brainnet.RData")
 
-#write out ROI files for brain map
-roi_inds<-which((apply(boot_onvoff_debase_ROIs$t>0,2,sum)/100)>=.99)
-roi_coeffs<-coef(m1_diff_debase)$ROI[,2]
-write(roi_inds,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_inds.txt",ncolumns=1)
-write(roi_coeffs,"/data/engine/abuch/NETPD/whole_brain/flex_med_roi_coefs.txt",ncolumns=1)
 ```
 
 ### Plot flexibility over time
@@ -798,15 +781,17 @@ R
 roi_names<-read.delim('~/GitHub/rl_flexibility/roi_names.txt',header=0)
 
 brain_p<-colMeans(boot_onvoff_debase_ROIs$t<0)
-med_eff_inds<-which(roi_names$V1 %in% roi_names$V1[brain_p<0.01])
+med_eff_inds<-which(brain_p<0.01)
 
 write.table(brain_p,
-            '~/Documents/med_eff_p.txt',
+            '/data/engram/engram_locker/rgerraty/NETPD/med_eff_p.txt',
             col.names = F,row.names = F)
 
 write.table(med_eff_inds,
-            '~/Documents/med_eff_p01_inds.txt',
+            '/data/engram/engram_locker/rgerraty/NETPD/med_eff_p01_inds.txt',
             col.names = F,row.names = F)
+
+
 
 
 ```
@@ -839,350 +824,92 @@ alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
 
 alleg_dat$allegiance[alleg_dat$allegiance==0]<-NA
 library(lme4)
-
-myfun<-function(.){
-  coef(.)$str_roi$"optstim:object_roi_1:med"
-}
-
-m1<-lmer(allegiance ~ optstim*object_roi_1*med+(optstim+object_roi_1+med||sub)+(optstim*object_roi_1*med||str_roi)+(optstim*med||ROI)+(optstim+object_roi_1+med||rev_bin),data=alleg_dat)
-
-
-
-m1_bootmer<-bootMer(m1,myfun,use.u=TRUE, type="parametric",parallel="multicore",ncpus=5,nsim=200)
-save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_boots.RData")
-
-
-
-library(rstanarm)
-options(mc.cores = parallel::detectCores())
-m1_stan<-stan_lmer(allegiance ~ optstim*object_roi_1*med+(optstim+object_roi_1+med|sub)+(optstim*object_roi_1*med|str_roi)+(optstim*med|ROI)+(optstim+object_roi_1+med|rev_bin),data=alleg_dat)
-
-save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_stan.RData")
-
-
-
-str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)))
-str_sub_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi)))
-
-for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
-  #effect of average striatal allegiance averaged across seeds
-  m_tmp<-lmer(allegiance~optstim*med+(optstim*med|sub),
-               data=alleg_dat,
-               subset=ROI==unique(alleg_dat$ROI)[i])
-  str_alleg_p[i]<-Anova(m_tmp)[3,3]
-  print(i)
-  for(j in seq(1,length(unique(alleg_dat$str_roi)),1)){
-    #if(str_ind[j]!=i){
-      #print(j)
-      m_str_tmp<-lmer(allegiance~optstim*med+(optstim*med|sub),
-                      data=alleg_dat,
-                      subset=ROI==unique(alleg_dat$ROI)[i] & str_roi==unique(alleg_dat$str_roi)[j])
-      str_sub_alleg_p[i,j]<-Anova(m_str_tmp)[3,3]
-   # }else{
-      #str_sub_alleg_p[i,j]=NA
-    #}
-  }
-}
-
-
-
-str_sub_alleg_fdrp<-matrix(p.adjust(c(str_sub_alleg_p),method='BH'),ncol=6)
-
-alleg_dat_melt<-melt(tapply(alleg_dat$allegiance,
-            list(alleg_dat$sub,alleg_dat$ROI,alleg_dat$bin),
-            mean,na.rm=1))
-names(alleg_dat_melt)<-c("sub","ROI","bin","allegiance")
-
-#write out allegiance scores broken down by block and striatal seed
-alleg_dat_avgbyblock<-tapply(alleg_dat_melt$allegiance,
-                                 list(alleg_dat_melt$ROI,alleg_dat_melt$bin),
-                                      mean,na.rm=1)
-
-alleg_dat_avgbystroi<-apply(tapply(alleg_dat$allegiance,
-                                   list(alleg_dat$ROI,alleg_dat$bin,alleg_dat$str_roi),
-                                   mean,na.rm=1),c(1,3),mean)
-
-alleg_dat_avg<-melt(rowMeans(alleg_dat_avgbyblock))
-
-str_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)))
-str_sub_alleg_p<-matrix(0,length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi)))
-
-#load task data
-learndata=read.table("~/Dropbox/reversal_learning_pd/Subjects/LearnGroup_newest.txt", header=FALSE, sep="")
-
-#add header row 
-headerlearn=c("SubNum", "Trial","Day",'Med','StimOnLeft','rewCat','Resp','RewProb','Rew','Optimal','ChosenCat','Old','RT', 'Bin')
-names(learndata)<-headerlearn
-
-
-
-library(lme4)
-library(reshape2)
 library(car)
-library(ggplot2)
 
-str_ind=seq(211,222,1);
-nrois<-length(str_ind)/2
+alleg_dat$run<-as.factor(ceiling(as.numeric(alleg_dat$bin)/2))
 
-alleg_dat<-read.csv("/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_long.csv",header=1)
 
-#not finished anything below yet, modifying template code from last paper
-alleg_dat$bin<-factor(alleg_dat$bin)
-alleg_dat$sub<-as.factor(alleg_dat$sub)
-alleg_dat$ROI<-as.factor(alleg_dat$ROI)
-alleg_dat$str_roi<-as.factor(alleg_dat$str_roi)
-levels(alleg_dat$str_roi)<-c("vCaud","GP","Accumbens","vmPut","dCaud","dlPut",
-                             "vCaud","GP","Accumbens","vmPut","dCaud","dlPut")
+str_logalleg_med_p<-matrix(0,234)
+str_logalleg_med_b<-matrix(0,234)
+str_logalleg_med_t<-matrix(0,234)
 
-alleg_dat$allegiance[alleg_dat$allegiance==0]<-NA
+for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
+  print(i)
 
-alleg_dat$med<-alleg_dat$med-.5
-alleg_dat$object_roi_1<-alleg_dat$object_roi_1-.5
-alleg_dat$optstim<-alleg_dat$optstim-1.5
-alleg_dat$day<-alleg_dat$day-1.5
+  #effect of optimal stimulus, trials since onset/rev, med
+  m_tmp<-lmer(log(allegiance+0.000001)~med+
+  (med||sub),#+(med||str_roi_bl),
+               data=alleg_dat,
+               subset=ROI==unique(alleg_dat$ROI)[i] &
+               str_roi_bl!='GP')
 
-alleg_dat$rev_bin<-as.numeric(alleg_dat$bin)
-alleg_dat$rev_bin[alleg_dat$rev_bin>5]<-alleg_dat$rev_bin[alleg_dat$rev_bin>5]-5
+  str_logalleg_med_p[i]<-Anova(m_tmp)[1,3]
+  str_logalleg_med_b[i]<-summary(m_tmp)$coefficients[2,1]
+  str_logalleg_med_t[i]<-summary(m_tmp)$coefficients[2,3]
 
-alleg_dat$prepostrev<-(as.numeric(alleg_dat$bin)>5)-.5
-
-alleg_dat$rev_bin_cent<-alleg_dat$rev_bin-3
-
-myfun<-function(.){
-  coef(.)$str_roi$"optstim:object_roi_1:med"
 }
 
-obj_inds=c(31,34,76,79,83,86,112,116)
-place_inds=c(22,36,148)
+str_logalleg_run_p<-matrix(0,234)
+str_logalleg_run_f<-matrix(0,234)
+
+for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
+  print(i)
+
+  #effect of optimal stimulus, trials since onset/rev, med
+  m_tmp<-lmer(log(allegiance+0.000001)~run+
+  (run||sub),#+(med||str_roi_bl),
+               data=alleg_dat,
+               subset=ROI==unique(alleg_dat$ROI)[i] &
+               str_roi_bl!='GP')
+
+  str_logalleg_run_p[i]<-Anova(m_tmp)[1,3]
+  str_logalleg_run_f[i]<-anova(m_tmp)[1,4]
+
+}
 
 
-str_logalleg_p<-matrix(0,length(unique(alleg_dat$ROI)),4)
-str_logalleg_b<-matrix(0,length(unique(alleg_dat$ROI)),4)
-str_sub_logalleg_b<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi))+1,3))
 
-
+str_logalleg_runxmed_p<-matrix(0,234)
+str_logalleg_runxmed_f<-matrix(0,234)
 
 for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
   print(i)
   #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp<-lmer(log(allegiance+0.000001)~med*optstim+
-  (med+optstim||sub)+(med*optstim||str_roi),
+  m_tmp<-lmer(log(allegiance+0.000001)~run*med+
+  (run*med||sub),#+(med||str_roi_bl),
                data=alleg_dat,
-               subset=ROI==unique(alleg_dat$ROI)[i])
+               subset=ROI==unique(alleg_dat$ROI)[i] &
+               str_roi_bl!='GP')
 
-              str_logalleg_p[i,1:3]<-Anova(m_tmp)[1:3,3]
-              str_logalleg_p[i,4]<-unique(alleg_dat$ROI)[i]
-              str_logalleg_b[i,1:3]<-fixef(m_tmp)[c(2:4)]
-              str_logalleg_b[i,4]<-unique(alleg_dat$ROI)[i]
-              #str_sub_logalleg_b[i,1:6,10]<-coef(m_tmp)$str_roi$"med:rev_bin_cent:optstim" 
-              #str_sub_logalleg_b[i,1:6,9]<-coef(m_tmp)$str_roi$"prepostrev:med:rev_bin_cent" 
-              str_sub_logalleg_b[i,1:6,3]<-coef(m_tmp)$str_roi$"med:optstim" 
-              #str_sub_logalleg_b[i,1:6,4]<-coef(m_tmp)$str_roi$"med:rev_bin_cent" 
-              #str_sub_logalleg_b[i,1:6,6]<-coef(m_tmp)$str_roi$"prepostrev:rev_bin_cent" 
-              #str_sub_logalleg_b[i,1:6,5]<-coef(m_tmp)$str_roi$"prepostrev:med"
-              str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$optstim
-              #str_sub_logalleg_b[i,1:6,2]<-coef(m_tmp)$str_roi$rev_bin_cent
-              str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$med
-              #str_sub_logalleg_b[i,1:6,1]<-coef(m_tmp)$str_roi$prepostrev
-              str_sub_logalleg_b[i,7,]<-unique(alleg_dat$ROI)[i]
-  
-}
+  str_logalleg_runxmed_p[i]<-Anova(m_tmp)[1,3]
+  str_logalleg_runxmed_f[i]<-anova(m_tmp)[1,4]
 
-save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats2.RData")
-
-
-write.table(which(p.adjust(str_logalleg_p[,8],method="fdr")<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdr_optstimxmed_inds.txt",col.names=F,row.names=F)
-write.table(p.adjust(str_logalleg_p[,8],method="fdr"),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdr_optstimxmed.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdr_revbinxmed_inds.txt",col.names=F,row.names=F)
-write.table(p.adjust(str_logalleg_p[,7],method="fdr"),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdr_revbinxmed.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,5],method="fdr")<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdr_prepostxmed_inds.txt",col.names=F,row.names=F)
-write.table(p.adjust(str_logalleg_p[,5],method="fdr"),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdr_prepostxmed.txt",col.names=F,row.names=F)
-
-
-str_logalleg_b_optstim_on<-matrix(0,length(unique(alleg_dat$ROI)),2)
-str_logalleg_b_optstim_off<-matrix(0,length(unique(alleg_dat$ROI)),2)
-
-str_logalleg_b_prepost_on<-matrix(0,length(unique(alleg_dat$ROI)),2)
-str_logalleg_b_prepost_off<-matrix(0,length(unique(alleg_dat$ROI)),2)
-
-str_logalleg_b_revbin_on<-matrix(0,length(unique(alleg_dat$ROI)),1)
-str_logalleg_b_revbin_off<-matrix(0,length(unique(alleg_dat$ROI)),1)
-
-str_logalleg_p_optstim_on<-matrix(0,length(unique(alleg_dat$ROI)),2)
-str_logalleg_p_optstim_off<-matrix(0,length(unique(alleg_dat$ROI)),2)
-
-str_logalleg_p_prepost_on<-matrix(0,length(unique(alleg_dat$ROI)),2)
-str_logalleg_p_prepost_off<-matrix(0,length(unique(alleg_dat$ROI)),2)
-
-str_logalleg_p_revbin_on<-matrix(0,length(unique(alleg_dat$ROI)),1)
-str_logalleg_p_revbin_off<-matrix(0,length(unique(alleg_dat$ROI)),1)
-
-
-str_sub_logalleg_b_on<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi))+1,5))
-str_sub_logalleg_b_off<-array(0,c(length(unique(alleg_dat$ROI)),
-                        length(unique(alleg_dat$str_roi))+1,5))
-
-
-for (i in seq(1,length(unique(alleg_dat$ROI)),1)){
-  print(i)
-  #effect of optimal stimulus, trials since onset/rev, med
-  m_tmp_on<-lmer(log(allegiance+0.000001)~prepostrev+rev_bin_cent+optstim+
-  (optstim+rev_bin_cent||sub)+(prepostrev+rev_bin_cent+optstim||str_roi),
-               data=alleg_dat,
-               subset=ROI==unique(alleg_dat$ROI)[i] & med==.5)
-
-               m_tmp_off<-lmer(log(allegiance+0.000001)~prepostrev+rev_bin_cent+optstim+
-  (optstim+rev_bin_cent||sub)+(prepostrev+rev_bin_cent+optstim||str_roi),
-               data=alleg_dat,
-               subset=ROI==unique(alleg_dat$ROI)[i] & med==-.5)
-
-              str_logalleg_b_optstim_on[i,1]<-fixef(m_tmp_on)[4]
-              str_logalleg_b_revbin_on[i]<-fixef(m_tmp_on)[3]
-              str_logalleg_b_prepost_on[i,1]<-fixef(m_tmp_on)[2]
-              str_logalleg_b_optstim_on[i,2]<-fixef(m_tmp_on)[6]
-              str_logalleg_b_prepost_on[i,2]<-fixef(m_tmp_on)[5]
-
-              str_logalleg_b_optstim_off[i,1]<-fixef(m_tmp_off)[4]
-              str_logalleg_b_revbin_off[i]<-fixef(m_tmp_off)[3]
-              str_logalleg_b_optstim_off[i,2]<-fixef(m_tmp_off)[6]
-              str_logalleg_b_prepost_off[i,2]<-fixef(m_tmp_off)[5]
-
-              str_logalleg_p_optstim_on[i,1]<-Anova(m_tmp_on)[3,3]
-              str_logalleg_p_revbin_on[i]<-Anova(m_tmp_on)[2,3]
-              str_logalleg_p_prepost_on[i,1]<-Anova(m_tmp_on)[1,3]
-              str_logalleg_p_optstim_on[i,2]<-Anova(m_tmp_on)[5,3]
-              str_logalleg_p_prepost_on[i,2]<-Anova(m_tmp_on)[4,3]
-
-              str_logalleg_p_optstim_off[i,1]<-Anova(m_tmp_off)[3,3]
-              str_logalleg_p_revbin_off[i]<-Anova(m_tmp_off)[2,3]
-              str_logalleg_p_prepost_off[i,1]<-Anova(m_tmp_off)[1,3]
-              str_logalleg_p_optstim_off[i,2]<-Anova(m_tmp_off)[5,3]
-              str_logalleg_p_prepost_off[i,2]<-Anova(m_tmp_off)[4,3]
-
-              str_sub_logalleg_b_on[i,1:6,1]<-coef(m_tmp_on)$str_roi$optstim
-              str_sub_logalleg_b_on[i,1:6,2]<-coef(m_tmp_on)$str_roi$prepostrev
-              str_sub_logalleg_b_on[i,1:6,3]<-coef(m_tmp_on)$str_roi$rev_bin_cent
-              str_sub_logalleg_b_on[i,1:6,4]<-coef(m_tmp_on)$str_roi$"rev_bin_cent:optstim"
-              str_sub_logalleg_b_on[i,1:6,5]<-coef(m_tmp_on)$str_roi$"prepostrev:rev_bin_cent"
-              str_sub_logalleg_b_on[i,7,]<-unique(alleg_dat$ROI)[i]
-
-              str_sub_logalleg_b_off[i,1:6,1]<-coef(m_tmp_off)$str_roi$optstim
-              str_sub_logalleg_b_off[i,1:6,2]<-coef(m_tmp_off)$str_roi$prepostrev
-              str_sub_logalleg_b_off[i,1:6,3]<-coef(m_tmp_off)$str_roi$rev_bin_cent
-              str_sub_logalleg_b_off[i,1:6,4]<-coef(m_tmp_off)$str_roi$"rev_bin_cent:optstim"
-              str_sub_logalleg_b_off[i,1:6,5]<-coef(m_tmp_off)$str_roi$"prepostrev:rev_bin_cent"
-              str_sub_logalleg_b_off[i,7,]<-unique(alleg_dat$ROI)[i]
-  
 }
 
 
-save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats2.RData")
+objvplace_weights<-read.table(
+  "/data/engine/engram_locker/rgerraty/NETPD/vis_ROIs/obj_v_scene/object_select.txt")
+objvplace_weights<-objvplace_weights$V1[-str_ind]
 
-#write out parameter estimates for brain maps
-write.table(str_logalleg_b_optstim_on[,1],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_optstim_on.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_optstim_off[,1],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_optstim_off.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_optstim_on[,2],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_optstimxrevbin_on.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_optstim_off[,2],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_optstimxrevbin_off.txt",col.names=F,row.names=F)
+save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_str_stats.RData")
 
 
-write.table(str_logalleg_b_prepost_on[,1],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_prepost_on.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_prepost_off[,1],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_prepost_off.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_prepost_on[,2],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_prepostxrevbin_on.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_prepost_off[,2],file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_prepostxrevbin_off.txt",col.names=F,row.names=F)
+write.table(which(str_logalleg_run_p<0.01),
+  file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_uncorr_run_inds.txt",
+  col.names=F,row.names=F)
 
-write.table(str_logalleg_b_revbin_off,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_revbin_off.txt",col.names=F,row.names=F)
-write.table(str_logalleg_b_revbin_on,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/b_revbin_on.txt",col.names=F,row.names=F)
-
-#write out thresholded indices for brain maps
-#p<0.05 uncorrrected
-write.table(which(str_logalleg_p_optstim_on[,1]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_optstim_on_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_optstim_off[,1]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_optstim_off_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_optstim_on[,2]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_optstimxrevbin_on_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_optstim_off[,2]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_optstimxrevbin_off_inds.txt",col.names=F,row.names=F)
+write.table(str_logalleg_run_p,
+  file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_uncorr_run.txt",
+  col.names=F,row.names=F)
 
 
-write.table(which(str_logalleg_p_prepost_on[,1]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_prepost_on_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_prepost_off[,1]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_prepost_off_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_prepost_on[,2]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_prepostxrevbin_on_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_prepost_off[,2]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_prepostxrevbin_off_inds.txt",col.names=F,row.names=F)
+write.table(which(str_logalleg_runxmed_p<0.01),
+  file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_uncorr_runxmed_inds.txt",
+  col.names=F,row.names=F)
 
-write.table(which(str_logalleg_p_revbin_on<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_revbin_on_inds.txt",col.names=F,row.names=F)
-write.table(which(str_logalleg_p_revbin_off[,1]<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_revbin_off_inds.txt",col.names=F,row.names=F)
-
-
-#masked by fdr correction for med interaction
-write.table(which(p.adjust(str_logalleg_p[,8],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_optstim_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,8],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_optstim_off_inds.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,10],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_optstimxrevbin_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,10],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_optstimxrevbin_off_inds.txt",col.names=F,row.names=F)
-
-
-write.table(which(p.adjust(str_logalleg_p[,7],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_revbin_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which(p.adjust(str_logalleg_p[,7],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/fdrxmed_revbin_off_inds.txt",col.names=F,row.names=F)
-
-
-
-
-#p<0.05 uncorrrected & fdr corrected for med interaction
-write.table(which((str_logalleg_p_optstim_on[,1]<0.05) & p.adjust(str_logalleg_p[,8],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_optstim_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_optstim_off[,1]<0.05) & p.adjust(str_logalleg_p[,8],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_optstim_off_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_optstim_on[,2]<0.05) & p.adjust(str_logalleg_p[,10],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_optstimxrevbin_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_optstim_off[,2]<0.05) & p.adjust(str_logalleg_p[,10],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_optstimxrevbin_off_inds.txt",col.names=F,row.names=F)
-
-
-write.table(which((str_logalleg_p_revbin_on<0.05) & p.adjust(str_logalleg_p[,7],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_revbin_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_revbin_off<0.05) & p.adjust(str_logalleg_p[,7],method='fdr')<0.05)
-,file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_revbin_off_inds.txt",col.names=F,row.names=F)
-
-
-write.table(which((str_logalleg_p_prepost_on[,1]<0.05) & p.adjust(str_logalleg_p[,5],method='fdr')<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_prepost_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_prepost_off[,1]<0.05) & p.adjust(str_logalleg_p[,5],method='fdr')<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_prepost_off_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_prepost_on[,2]<0.05) & p.adjust(str_logalleg_p[,9],method='fdr')<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_prepostxrevbin_on_inds.txt",col.names=F,row.names=F)
-
-write.table(which((str_logalleg_p_prepost_off[,2]<0.05) & p.adjust(str_logalleg_p[,9],method='fdr')<0.05),file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_fdrxmed_prepostxrevbin_off_inds.txt",col.names=F,row.names=F)
-
-
- str_sub_logalleg_b[which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05),1:6,7]
-
-library(ggplot2)
- ggplot(data=subset(alleg_dat,ROI %in% which(p.adjust(str_logalleg_p[,7],method="fdr")<0.05)),aes(y=allegiance,x=rev_bin,color=med))+stat_summary(fun.y=mean)+stat_smooth(method='lm')+facet_grid(med~optstim~ROI)
-
-
- m1_long<-lmer(allegiance ~ optstim*med+(optstim*med|sub)+(optstim*med||str_roi)+(optstim*med|ROI),data=alleg_dat)
-
- library(rstanarm)
-options(mc.cores = parallel::detectCores())
-
- m1_long_bayes<-stan_lmer(I(log(allegiance+.0000000001)) ~ optstim*med+day+prepostrev+(optstim*med|sub)+(optstim*med|str_roi)+(optstim*med+day+prepostrev|ROI),data=alleg_dat,nsim=500)
-
- save.image(file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/alleg_bayes.RData")
+write.table(str_logalleg_runxmed_p,
+  file="/data/engine/engram_locker/rgerraty/NETPD/brainnet_allegiance/brains/p05_uncorr_runxmed.txt",
+  col.names=F,row.names=F)
 
 
 ```
