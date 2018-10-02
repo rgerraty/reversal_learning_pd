@@ -10,8 +10,14 @@ else
 	#note this will only work for very specific B0 images already in phase/magnitide 
 	echo splitting $1 into phase and magnitude images
 	fslsplit $1 $dir_name/vol
-	mv $dir_name/vol0000.nii.gz $dir_name/fieldmap_rads.nii.gz
+	mv $dir_name/vol0000.nii.gz $dir_name/fieldmap_hz.nii.gz
 	mv $dir_name/vol0001.nii.gz $dir_name/fieldmap_mag.nii.gz
+	bet  $dir_name/fieldmap_mag.nii.gz  $dir_name/fieldmap_mag_brain -m -n
+
+	fslmaths $dir_name/fieldmap_hz.nii.gz -mul 6.28 $dir_name/fieldmap_rads.nii.gz
+
+# mask the fieldmap image
+fslmaths $dir_name/fieldmap_rads.nii.gz -mul $dir_name/fieldmap_mag_brain_mask.nii.gz $dir_name/fieldmap_rads.nii.gz
 
 	echo regularizing field map
 	fugue --loadfmap=$dir_name/fieldmap_rads -s 2 --savefmap=$dir_name/fieldmap_rads
